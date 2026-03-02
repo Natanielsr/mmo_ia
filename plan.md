@@ -194,3 +194,6 @@ O repositório foi inicializado e commits foram feitos em etapas para refletir o
 - `ai-branch` foi criada para desenvolvimento conduzido pela IA; após adicionar modificações é esperado abrir um pull request de volta para `master`.
 
 *Ao terminar uma feature ou conjunto de testes nesta branch, faça o push e abra PR no GitHub.*
+
+> **Nota de processo:** a partir de agora evitaremos commits agregados. cada modificação (contrato, teste, refatoração etc.) deve ser commitada separadamente com mensagem descritiva. 
+> o commit anterior agrupou várias adições (novos contratos + testes) em único envio; isso é apenas um ponto histórico e não será repetido.
