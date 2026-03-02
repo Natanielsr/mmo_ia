@@ -20,7 +20,7 @@ namespace GameServer.Tests.Network
         public void Connect_Should_Return_Null_When_Token_Invalid()
         {
             var mock = new Mock<IConnectionService>();
-            mock.Setup(s => s.Connect("bad")).Returns((string)null);
+            mock.Setup(s => s.Connect("bad")).Returns((string?)null);
 
             var result = mock.Object.Connect("bad");
             Assert.Null(result);
