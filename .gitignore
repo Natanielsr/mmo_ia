@@ -1,0 +1,15 @@
+# .gitignore for .NET projects
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+*.log
+*.vs/
+*.vscode/
+GameServerApp/bin
+GameServerApp/obj
+GameServer.Tests/bin
+GameServer.Tests/obj
