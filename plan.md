@@ -176,5 +176,14 @@ O repositório foi inicializado e commits foram feitos em etapas para refletir o
 5. **Conversão para class library** – modificação do csproj para facilitar o uso em testes.
 6. **Refatorações** – separação de `Position` e `Size` em novos arquivos e remoção de warnings.
 7. **Testes adicionais** – inclusão de validações de grade e restrições de inventário/obstáculos.
+8. **Branch de IA** – criada `ai-branch` para trabalho assistido pela IA; futuras implementações e experimentos ocorrerão nela.
 
 *Siga este histórico para entender a evolução do projeto.*
+
+
+### Branches e Pull Requests
+
+- `master` mantém estado de referência estável.
+- `ai-branch` foi criada para desenvolvimento conduzido pela IA; após adicionar modificações é esperado abrir um pull request de volta para `master`.
+
+*Ao terminar uma feature ou conjunto de testes nesta branch, faça o push e abra PR no GitHub.*
