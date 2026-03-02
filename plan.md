@@ -83,19 +83,26 @@ O backend será desenvolvido em **C# / .NET**, usando ASP.NET Core para o servid
 ```
 /mmo
 ├── backend/
+│   ├── GameServer.slnx
+│   ├── GameServerApp/                # backend class library
+│   │   ├── Contracts/               # interfaces e tipos de domínio
+│   │   │   ├── Types/
+│   │   │   │   ├── Position.cs
+│   │   │   │   └── Size.cs
+│   │   │   └── I*.cs
+│   │   ├── Auth/                    # autenticação (vazio por enquanto)
+│   │   ├── Network/                 # WebSocket, REST
+│   │   ├── World/                   # lógica de mundo, entidades, serviços
+│   │   ├── DB/                      # persistência
+│   │   └── GameServerApp.csproj
+│   └── GameServer.Tests/            # testes xUnit
+│       ├── Combat/
+│       ├── Inventory/
+│       ├── Managers/
+│       └── World/
+├── frontend/                        # futuro cliente JS/HTML
 │   ├── src/
-│   │   ├── server.js       # inicialização
-│   │   ├── world/          # lógica do mundo, entidades
-│   │   ├── network/        # WebSocket, REST
-│   │   ├── auth/           # login/token
-│   │   └── db/             # esquemas, modelos
-│   └── tests/
-├── frontend/
-│   ├── src/
-│   │   ├── game/           # render, input, assets
-│   │   ├── ui/
-│   │   └── network/        # cliente WebSocket/REST
-│   └── public/             # assets estáticos
+│   └── public/
 ├── docs/
 └── plan.md
 ```
