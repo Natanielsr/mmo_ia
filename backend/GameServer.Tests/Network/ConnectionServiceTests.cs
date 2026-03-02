@@ -1,3 +1,4 @@
+#nullable enable
 using Moq;
 using Xunit;
 using GameServerApp.Contracts;
