@@ -1,6 +1,8 @@
 using Moq;
 using Xunit;
-using GameServerApp.Contracts;
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.World;
 
 namespace GameServer.Tests.Combat;
 

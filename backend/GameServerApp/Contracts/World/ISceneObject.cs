@@ -1,4 +1,4 @@
-namespace GameServerApp.Contracts
+namespace GameServerApp.Contracts.World
 {
     public interface ISceneObject
     {

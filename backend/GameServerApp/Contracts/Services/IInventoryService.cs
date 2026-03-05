@@ -1,4 +1,5 @@
-namespace GameServerApp.Contracts
+using GameServerApp.Contracts.World;
+namespace GameServerApp.Contracts.Services
 {
     using GameServerApp.Contracts.Types;
 

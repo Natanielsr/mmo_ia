@@ -1,6 +1,7 @@
+using GameServerApp.Contracts.World;
 using System;
 
-namespace GameServerApp.Contracts
+namespace GameServerApp.Contracts.Managers
 {
     public interface IZoneManager
     {

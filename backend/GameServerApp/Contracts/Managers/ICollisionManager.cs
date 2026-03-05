@@ -1,6 +1,7 @@
+using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 
-namespace GameServerApp.Contracts
+namespace GameServerApp.Contracts.Managers
 {
     public interface ICollisionManager
     {

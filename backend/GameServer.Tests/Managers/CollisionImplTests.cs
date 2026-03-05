@@ -1,5 +1,7 @@
 using Xunit;
-using GameServerApp.Contracts;
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Managers;
 using GameServerApp.World;

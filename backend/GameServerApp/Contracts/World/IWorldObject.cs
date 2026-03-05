@@ -1,6 +1,6 @@
 using GameServerApp.Contracts.Types;
 
-namespace GameServerApp.Contracts
+namespace GameServerApp.Contracts.World
 {
     public enum ObjectType
     {
