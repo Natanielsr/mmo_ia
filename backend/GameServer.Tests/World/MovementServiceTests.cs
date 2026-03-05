@@ -1,21 +1,52 @@
-using Moq;
 using Xunit;
-using GameServerApp.Contracts;
 using GameServerApp.Contracts.Types;
+using GameServerApp.World;
 
 namespace GameServer.Tests.World;
 
 public class MovementServiceTests
 {
-    [Fact]
-    public void MovementService_Should_Change_Position()
-    {
-        var mock = new Mock<IMovementService>();
-        mock.Setup(m => m.Move(It.Is<Position>(p => p.X == 0 && p.Y == 0), "east"))
-            .Returns(new Position(1, 0));
+    private readonly MovementService _service = new();
 
-        var result = mock.Object.Move(new Position(0, 0), "east");
+    [Fact]
+    public void MovementService_Should_Move_East()
+    {
+        var result = _service.Move(new Position(0, 0), "east");
         Assert.Equal(new Position(1, 0), result);
-        mock.Verify(m => m.Move(It.Is<Position>(p => p.X == 0 && p.Y == 0), "east"), Times.Once);
+    }
+
+    [Fact]
+    public void MovementService_Should_Move_West()
+    {
+        var result = _service.Move(new Position(1, 0), "west");
+        Assert.Equal(new Position(0, 0), result);
+    }
+
+    [Fact]
+    public void MovementService_Should_Move_North()
+    {
+        var result = _service.Move(new Position(0, 1), "north");
+        Assert.Equal(new Position(0, 0), result);
+    }
+
+    [Fact]
+    public void MovementService_Should_Move_South()
+    {
+        var result = _service.Move(new Position(0, 0), "south");
+        Assert.Equal(new Position(0, 1), result);
+    }
+
+    [Fact]
+    public void MovementService_Should_Be_Case_Insensitive()
+    {
+        var result = _service.Move(new Position(0, 0), "EAST");
+        Assert.Equal(new Position(1, 0), result);
+    }
+
+    [Fact]
+    public void MovementService_Should_Throw_On_Invalid_Direction()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            _service.Move(new Position(0, 0), "diagonal"));
     }
 }
