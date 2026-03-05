@@ -15,6 +15,10 @@ const worldMap = document.getElementById('world-map');
 const logContent = document.getElementById('log-content');
 const errorBanner = document.getElementById('connection-error');
 
+const WORLD_SIZE = 2048;
+const GRID_SIZE = 32;
+const WORLD_CENTER = WORLD_SIZE / 2; // 1024, exactly 32 * 32
+
 // --- SignalR Lifecycle ---
 
 connection.onreconnecting((error) => {
@@ -139,18 +143,36 @@ function updatePlayerPosition(id, x, y, isMe = false) {
         worldMap.appendChild(el);
     }
 
-    // Convert coordinates to pixels (simple 32px grid)
-    const px = x * 32 + (window.innerWidth / 2) - 160;
-    const py = y * 32 + (window.innerHeight / 2) - 100;
+    // Fixed world coordinates
+    const px = WORLD_CENTER + (x * GRID_SIZE);
+    const py = WORLD_CENTER + (y * GRID_SIZE);
 
     el.style.left = `${px}px`;
     el.style.top = `${py}px`;
 
     if (isMe) {
-        // Center camera pseudo-logic
-        worldMap.style.transform = `translate(${-x * 32}px, ${-y * 32}px)`;
+        // Center camera: viewport center - player world position
+        const viewX = (gameContainer.offsetWidth / 2) - px;
+        const viewY = (gameContainer.offsetHeight / 2) - py;
+        worldMap.style.transform = `translate(${viewX}px, ${viewY}px)`;
     }
 }
+
+function createGridLabels() {
+    const range = 20; // Generate labels around the center
+    for (let x = -range; x <= range; x++) {
+        for (let y = -range; y <= range; y++) {
+            const label = document.createElement('div');
+            label.className = 'grid-label';
+            label.innerText = `${x},${y}`;
+            label.style.left = `${WORLD_CENTER + (x * GRID_SIZE)}px`;
+            label.style.top = `${WORLD_CENTER + (y * GRID_SIZE)}px`;
+            worldMap.appendChild(label);
+        }
+    }
+}
+
+createGridLabels();
 
 function removePlayer(id) {
     const el = document.getElementById(`player-${id}`);

@@ -135,8 +135,25 @@ input {
 
 #world-map {
     position: absolute;
-    width: 2000px;
-    height: 2000px;
+    width: 2048px;
+    height: 2048px;
+    background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.grid-label {
+    position: absolute;
+    font-size: 8px;
+    color: var(--text-dim);
+    opacity: 0.3;
+    pointer-events: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .player-token {
