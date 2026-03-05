@@ -133,22 +133,22 @@ window.onkeydown = (e) => {
 // --- Utils ---
 
 function updatePlayerPosition(id, x, y, isMe = false) {
-    let el = document.getElementById(`player-${id}`);
-    if (!el) {
-        el = document.createElement('div');
-        el.id = `player-${id}`;
-        el.className = 'player-token';
-        el.setAttribute('data-name', id);
-        if (isMe) el.style.backgroundColor = '#818cf8';
-        worldMap.appendChild(el);
+    let playerElement = document.getElementById(`player-${id}`);
+    if (!playerElement) {
+        playerElement = document.createElement('div');
+        playerElement.id = `player-${id}`;
+        playerElement.className = 'player-token';
+        playerElement.setAttribute('data-name', id);
+        if (isMe) playerElement.style.backgroundColor = '#818cf8';
+        worldMap.appendChild(playerElement);
     }
 
     // Fixed world coordinates
     const px = WORLD_CENTER + (x * GRID_SIZE);
     const py = WORLD_CENTER - (y * GRID_SIZE);
 
-    el.style.left = `${px}px`;
-    el.style.top = `${py}px`;
+    playerElement.style.left = `${px}px`;
+    playerElement.style.top = `${py}px`;
 
     if (isMe) {
         // Center camera: viewport center - player world position
