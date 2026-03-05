@@ -40,6 +40,11 @@ connection.on("PlayerMoved", (data) => {
     updatePlayerPosition(data.playerId, data.x, data.y);
 });
 
+connection.on("PlayerLeft", (playerId) => {
+    addLog(`${playerId} saiu do mundo.`);
+    removePlayer(playerId);
+});
+
 connection.on("PlayerAttacked", (data) => {
     addLog(`${data.attackerId} atacou ${data.targetId} causando ${data.damage} de dano!`);
 });
@@ -111,6 +116,13 @@ function updatePlayerPosition(id, x, y, isMe = false) {
     if (isMe) {
         // Center camera pseudo-logic
         worldMap.style.transform = `translate(${-x * 32}px, ${-y * 32}px)`;
+    }
+}
+
+function removePlayer(id) {
+    const el = document.getElementById(`player-${id}`);
+    if (el) {
+        el.remove();
     }
 }
 

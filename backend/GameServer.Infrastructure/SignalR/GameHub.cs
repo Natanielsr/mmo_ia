@@ -10,11 +10,13 @@ namespace GameServer.Infrastructure.SignalR
     public class GameHub : Hub
     {
         private readonly IWorldProcessor _worldProcessor;
+        private readonly IWorldEvents _worldEvents;
         private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
 
-        public GameHub(IWorldProcessor worldProcessor)
+        public GameHub(IWorldProcessor worldProcessor, IWorldEvents worldEvents)
         {
             _worldProcessor = worldProcessor;
+            _worldEvents = worldEvents;
         }
 
         public async Task JoinGame(string playerName)
@@ -48,10 +50,13 @@ namespace GameServer.Infrastructure.SignalR
             }
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            _sessions.TryRemove(Context.ConnectionId, out _);
-            return base.OnDisconnectedAsync(exception);
+            if (_sessions.TryRemove(Context.ConnectionId, out var player))
+            {
+                _worldEvents.OnPlayerLeft(player.Name);
+            }
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

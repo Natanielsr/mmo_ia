@@ -28,5 +28,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player levels up.
         /// </summary>
         void OnPlayerLevelUp(string playerId, int newLevel);
+
+        /// <summary>
+        /// Triggered when a player leaves the world.
+        /// </summary>
+        void OnPlayerLeft(string playerId);
     }
 }

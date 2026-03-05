@@ -55,5 +55,10 @@ namespace GameServer.Infrastructure.SignalR
                 Level = newLevel
             });
         }
+
+        public void OnPlayerLeft(string playerId)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerLeft", playerId);
+        }
     }
 }
