@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity MMO - Client</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+</head>
+<body>
+    <div id="login-overlay" class="overlay">
+        <div class="login-card glass">
+            <h1>Antigravity MMO</h1>
+            <p>Entre no mundo em tempo real</p>
+            <input type="text" id="username" placeholder="Nome do Personagem" maxlength="15">
+            <button id="btn-join" class="btn-primary">Entrar no Jogo</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <div class="game-layout">
+            <main class="game-view glass">
+                <div id="world-map">
+                    <!-- Players will be rendered here -->
+                </div>
+            </main>
+
+            <aside class="sidebar glass">
+                <section class="player-stats">
+                    <h2>Status</h2>
+                    <div class="stat-row">
+                        <span>HP:</span>
+                        <div class="progress-bar hp-bar">
+                            <div id="hp-progress" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="game-log">
+                    <h2>Log do Mundo</h2>
+                    <div id="log-content"></div>
+                </section>
+            </aside>
+        </div>
+
+        <div class="controls-hint">
+            Use as setas do teclado ou <span>WASD</span> para mover
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+</html>
