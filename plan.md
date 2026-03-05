@@ -127,6 +127,7 @@ O backend será desenvolvido em **C# / .NET**, usando ASP.NET Core para o servid
   - `GameServer.Tests/Combat/` → testes de combate, dano, HP
   - `GameServer.Tests/Inventory/` → testes de itens, mochila
   - etc.
+- **Separação de Mocks e Implementações**: Os testes que utilizam Mocks (`*Tests.cs`) devem ser mantidos originais para validar os contratos. Testes da implementação real devem ser criados em arquivos separados com o sufixo `*ImplTests.cs`.
 
 ### Metodologia (XP - Extreme Programming)
 
