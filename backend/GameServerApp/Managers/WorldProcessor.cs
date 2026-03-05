@@ -11,17 +11,20 @@ namespace GameServerApp.Managers
         private readonly ICollisionManager _collisionManager;
         private readonly ICombatService _combatService;
         private readonly IGameStateManager _gameStateManager;
+        private readonly IWorldEvents _worldEvents;
 
         public WorldProcessor(
             IMovementService movementService,
             ICollisionManager collisionManager,
             ICombatService combatService,
-            IGameStateManager gameStateManager)
+            IGameStateManager gameStateManager,
+            IWorldEvents worldEvents)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
             _combatService = combatService;
             _gameStateManager = gameStateManager;
+            _worldEvents = worldEvents;
         }
 
         public bool ProcessPlayerMovement(IPlayer player, string direction)
@@ -36,6 +39,9 @@ namespace GameServerApp.Managers
             {
                 // 3. Update player position
                 player.Move(targetPos);
+                
+                // 4. Emit event
+                _worldEvents.OnPlayerMoved(player.Name, targetPos); // Using player.Name as ID for now
                 return true;
             }
 
@@ -62,7 +68,12 @@ namespace GameServerApp.Managers
                 _gameStateManager.PlayerDied(target);
                 _gameStateManager.AddPlayerExperience(player, 100); // 100 XP reward
                 _gameStateManager.CheckForLevelUp(player);
+                
+                _worldEvents.OnPlayerDied(target.Name);
+                _worldEvents.OnPlayerExperienceGained(player.Name, 100, player.Experience);
             }
+            
+            _worldEvents.OnPlayerAttacked(player.Name, target.Name, damage);
         }
 
         public void Tick()

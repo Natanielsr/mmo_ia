@@ -153,9 +153,10 @@ Adotamos uma abordagem que separa responsabilidades em três camadas principais:
 2.  **Serviços (Stateless Services):** Especialistas em lógica pura, sem manter estado (ex: `MovementService`, `CombatService`).
 3.  **Gerentes (Managers/Orchestrators):** Componentes que detêm o estado global e coordenam a interação entre Entidades e Serviços (ex: `GameStateManager`, `CollisionManager`, `WorldProcessor`).
 
-O **`WorldProcessor`** atua como o orquestrador principal de ações, recebendo intenções de movimentação ou ataque e garantindo que o fluxo de cálculo e validação seja seguido.
+4.  **Infraestrutura (Infrastructure):** Implementações de tecnologia específica (ex: SignalR, Database). Depende do Core.
+5.  **Apresentação/Host (Web):** O ponto de entrada da aplicação que configura o pipeline do ASP.NET Core.
 
-Essa estrutura facilita o desacoplamento e permite testes unitários rigorosos em cada peça.
+Essa estrutura (Clean Architecture) garante que o Core do jogo seja independente de protocolos de rede ou banco de dados.
 
 ### Regras e Gameplay Inspiradas em Tibia
 

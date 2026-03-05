@@ -3,6 +3,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
 
@@ -15,6 +16,7 @@ namespace GameServer.Tests.Managers
         private readonly CollisionManager _collisionManager = new();
         private readonly CombatService _combatService = new();
         private readonly GameStateManager _gameStateManager = new();
+        private readonly Mock<IWorldEvents> _mockEvents = new();
 
         public WorldProcessorImplTests()
         {
@@ -22,7 +24,8 @@ namespace GameServer.Tests.Managers
                 _movementService,
                 _collisionManager,
                 _combatService,
-                _gameStateManager
+                _gameStateManager,
+                _mockEvents.Object
             );
         }
 
