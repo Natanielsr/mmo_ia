@@ -145,6 +145,16 @@ O backend será desenvolvido em **C# / .NET**, usando ASP.NET Core para o servid
 
 Essas práticas vão guiar nosso fluxo de trabalho e decisões técnicas.
 
+### Arquitetura do Projeto (Manager/Service/Entity)
+
+Adotamos uma abordagem que separa responsabilidades em três camadas principais:
+
+1.  **Entidades (Domain):** Guardam dados e regras de auto-validação (ex: `Player`, `Item`).
+2.  **Serviços (Stateless Services):** Especialistas em lógica pura, sem manter estado (ex: `MovementService`, `CombatService`).
+3.  **Gerentes (Managers/Orchestrators):** Componentes que detêm o estado global e coordenam a interação entre Entidades e Serviços (ex: `GameStateManager`, `CollisionManager`).
+
+Essa estrutura facilita o desacoplamento e permite testes unitários rigorosos em cada peça.
+
 ### Regras e Gameplay Inspiradas em Tibia
 
 - **Visão**: top-down isométrica, grid-based, com movimentação por tiles.
