@@ -151,7 +151,9 @@ Adotamos uma abordagem que separa responsabilidades em três camadas principais:
 
 1.  **Entidades (Domain):** Guardam dados e regras de auto-validação (ex: `Player`, `Item`).
 2.  **Serviços (Stateless Services):** Especialistas em lógica pura, sem manter estado (ex: `MovementService`, `CombatService`).
-3.  **Gerentes (Managers/Orchestrators):** Componentes que detêm o estado global e coordenam a interação entre Entidades e Serviços (ex: `GameStateManager`, `CollisionManager`).
+3.  **Gerentes (Managers/Orchestrators):** Componentes que detêm o estado global e coordenam a interação entre Entidades e Serviços (ex: `GameStateManager`, `CollisionManager`, `WorldProcessor`).
+
+O **`WorldProcessor`** atua como o orquestrador principal de ações, recebendo intenções de movimentação ou ataque e garantindo que o fluxo de cálculo e validação seja seguido.
 
 Essa estrutura facilita o desacoplamento e permite testes unitários rigorosos em cada peça.
 
