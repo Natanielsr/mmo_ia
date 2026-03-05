@@ -30,7 +30,7 @@ O frontend é uma aplicação estática. Para jogar:
 Para rodar a suíte de testes unitários:
 
 ```bash
-dotnet test backend/GameServer.sln
+dotnet test backend/GameServer.slnx
 ```
 
 ## 🛠 Tecnologias
