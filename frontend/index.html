@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 </head>
+
 <body>
     <div id="login-overlay" class="overlay">
         <div class="login-card glass">
             <h1>Antigravity MMO</h1>
             <p>Entre no mundo em tempo real</p>
-            <input type="text" id="username" placeholder="Nome do Personagem" maxlength="15">
+            <div id="connection-error" class="error-banner hidden">
+                Falha ao conectar ao servidor. Tentando reconectar...
+            </div>
+            <input required type="text" id="username" placeholder="Nome do Personagem" maxlength="15">
             <button id="btn-join" class="btn-primary">Entrar no Jogo</button>
         </div>
     </div>
@@ -53,4 +58,5 @@
 
     <script src="js/game.js"></script>
 </body>
+
 </html>

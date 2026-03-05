@@ -13,6 +13,31 @@ const btnJoin = document.getElementById('btn-join');
 const inputName = document.getElementById('username');
 const worldMap = document.getElementById('world-map');
 const logContent = document.getElementById('log-content');
+const errorBanner = document.getElementById('connection-error');
+
+// --- SignalR Lifecycle ---
+
+connection.onreconnecting((error) => {
+    console.warn("Reconectando...", error);
+    errorBanner.classList.remove('hidden');
+    addLog("Conexão perdida. Tentando reconectar...", "error");
+    btnJoin.disabled = true;
+});
+
+connection.onreconnected((connectionId) => {
+    console.log("Reconectado!");
+    errorBanner.classList.add('hidden');
+    addLog("Conexão reestabelecida!", "info");
+    btnJoin.disabled = false;
+});
+
+connection.onclose((error) => {
+    console.error("Conexão fechada!", error);
+    errorBanner.innerText = "Conexão perdida. Por favor, recarregue a página.";
+    errorBanner.classList.remove('hidden');
+    addLog("Conexão encerrada. Por favor, recarregue a página.", "error");
+    btnJoin.disabled = true;
+});
 
 // --- SignalR Handlers ---
 
@@ -57,11 +82,19 @@ connection.on("MoveFailed", (msg) => {
 
 async function start() {
     try {
+        btnJoin.disabled = true;
         await connection.start();
         console.log("Conectado ao SignalR!");
+        errorBanner.classList.add('hidden');
+        btnJoin.disabled = false;
     } catch (err) {
         console.error("Erro ao conectar:", err);
+        addLog("Não foi possível conectar ao servidor. Tentando novamente...", "error");
+        errorBanner.innerText = "Conexão perdida. Por favor, recarregue a página.";
+        errorBanner.classList.remove('hidden');
+
         setTimeout(start, 5000);
+
     }
 }
 

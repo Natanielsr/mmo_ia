@@ -30,7 +30,26 @@ body {
     border-radius: 12px;
 }
 
-.hidden { display: none !important; }
+.hidden {
+    display: none !important;
+}
+
+.error-banner {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.log-entry.error {
+    color: #f87171;
+    font-weight: 600;
+}
 
 /* Overlay */
 .overlay {
@@ -56,6 +75,7 @@ body {
     margin-bottom: 0.5rem;
     background: linear-gradient(to right, #818cf8, #c084fc);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -87,7 +107,9 @@ input {
     transition: background 0.2s;
 }
 
-.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
 
 /* Game Layout */
 #game-container {
@@ -174,7 +196,11 @@ input {
     line-height: 1.5;
 }
 
-.log-entry { margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.25rem; }
+.log-entry {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+}
 
 .controls-hint {
     text-align: center;
