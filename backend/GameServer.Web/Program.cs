@@ -10,6 +10,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add SignalR
 builder.Services.AddSignalR();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.SetIsOriginAllowed(_ => true) // Allow any origin, including file:// (null)
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials(); // Required for SignalR
+    });
+});
+
 // Register Core Services (Stateless)
 builder.Services.AddSingleton<IMovementService, MovementService>();
 builder.Services.AddSingleton<ICombatService, CombatService>();
@@ -23,6 +35,8 @@ builder.Services.AddSingleton<IWorldProcessor, WorldProcessor>();
 builder.Services.AddSingleton<IWorldEvents, SignalREventEmitter>();
 
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 app.MapGet("/", () => "MMO Game Server is running!");
 
