@@ -1,21 +1,45 @@
 using Microsoft.AspNetCore.SignalR;
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.World;
+using GameServerApp.Contracts.Types;
+using GameServerApp.World;
+using System.Collections.Concurrent;
 
 namespace GameServer.Infrastructure.SignalR
 {
     public class GameHub : Hub
     {
-        // Hub methods to be called from the client (e.g., SendMessage, RequestMove)
-        // For now, it serves as the real-time pipe.
-        
-        public override async Task OnConnectedAsync()
+        private readonly IWorldProcessor _worldProcessor;
+        private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
+
+        public GameHub(IWorldProcessor worldProcessor)
         {
-            await base.OnConnectedAsync();
-            // Logic for when a player connects (e.g., authentication check)
+            _worldProcessor = worldProcessor;
         }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        public async Task JoinGame(string playerName)
         {
-            await base.OnDisconnectedAsync(exception);
+            // Simple logic: create or get player
+            var player = _sessions.GetOrAdd(Context.ConnectionId, _ => new Player(playerName, new Position(0, 0)));
+            await Clients.Caller.SendAsync("Joined", new { Name = player.Name, Position = player.Position });
+        }
+
+        public async Task RequestMove(string direction)
+        {
+            if (_sessions.TryGetValue(Context.ConnectionId, out var player))
+            {
+                bool success = _worldProcessor.ProcessPlayerMovement(player, direction);
+                if (!success)
+                {
+                    await Clients.Caller.SendAsync("MoveFailed", "Caminho bloqueado ou ação inválida.");
+                }
+            }
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            _sessions.TryRemove(Context.ConnectionId, out _);
+            return base.OnDisconnectedAsync(exception);
         }
     }
 }
