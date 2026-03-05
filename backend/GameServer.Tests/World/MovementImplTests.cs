@@ -25,15 +25,15 @@ public class MovementImplTests
     [Fact]
     public void MovementService_Should_Move_North()
     {
-        var result = _service.Move(new Position(0, 1), "north");
-        Assert.Equal(new Position(0, 0), result);
+        var result = _service.Move(new Position(0, 0), "north");
+        Assert.Equal(new Position(0, 1), result);
     }
 
     [Fact]
     public void MovementService_Should_Move_South()
     {
         var result = _service.Move(new Position(0, 0), "south");
-        Assert.Equal(new Position(0, 1), result);
+        Assert.Equal(new Position(0, -1), result);
     }
 
     [Fact]

@@ -145,7 +145,7 @@ function updatePlayerPosition(id, x, y, isMe = false) {
 
     // Fixed world coordinates
     const px = WORLD_CENTER + (x * GRID_SIZE);
-    const py = WORLD_CENTER + (y * GRID_SIZE);
+    const py = WORLD_CENTER - (y * GRID_SIZE);
 
     el.style.left = `${px}px`;
     el.style.top = `${py}px`;
@@ -164,7 +164,7 @@ function createGridLabels() {
         for (let y = -range; y <= range; y++) {
             const label = document.createElement('div');
             label.className = 'grid-label';
-            label.innerText = `${x},${y}`;
+            label.innerText = `${x},${-y}`;
             label.style.left = `${WORLD_CENTER + (x * GRID_SIZE)}px`;
             label.style.top = `${WORLD_CENTER + (y * GRID_SIZE)}px`;
             worldMap.appendChild(label);

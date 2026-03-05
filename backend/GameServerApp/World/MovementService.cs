@@ -9,10 +9,10 @@ namespace GameServerApp.World
     {
         private static readonly Dictionary<string, (int dx, int dy)> Directions = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["north"] = (0, -1),
-            ["south"] = (0, 1),
-            ["east"]  = (1, 0),
-            ["west"]  = (-1, 0),
+            ["north"] = (0, 1),
+            ["south"] = (0, -1),
+            ["east"] = (1, 0),
+            ["west"] = (-1, 0),
         };
 
         public Position Move(Position position, string direction)
