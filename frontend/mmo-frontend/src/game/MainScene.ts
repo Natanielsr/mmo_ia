@@ -66,8 +66,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false) {
-        const px = gridX * GRID_SIZE;
-        const py = -gridY * GRID_SIZE;
+        const px = gridX * GRID_SIZE + (GRID_SIZE / 2);
+        const py = -gridY * GRID_SIZE - (GRID_SIZE / 2);
 
         if (!this.playerSprites[id]) {
             const sprite = this.add.sprite(px, py, 'token');
