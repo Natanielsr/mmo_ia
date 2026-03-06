@@ -49,7 +49,9 @@ namespace GameServerApp.Managers
             if (!_collisionManager.IsPositionBlocked(targetPos))
             {
                 // 3. Update player position
+                Position oldPos = player.Position;
                 player.Move(targetPos);
+                _collisionManager.UpdateObjectPosition(player, oldPos);
                 
                 // 4. Emit event
                 _worldEvents.OnPlayerMoved(player.Name, targetPos); // Using player.Name as ID for now

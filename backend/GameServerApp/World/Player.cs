@@ -8,6 +8,12 @@ namespace GameServerApp.World
     public class Player : IPlayer
     {
         public string Name { get; }
+        public string Id => Name;
+        public ObjectType Type => ObjectType.Player;
+        public bool IsPassable => false;
+        public Size Size { get; } = new Size { Width = 1, Height = 1 };
+        public float Rotation { get; } = 0f;
+        
         public Position Position { get; private set; }
         public int Hp { get; private set; }
         public int MaxHp { get; private set; }

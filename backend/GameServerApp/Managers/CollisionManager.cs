@@ -27,6 +27,15 @@ namespace GameServerApp.Managers
             }
         }
 
+        public void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition)
+        {
+            if (worldObject == null) return;
+            
+            _objects.Remove(oldPosition);
+            _objects[worldObject.Position] = worldObject;
+            _objectsById[worldObject.Id] = worldObject; // Ensure dictionary is updated just in case
+        }
+
         public bool IsPositionBlocked(Position position)
         {
             if (_objects.TryGetValue(position, out var obj))
