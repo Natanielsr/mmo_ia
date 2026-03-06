@@ -12,10 +12,13 @@ namespace GameServerApp.Contracts.World
         Player
     }
 
-    public interface IWorldObject : ISceneObject
+    public interface IWorldObject
     {
         string Id { get; }
         ObjectType Type { get; }
         bool IsPassable { get; }
+        Position Position { get; }
+        Size Size { get; }
+        float Rotation { get; }
     }
 }
