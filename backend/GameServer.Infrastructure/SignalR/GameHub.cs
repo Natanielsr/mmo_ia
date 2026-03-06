@@ -11,18 +11,23 @@ namespace GameServer.Infrastructure.SignalR
     {
         private readonly IWorldProcessor _worldProcessor;
         private readonly IWorldEvents _worldEvents;
+        private readonly ICollisionManager _collisionManager;
         private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
 
-        public GameHub(IWorldProcessor worldProcessor, IWorldEvents worldEvents)
+        public GameHub(IWorldProcessor worldProcessor, IWorldEvents worldEvents, ICollisionManager collisionManager)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
+            _collisionManager = collisionManager;
         }
 
         public async Task JoinGame(string playerName)
         {
             // Simple logic: create or get player
             var player = _sessions.GetOrAdd(Context.ConnectionId, _ => new Player(playerName, new Position(0, 0)));
+            
+            // Register player collision
+            _collisionManager.RegisterObject(player);
             
             // 1. Notify caller they joined
             await Clients.Caller.SendAsync("Joined", new { Name = player.Name, Position = player.Position });
@@ -55,6 +60,7 @@ namespace GameServer.Infrastructure.SignalR
             if (_sessions.TryRemove(Context.ConnectionId, out var player))
             {
                 _worldEvents.OnPlayerLeft(player.Name);
+                _collisionManager.RemoveObject(player.Id);
             }
             await base.OnDisconnectedAsync(exception);
         }

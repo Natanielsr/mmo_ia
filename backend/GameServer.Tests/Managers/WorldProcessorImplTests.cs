@@ -15,11 +15,12 @@ namespace GameServer.Tests.Managers
         private readonly MovementService _movementService = new();
         private readonly CollisionManager _collisionManager = new();
         private readonly CombatService _combatService = new();
-        private readonly GameStateManager _gameStateManager = new();
+        private readonly GameStateManager _gameStateManager;
         private readonly Mock<IWorldEvents> _mockEvents = new();
 
         public WorldProcessorImplTests()
         {
+            _gameStateManager = new GameStateManager(_collisionManager);
             _processor = new WorldProcessor(
                 _movementService,
                 _collisionManager,
@@ -101,6 +102,23 @@ namespace GameServer.Tests.Managers
             bool moved2 = _processor.ProcessPlayerMovement(player, "east");
             Assert.False(moved2);
             Assert.Equal(1, player.Position.X); // Position should not change
+        }
+
+        [Fact]
+        public void Movement_Should_Fail_If_Blocked_By_Player()
+        {
+            var startPos = new Position(0, 0);
+            var targetPos = new Position(1, 0);
+            var player1 = new Player("Hero", startPos);
+            var player2 = new Player("Blocker", targetPos);
+            
+            // Register player2 as an obstacle
+            _collisionManager.RegisterObject(player2);
+            
+            bool moved = _processor.ProcessPlayerMovement(player1, "east");
+            
+            Assert.False(moved);
+            Assert.Equal(0, player1.Position.X); // Stayed at 0
         }
     }
 }

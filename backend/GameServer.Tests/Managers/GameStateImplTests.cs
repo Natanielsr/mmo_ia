@@ -10,7 +10,13 @@ namespace GameServer.Tests.Managers;
 
 public class GameStateImplTests
 {
-    private readonly GameStateManager _manager = new();
+    private readonly CollisionManager _collisionManager = new();
+    private readonly GameStateManager _manager;
+
+    public GameStateImplTests()
+    {
+        _manager = new GameStateManager(_collisionManager);
+    }
     private readonly Position _spawnPoint = new Position(10, 10);
     private readonly Position _hospitalPoint = new Position(50, 50);
 
