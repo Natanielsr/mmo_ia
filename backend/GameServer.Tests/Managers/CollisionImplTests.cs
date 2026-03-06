@@ -63,5 +63,38 @@ namespace GameServer.Tests.Managers
             var pos = new Position(100, 100);
             Assert.False(_collisionManager.IsPositionBlocked(pos));
         }
+
+        [Fact]
+        public void CollisionManager_Should_Handle_Multiple_Objects_At_Same_Position()
+        {
+            var spawnPos = new Position(0, 0);
+            var targetPos = new Position(1, 0);
+            
+            var player1 = new Player("Player 1", spawnPos);
+            var player2 = new Player("Player 2", spawnPos);
+            
+            _collisionManager.RegisterObject(player1);
+            _collisionManager.RegisterObject(player2);
+            
+            // Both at spawn: position is blocked
+            Assert.True(_collisionManager.IsPositionBlocked(spawnPos));
+            
+            // Move player 2 away
+            Position oldPos = player2.Position;
+            player2.Move(targetPos);
+            _collisionManager.UpdateObjectPosition(player2, oldPos);
+            
+            // spawnPos should STILL be blocked by player 1
+            Assert.True(_collisionManager.IsPositionBlocked(spawnPos), "Spawn position should still be blocked by Player 1 after Player 2 moves.");
+            
+            // targetPos should also be blocked by player 2
+            Assert.True(_collisionManager.IsPositionBlocked(targetPos));
+            
+            // Remove player 1
+            _collisionManager.RemoveObject(player1.Id);
+            
+            // Now spawnPos should be free
+            Assert.False(_collisionManager.IsPositionBlocked(spawnPos));
+        }
     }
 }

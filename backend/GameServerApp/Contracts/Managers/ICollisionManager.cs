@@ -9,7 +9,7 @@ namespace GameServerApp.Contracts.Managers
         void RemoveObject(string objectId);
         void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition);
         bool CanPlayerMove(Position from, Position to);
-        IWorldObject GetObjectAt(Position position);
+        IWorldObject? GetObjectAt(Position position);
         bool IsPositionBlocked(Position position);
     }
 }
