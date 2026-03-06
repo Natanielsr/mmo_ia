@@ -32,15 +32,15 @@ namespace GameServer.Infrastructure.SignalR
             // 1. Notify caller they joined
             await Clients.Caller.SendAsync("Joined", new { Name = player.Name, Position = player.Position });
 
-            // 2. Send all existing players to the new player
+            // 2. Notify world events (which will notify other players)
+            _worldEvents.OnPlayerJoined(player.Name, player.Position);
+
+            // 3. Send all existing players to the new player
             var otherPlayers = _sessions.Values
                 .Where(p => p.Name != player.Name)
                 .Select(p => new { PlayerId = p.Name, X = p.Position.X, Y = p.Position.Y });
             
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
-
-            // 3. Notify everyone else that a new player joined
-            await Clients.Others.SendAsync("PlayerJoined", new { PlayerId = player.Name, X = player.Position.X, Y = player.Position.Y });
         }
 
         public async Task RequestMove(string direction)

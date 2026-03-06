@@ -8,6 +8,11 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player moves to a new position.
         /// </summary>
         void OnPlayerMoved(string playerId, Position newPosition);
+        
+        /// <summary>
+        /// Triggered when a player joins the world.
+        /// </summary>
+        void OnPlayerJoined(string playerId, Position spawnPosition);
 
         /// <summary>
         /// Triggered when a player attacks another player/target.

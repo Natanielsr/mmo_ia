@@ -23,6 +23,16 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
+        public void OnPlayerJoined(string playerId, Position spawnPosition)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerJoined", new
+            {
+                PlayerId = playerId,
+                X = spawnPosition.X,
+                Y = spawnPosition.Y
+            });
+        }
+
         public void OnPlayerAttacked(string attackerId, string targetId, int damage)
         {
             _hubContext.Clients.All.SendAsync("PlayerAttacked", new
