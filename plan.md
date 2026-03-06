@@ -78,34 +78,129 @@ O backend será desenvolvido em **C# / .NET**, usando ASP.NET Core para o servid
 4. Servidor → envia atualizações de mundo para clientes na mesma zona.
 5. Eventos (chat, loot, spawn) são propagados por WebSocket.
 
-### Estrutura de Pastas Sugerida
+### Estrutura de Pastas Atual (Repositório Atualizado)
 
 ```
 /mmo
 ├── backend/
-│   ├── GameServer.slnx
-│   ├── GameServerApp/                # backend class library
-│   │   ├── Contracts/               # interfaces e tipos de domínio
-│   │   │   ├── Types/
+│   ├── GameServer.slnx                            # Solução .NET com todos os projetos
+│   ├── GameServerApp/                            # Core do Jogo (Class Library)
+│   │   ├── Auth/                                # Autenticação
+│   │   ├── Contracts/                           # Interfaces e contratos
+│   │   │   ├── Managers/                       # Interfaces dos Managers
+│   │   │   │   ├── ICollisionManager.cs
+│   │   │   │   ├── IGameStateManager.cs
+│   │   │   │   ├── IWorldProcessor.cs
+│   │   │   │   └── IZoneManager.cs
+│   │   │   ├── Services/                       # Interfaces dos Serviços
+│   │   │   │   ├── IAuthenticationService.cs
+│   │   │   │   ├── ICombatService.cs
+│   │   │   │   ├── IConnectionService.cs
+│   │   │   │   ├── IInventoryService.cs
+│   │   │   │   ├── IMovementService.cs
+│   │   │   │   └── IPersistenceService.cs
+│   │   │   ├── Types/                          # Tipos de domínio
 │   │   │   │   ├── Position.cs
 │   │   │   │   └── Size.cs
-│   │   │   └── I*.cs
-│   │   ├── Auth/                    # autenticação (vazio por enquanto)
-│   │   ├── Network/                 # WebSocket, REST
-│   │   ├── World/                   # lógica de mundo, entidades, serviços
-│   │   ├── DB/                      # persistência
+│   │   │   └── World/                          # Interfaces de entidades
+│   │   │       ├── IItem.cs
+│   │   │       ├── IPlayer.cs
+│   │   │       ├── IWorldEvents.cs
+│   │   │       └── IWorldObject.cs
+│   │   ├── DB/                                 # Persistência
+│   │   ├── Managers/                           # Implementações dos Managers
+│   │   │   ├── CollisionManager.cs
+│   │   │   ├── GameStateManager.cs
+│   │   │   └── WorldProcessor.cs
+│   │   ├── Network/                            # Rede
+│   │   ├── World/                              # Entidades e Serviços do mundo
+│   │   │   ├── CombatService.cs
+│   │   │   ├── InventoryService.cs
+│   │   │   ├── Item.cs
+│   │   │   ├── MovementService.cs
+│   │   │   ├── Player.cs
+│   │   │   └── WorldObject.cs
 │   │   └── GameServerApp.csproj
-│   └── GameServer.Tests/            # testes xUnit
+│   ├── GameServer.Infrastructure/              # Infraestrutura (SignalR, Database, etc.)
+│   │   ├── SignalR/                            # Implementação SignalR
+│   │   │   ├── GameHub.cs
+│   │   │   └── SignalREventEmitter.cs
+│   │   └── GameServer.Infrastructure.csproj
+│   ├── GameServer.Web/                         # Host Web (ASP.NET Core)
+│   │   ├── Program.cs
+│   │   ├── Properties/
+│   │   └── GameServer.Web.csproj
+│   └── GameServer.Tests/                       # Testes xUnit
+│       ├── Auth/
+│       │   └── AuthenticationServiceTests.cs
 │       ├── Combat/
+│       │   ├── CombatImplTests.cs
+│       │   └── CombatServiceTests.cs
+│       ├── DB/
+│       │   └── PersistenceServiceTests.cs
 │       ├── Inventory/
+│       │   ├── InventoryImplTests.cs
+│       │   └── InventorySystemTests.cs
 │       ├── Managers/
-│       └── World/
-├── frontend/                        # futuro cliente JS/HTML
-│   ├── src/
-│   └── public/
-├── docs/
-└── plan.md
+│       │   ├── CollisionImplTests.cs
+│       │   ├── GameStateImplTests.cs
+│       │   ├── GameStateManagerTests.cs
+│       │   └── WorldProcessorImplTests.cs
+│       ├── Network/
+│       │   └── ConnectionServiceTests.cs
+│       ├── World/
+│       │   ├── MovementImplTests.cs
+│       │   ├── MovementServiceTests.cs
+│       │   ├── PlayerImplTests.cs
+│       │   ├── PlayerTests.cs
+│       │   ├── SceneObjectTests.cs
+│       │   ├── WorldObjectTests.cs
+│       │   └── ZoneManagerTests.cs
+│       └── GameServer.Tests.csproj
+├── frontend/
+│   ├── mmo-frontend/                           # Frontend principal (TypeScript/Vite)
+│   │   ├── src/
+│   │   │   ├── game/
+│   │   │   │   └── MainScene.ts               # Cena principal do jogo
+│   │   │   ├── css/
+│   │   │   │   └── style.css
+│   │   │   ├── counter.ts
+│   │   │   ├── main.ts
+│   │   │   └── types.ts
+│   │   ├── public/
+│   │   │   ├── assets/
+│   │   │   │   └── hero.png
+│   │   │   └── vite.svg
+│   │   ├── index.html
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── .gitignore
+│   └── position_tester/                        # Protótipo de teste de posicionamento
+│       ├── css/
+│       │   └── style.css
+│       ├── js/
+│       │   └── game.js
+│       └── index.html
+├── docs/                                       # Documentação
+├── MemoryContext/                              # Contexto de memória para IA
+└── plan.md                                    # Este arquivo de planejamento
 ```
+
+#### Organização de Projetos .NET
+
+- **GameServerApp** (`GameServerApp.csproj`): Class Library contendo o core do jogo (entidades, serviços, managers)
+- **GameServer.Infrastructure** (`GameServer.Infrastructure.csproj`): Implementações de infraestrutura (SignalR, Database)
+- **GameServer.Web** (`GameServer.Web.csproj`): Host Web ASP.NET Core
+- **GameServer.Tests** (`GameServer.Tests.csproj`): Testes unitários xUnit
+
+#### Frontend Stack
+
+- **mmo-frontend**: Frontend principal desenvolvido com:
+  - TypeScript
+  - Vite como bundler
+  - Phaser 3 (planos futuros)
+  - Interface WebSocket para conectar com o backend
+- **position_tester**: Protótipo simples para testes de posicionamento e movimentação
 
 ### Próximos Passos
 
@@ -211,3 +306,6 @@ O repositório foi inicializado e commits foram feitos em etapas para refletir o
 
 > **Nota de processo:** a partir de agora evitaremos commits agregados. cada modificação (contrato, teste, refatoração etc.) deve ser commitada separadamente com mensagem descritiva. 
 > o commit anterior agrupou várias adições (novos contratos + testes) em único envio; isso é apenas um ponto histórico e não será repetido.
+
+
+
