@@ -18,6 +18,8 @@ namespace GameServerApp.Contracts.World
         int MaxHp { get; }
         int Level { get; }
         long Experience { get; }
+        double Speed { get; }
+        DateTime LastMoveTime { get; }
         PlayerState State { get; }
 
         void Move(Position newPosition);

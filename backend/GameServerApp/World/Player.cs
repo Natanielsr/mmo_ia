@@ -13,6 +13,8 @@ namespace GameServerApp.World
         public int MaxHp { get; private set; }
         public int Level { get; private set; }
         public long Experience { get; private set; }
+        public double Speed { get; private set; }
+        public DateTime LastMoveTime { get; private set; }
         public PlayerState State { get; private set; }
 
         private const long ExperiencePerLevel = 1000;
@@ -25,6 +27,8 @@ namespace GameServerApp.World
             Hp = maxHp;
             Level = 1;
             Experience = 0;
+            Speed = 4.0; // Default speed: 4 positions per second
+            LastMoveTime = DateTime.MinValue;
             State = PlayerState.Alive;
         }
 
@@ -34,6 +38,7 @@ namespace GameServerApp.World
                 return;
 
             Position = newPosition;
+            LastMoveTime = DateTime.UtcNow;
         }
 
         public void Attack(IPlayer target)
