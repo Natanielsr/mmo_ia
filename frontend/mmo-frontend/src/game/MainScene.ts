@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 
 const GRID_SIZE = 64;
-const PLAYER_POSITION_OFFSET_X = 3;
-const PLAYER_POSITION_OFFSET_Y = 3;
+const PLAYER_POSITION_OFFSET_X = 0;
+const PLAYER_POSITION_OFFSET_Y = 15;
 
 // Interface para guardar a referência visual do jogador
 interface PlayerSprite {
@@ -29,7 +29,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('token', 'https://labs.phaser.io/assets/sprites/aqua_ball.png');
+        this.load.image('hero', 'assets/hero.png');
     }
 
     create() {
@@ -72,8 +72,8 @@ export class MainScene extends Phaser.Scene {
         const py = (-gridY * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
 
         if (!this.playerSprites[id]) {
-            const sprite = this.add.sprite(px, py, 'token');
-            sprite.setDisplaySize(GRID_SIZE * 0.8, GRID_SIZE * 0.8); // Escala o sprite para ocupar 80% do quadrado
+            const sprite = this.add.sprite(px, py, 'hero');
+            sprite.setDisplaySize(GRID_SIZE * 1, GRID_SIZE * 1); // Escala o sprite para ocupar 80% do quadrado
 
             const nameText = this.add.text(px, py - (GRID_SIZE / 2 + 10), id, {
                 fontSize: '14px', color: '#fff', fontFamily: 'Inter'
@@ -84,10 +84,9 @@ export class MainScene extends Phaser.Scene {
             if (isMe) {
                 this.myId = id;
                 if (this.input.keyboard) this.input.keyboard.enabled = true; // Reativa o teclado para movimento
-                sprite.setTint(0x818cf8);
                 this.cameras.main.startFollow(sprite, true, 0.1, 0.1);
             } else {
-                sprite.setTint(0xef4444);
+                // Opcional: manter um tom diferente para outros players, mas talvez sem tint seja melhor para heróis
             }
         } else {
             const p = this.playerSprites[id];
