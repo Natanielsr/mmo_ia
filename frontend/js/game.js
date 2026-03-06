@@ -112,6 +112,9 @@ btnJoin.onclick = () => {
 // Movement handling
 let lastMoveTime = 0;
 const playerSpeed = 4.0;
+const minTimeBetweenMovesMs = 1000 / playerSpeed;
+let nextMoveQueue = null;
+let moveTimeout = null;
 
 window.onkeydown = (e) => {
     if (gameContainer.classList.contains('hidden')) return;
@@ -129,15 +132,38 @@ window.onkeydown = (e) => {
     }
 
     if (direction) {
-        const now = Date.now();
-        const minTimeBetweenMovesMs = 1000 / playerSpeed;
-
-        if (now - lastMoveTime >= minTimeBetweenMovesMs) {
-            connection.invoke("RequestMove", direction);
-            lastMoveTime = now;
-        }
+        nextMoveQueue = direction;
+        tryExecuteMove();
     }
 };
+
+function tryExecuteMove() {
+    if (!nextMoveQueue) return;
+
+    const now = Date.now();
+    const timeSinceLastMove = now - lastMoveTime;
+
+    if (timeSinceLastMove >= minTimeBetweenMovesMs) {
+        // Cooldown concluído, move imediatamente
+        connection.invoke("RequestMove", nextMoveQueue);
+        lastMoveTime = now;
+        nextMoveQueue = null;
+
+        if (moveTimeout) {
+            clearTimeout(moveTimeout);
+            moveTimeout = null;
+        }
+    } else {
+        // Em cooldown, agenda para o exato momento que ficar livre
+        if (!moveTimeout) {
+            const timeToWait = minTimeBetweenMovesMs - timeSinceLastMove;
+            moveTimeout = setTimeout(() => {
+                moveTimeout = null;
+                tryExecuteMove();
+            }, timeToWait);
+        }
+    }
+}
 
 // --- Utils ---
 
