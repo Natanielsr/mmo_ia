@@ -79,7 +79,7 @@ connection.on("PlayerAttacked", (data) => {
 });
 
 connection.on("MoveFailed", (msg) => {
-    addLog(`Sistema: ${msg}`, 'error');
+    //addLog(`Sistema: ${msg}`, 'error');
 });
 
 // --- Actions ---
@@ -110,6 +110,9 @@ btnJoin.onclick = () => {
 };
 
 // Movement handling
+let lastMoveTime = 0;
+const playerSpeed = 4.0;
+
 window.onkeydown = (e) => {
     if (gameContainer.classList.contains('hidden')) return;
 
@@ -126,7 +129,13 @@ window.onkeydown = (e) => {
     }
 
     if (direction) {
-        connection.invoke("RequestMove", direction);
+        const now = Date.now();
+        const minTimeBetweenMovesMs = 1000 / playerSpeed;
+
+        if (now - lastMoveTime >= minTimeBetweenMovesMs) {
+            connection.invoke("RequestMove", direction);
+            lastMoveTime = now;
+        }
     }
 };
 
