@@ -154,7 +154,9 @@ function updatePlayerPosition(id, x, y, isMe = false) {
         // Center camera: viewport center - player world position
         const viewX = (gameContainer.offsetWidth / 2) - px;
         const viewY = (gameContainer.offsetHeight / 2) - py;
-        worldMap.style.transform = `translate(${viewX}px, ${viewY}px)`;
+        const offsetX = 190;
+
+        worldMap.style.transform = `translate(${viewX - offsetX}px, ${viewY}px)`;
     }
 }
 
