@@ -140,7 +140,7 @@ input {
     background-image:
         linear-gradient(var(--border) 1px, transparent 1px),
         linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 32px 32px;
+    background-size: 64px 64px;
     transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -150,8 +150,8 @@ input {
     color: var(--text-dim);
     opacity: 0.3;
     pointer-events: none;
-    width: 32px;
-    height: 32px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -159,8 +159,8 @@ input {
 
 .player-token {
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 64px;
+    height: 64px;
     background: var(--primary);
     border-radius: 50%;
     display: flex;

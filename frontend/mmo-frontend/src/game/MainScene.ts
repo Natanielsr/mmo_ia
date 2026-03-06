@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 
-const GRID_SIZE = 32;
+const GRID_SIZE = 64;
+const PLAYER_POSITION_OFFSET_X = 3;
+const PLAYER_POSITION_OFFSET_Y = 3;
 
 // Interface para guardar a referência visual do jogador
 interface PlayerSprite {
@@ -66,13 +68,15 @@ export class MainScene extends Phaser.Scene {
     }
 
     public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false) {
-        const px = gridX * GRID_SIZE + (GRID_SIZE / 2);
-        const py = -gridY * GRID_SIZE - (GRID_SIZE / 2);
+        const px = (gridX * GRID_SIZE + (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_X;
+        const py = (-gridY * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
 
         if (!this.playerSprites[id]) {
             const sprite = this.add.sprite(px, py, 'token');
-            const nameText = this.add.text(px, py - 20, id, {
-                fontSize: '12px', color: '#fff', fontFamily: 'Inter'
+            sprite.setDisplaySize(GRID_SIZE * 0.8, GRID_SIZE * 0.8); // Escala o sprite para ocupar 80% do quadrado
+
+            const nameText = this.add.text(px, py - (GRID_SIZE / 2 + 10), id, {
+                fontSize: '14px', color: '#fff', fontFamily: 'Inter'
             }).setOrigin(0.5);
 
             this.playerSprites[id] = { sprite, nameText };
@@ -91,7 +95,7 @@ export class MainScene extends Phaser.Scene {
             this.tweens.add({
                 targets: [p.sprite, p.nameText],
                 x: px,
-                y: (target: any) => target.type === 'Text' ? py - 20 : py,
+                y: (target: any) => target.type === 'Text' ? py - (GRID_SIZE / 2 + 10) : py,
                 duration: this.minTimeBetweenMovesMs - 50,
                 ease: 'Linear'
             });
