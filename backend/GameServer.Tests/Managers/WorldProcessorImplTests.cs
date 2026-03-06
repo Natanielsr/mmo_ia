@@ -85,5 +85,22 @@ namespace GameServer.Tests.Managers
             Assert.False(moved);
             Assert.Equal(0, player.Position.X);
         }
+
+        [Fact]
+        public void Movement_Should_Fail_If_Moving_Too_Fast()
+        {
+            var startPos = new Position(0, 0);
+            var player = new Player("Speedster", startPos); // Speed is 2.0 (1 move every 0.5s)
+            
+            // First move should succeed
+            bool moved1 = _processor.ProcessPlayerMovement(player, "east");
+            Assert.True(moved1);
+            Assert.Equal(1, player.Position.X);
+
+            // Immediate second move should fail due to speed limit
+            bool moved2 = _processor.ProcessPlayerMovement(player, "east");
+            Assert.False(moved2);
+            Assert.Equal(1, player.Position.X); // Position should not change
+        }
     }
 }
