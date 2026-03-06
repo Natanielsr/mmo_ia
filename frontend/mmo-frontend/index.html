@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity MMO - Phaser + TS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="login-overlay" class="overlay">
+    <div class="login-card glass">
+      <h1>MMO Antigravity</h1>
+      <p>Entra no mundo e começa a tua aventura</p>
+
+      <div id="connection-error" class="error-banner hidden">
+        Não foi possível conectar ao servidor. Verifica se o backend está a correr na porta 5258.
+      </div>
+
+      <input type="text" id="username" placeholder="Nome da personagem..." maxlength="12">
+      <button id="btn-join" class="btn-primary">ENTRAR NO JOGO</button>
+    </div>
+  </div>
+
+  <div id="game-container" class="hidden">
+    <div class="game-layout">
+      <!-- Phaser Game Canvas -->
+      <div id="phaser-game" class="game-view glass"></div>
+
+      <!-- UI Sidebar -->
+      <div class="sidebar glass">
+        <div class="character-info">
+          <h3>Personagem</h3>
+          <div class="hp-bar progress-bar">
+            <div style="width: 100%"></div>
+          </div>
+        </div>
+
+        <div class="game-log">
+          <h3>Log de Atividades</h3>
+          <div id="log-content"></div>
+        </div>
+
+        <div class="controls-hint">
+          Usa as <span>SETAS</span> ou <span>WASD</span> para mover
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
