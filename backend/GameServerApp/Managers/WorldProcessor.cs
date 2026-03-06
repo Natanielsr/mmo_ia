@@ -31,6 +31,17 @@ namespace GameServerApp.Managers
         {
             if (player.State == PlayerState.Dead) return false;
 
+            // Enforce speed limit:
+            // Calculate minimum time between moves based on Speed (positions per second)
+            if (player.Speed > 0)
+            {
+                double minTimeBetweenMovesSec = 1.0 / player.Speed;
+                if ((DateTime.UtcNow - player.LastMoveTime).TotalSeconds < minTimeBetweenMovesSec)
+                {
+                    return false; // Moving too fast
+                }
+            }
+
             // 1. Calculate target position
             Position targetPos = _movementService.Move(player.Position, direction);
 
