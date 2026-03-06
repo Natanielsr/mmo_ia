@@ -8,7 +8,8 @@ namespace GameServerApp.Contracts.World
         Obstacle,
         Door,
         Chest,
-        NPC
+        NPC,
+        Player
     }
 
     public interface IWorldObject : ISceneObject

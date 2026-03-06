@@ -7,6 +7,7 @@ namespace GameServerApp.Contracts.Managers
     {
         void RegisterObject(IWorldObject worldObject);
         void RemoveObject(string objectId);
+        void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition);
         bool CanPlayerMove(Position from, Position to);
         IWorldObject GetObjectAt(Position position);
         bool IsPositionBlocked(Position position);
