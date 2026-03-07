@@ -1,13 +1,23 @@
 import Phaser from 'phaser';
+import type { Position } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
+    public serverPosition: Position;
+    public worldPosition: Position;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, id: string, gridSize: number) {
-        super(scene, x, y);
+    constructor(
+        scene: Phaser.Scene,
+        worldPosition: Position,
+        serverPosition: Position,
+        id: string,
+        gridSize: number) {
+        super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
+        this.worldPosition = worldPosition
+        this.serverPosition = serverPosition;
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
@@ -36,9 +46,9 @@ export class Player extends Phaser.GameObjects.Container {
         }
     }
 
-    public move(targetX: number, targetY: number, duration: number): void {
-        const dx = targetX - this.x;
-        const dy = targetY - this.y;
+    public move(worldPos: Position, duration: number): void {
+        const dx = worldPos.x - this.x;
+        const dy = worldPos.y - this.y;
 
         // Cuida da própria animação
         const animKey = this.getDirectionAnimation(dx, dy);
@@ -52,8 +62,8 @@ export class Player extends Phaser.GameObjects.Container {
         // Move o Container (Sprite e Texto vão juntos automaticamente!)
         this.scene.tweens.add({
             targets: this,
-            x: targetX,
-            y: targetY,
+            x: worldPos.x,
+            y: worldPos.y,
             duration: duration,
             ease: 'Linear',
             onComplete: () => this.stopWalking()

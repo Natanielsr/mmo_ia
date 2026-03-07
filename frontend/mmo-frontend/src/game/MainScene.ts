@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from './Player'; // Importe a nova classe aqui!
+import type { Position } from '../types';
 
 const GRID_SIZE = 64;
 const PLAYER_POSITION_OFFSET_X = 0;
@@ -10,7 +11,6 @@ export class MainScene extends Phaser.Scene {
     private players: Record<string, Player> = {};
     public myId: string | null = null;
 
-    private lastMoveTime: number = 0;
     private playerSpeed: number = 4.0;
     private minTimeBetweenMovesMs: number = 1000 / this.playerSpeed;
 
@@ -53,7 +53,7 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    update(time: number) {
+    update() {
         if (!this.myId || !this.onRequestMove) return;
 
         let direction: string | null = null;
@@ -63,32 +63,38 @@ export class MainScene extends Phaser.Scene {
         else if (this.cursors.left.isDown || this.wasd.left.isDown) direction = "west";
         else if (this.cursors.right.isDown || this.wasd.right.isDown) direction = "east";
 
-        if (direction && time - this.lastMoveTime >= this.minTimeBetweenMovesMs) {
+        if (direction) {
             this.onRequestMove(direction);
-            this.lastMoveTime = time;
         }
     }
 
     public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false): void {
-        const { px, py } = this.getWorldCoordinates(gridX, gridY);
+        const serverPosition = { x: gridX, y: gridY };
+        const worldPos = this.getWorldCoordinates(serverPosition);
 
         if (!this.players[id]) {
-            this.spawnNewPlayer(id, px, py, isMe);
+            this.spawnNewPlayer(id, worldPos, serverPosition, isMe);
         } else {
             // Delega o movimento e a animação totalmente para a classe do jogador
-            this.players[id].move(px, py, this.minTimeBetweenMovesMs);
+            this.players[id].serverPosition = serverPosition;
+            this.players[id].move(worldPos, this.minTimeBetweenMovesMs);
         }
     }
 
-    private getWorldCoordinates(gridX: number, gridY: number): { px: number, py: number } {
-        const px = (gridX * GRID_SIZE + (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_X;
-        const py = (-gridY * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
-        return { px, py };
+    private getWorldCoordinates(serverPosition: Position): Position {
+        const px = (serverPosition.x * GRID_SIZE + (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_X;
+        const py = (-serverPosition.y * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
+        return { x: px, y: py };
     }
 
-    private spawnNewPlayer(id: string, px: number, py: number, isMe: boolean): void {
+    private spawnNewPlayer(
+        id: string,
+        worldPosition: Position,
+        serverPosition: Position,
+        isMe: boolean): void {
         // Instancia o objeto já passando o GRID_SIZE
-        const newPlayer = new Player(this, px, py, id, GRID_SIZE);
+
+        const newPlayer = new Player(this, worldPosition, serverPosition, id, GRID_SIZE);
         this.players[id] = newPlayer;
 
         if (isMe) {
