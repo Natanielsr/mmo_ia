@@ -110,6 +110,10 @@ export class MainScene extends Phaser.Scene {
             }).setOrigin(0.5);
 
             this.playerSprites[id] = { sprite, nameText };
+            const p = this.playerSprites[id];
+            const startAnim = this.anims.get('walk-south');
+            const startFrame = startAnim.frames[1].textureFrame;
+            p.sprite.setFrame(startFrame);
 
             if (isMe) {
                 this.myId = id;
