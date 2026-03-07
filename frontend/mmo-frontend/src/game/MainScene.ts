@@ -24,7 +24,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.spritesheet('hero', 'assets/16x16.png', {
+        this.load.spritesheet('hero', 'assets/player_sprite_16x16.png', {
             frameWidth: 16,
             frameHeight: 18
         });
