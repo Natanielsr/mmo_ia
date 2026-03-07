@@ -24,6 +24,7 @@ const phaserConfig: Phaser.Types.Core.GameConfig = {
   parent: 'phaser-game',
   width: '100%',
   height: '100%',
+  pixelArt: true,
   backgroundColor: '#1e293b',
   scene: [mainScene]
 };

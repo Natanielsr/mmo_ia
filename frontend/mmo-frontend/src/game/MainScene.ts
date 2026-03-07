@@ -29,12 +29,42 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('hero', 'assets/hero.png');
+        // Carrega o spritesheet (1024x1024 total, 4x4 frames de 256x256 cada)
+        this.load.spritesheet('hero', 'assets/16x16.png', {
+            frameWidth: 16,
+            frameHeight: 18
+        });
     }
 
     create() {
         // Grelha visual
         this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x0f172a, 1, 0xffffff, 0.05);
+
+        // Define animações correspondentes às linhas do spritesheet
+        this.anims.create({
+            key: 'walk-north',
+            frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }),
+            frameRate: 16,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walk-east',
+            frames: this.anims.generateFrameNumbers('hero', { start: 3, end: 5 }),
+            frameRate: 16,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walk-south',
+            frames: this.anims.generateFrameNumbers('hero', { start: 6, end: 8 }),
+            frameRate: 16,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walk-west',
+            frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }),
+            frameRate: 16,
+            repeat: -1
+        });
 
         if (this.input.keyboard) {
             this.input.keyboard.enabled = false;
@@ -72,8 +102,8 @@ export class MainScene extends Phaser.Scene {
         const py = (-gridY * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
 
         if (!this.playerSprites[id]) {
-            const sprite = this.add.sprite(px, py, 'hero');
-            sprite.setDisplaySize(GRID_SIZE * 1, GRID_SIZE * 1); // Escala o sprite para ocupar 80% do quadrado
+            const sprite = this.add.sprite(px, py, 'hero', 0);
+            sprite.setDisplaySize(GRID_SIZE * 1, GRID_SIZE * 1); // Aumentado para o novo spritesheet
 
             const nameText = this.add.text(px, py - (GRID_SIZE / 2 + 10), id, {
                 fontSize: '14px', color: '#fff', fontFamily: 'Inter'
@@ -83,20 +113,52 @@ export class MainScene extends Phaser.Scene {
 
             if (isMe) {
                 this.myId = id;
-                if (this.input.keyboard) this.input.keyboard.enabled = true; // Reativa o teclado para movimento
+                if (this.input.keyboard) this.input.keyboard.enabled = true;
                 this.cameras.main.startFollow(sprite, true, 0.1, 0.1);
-            } else {
-                // Opcional: manter um tom diferente para outros players, mas talvez sem tint seja melhor para heróis
             }
         } else {
             const p = this.playerSprites[id];
+
+            // Detecta direção para animação
+            let animKey = '';
+            const dx = px - p.sprite.x;
+            const dy = py - p.sprite.y;
+
+            // Só calcula a direção se houver algum movimento
+            if (dx !== 0 || dy !== 0) {
+                // Avalia qual eixo tem o maior deslocamento absoluto
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // Movimento predominantemente horizontal
+                    animKey = dx > 0 ? 'walk-east' : 'walk-west';
+                } else {
+                    // Movimento predominantemente vertical (ou diagonal exata)
+                    animKey = dy > 0 ? 'walk-south' : 'walk-north';
+                }
+            }
+
+            if (animKey) {
+                p.sprite.play(animKey, true);
+            }
+
+            // Remove tweens ativos para evitar conflitos
+            this.tweens.killTweensOf([p.sprite, p.nameText]);
 
             this.tweens.add({
                 targets: [p.sprite, p.nameText],
                 x: px,
                 y: (target: any) => target.type === 'Text' ? py - (GRID_SIZE / 2 + 10) : py,
-                duration: this.minTimeBetweenMovesMs - 50,
-                ease: 'Linear'
+                duration: this.minTimeBetweenMovesMs,
+                ease: 'Linear',
+                onComplete: () => {
+                    p.sprite.stop(); // Para a animação ao chegar no tile
+
+                    // Verifica a animação atual e pega o 2º frame (índice 1) dela
+                    if (p.sprite.anims.currentAnim) {
+                        // frames[1] pega o segundo quadro da sequência atual
+                        const frameParado = p.sprite.anims.currentAnim.frames[1].textureFrame;
+                        p.sprite.setFrame(frameParado);
+                    }
+                }
             });
         }
     }
