@@ -1,17 +1,13 @@
 import Phaser from 'phaser';
+import { Player } from './Player'; // Importe a nova classe aqui!
 
 const GRID_SIZE = 64;
 const PLAYER_POSITION_OFFSET_X = 0;
 const PLAYER_POSITION_OFFSET_Y = 15;
 
-// Interface para guardar a referência visual do jogador
-interface PlayerSprite {
-    sprite: Phaser.GameObjects.Sprite;
-    nameText: Phaser.GameObjects.Text;
-}
-
 export class MainScene extends Phaser.Scene {
-    private playerSprites: Record<string, PlayerSprite> = {};
+    // Agora armazenamos instâncias da classe Player diretamente
+    private players: Record<string, Player> = {};
     public myId: string | null = null;
 
     private lastMoveTime: number = 0;
@@ -21,7 +17,6 @@ export class MainScene extends Phaser.Scene {
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
 
-    // Callback injetado pelo main.ts para enviar comandos para o SignalR
     public onRequestMove?: (direction: string) => void;
 
     constructor() {
@@ -29,7 +24,6 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        // Carrega o spritesheet (1024x1024 total, 4x4 frames de 256x256 cada)
         this.load.spritesheet('hero', 'assets/16x16.png', {
             frameWidth: 16,
             frameHeight: 18
@@ -37,38 +31,16 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
-        // Grelha visual
         this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x0f172a, 1, 0xffffff, 0.05);
 
-        // Define animações correspondentes às linhas do spritesheet
-        this.anims.create({
-            key: 'walk-north',
-            frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk-east',
-            frames: this.anims.generateFrameNumbers('hero', { start: 3, end: 5 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk-south',
-            frames: this.anims.generateFrameNumbers('hero', { start: 6, end: 8 }),
-            frameRate: 16,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'walk-west',
-            frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }),
-            frameRate: 16,
-            repeat: -1
-        });
+        // Criação das animações mantém-se aqui, pois são recursos globais da Cena
+        this.anims.create({ key: 'walk-north', frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-east', frames: this.anims.generateFrameNumbers('hero', { start: 3, end: 5 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-south', frames: this.anims.generateFrameNumbers('hero', { start: 6, end: 8 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-west', frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }), frameRate: 16, repeat: -1 });
 
         if (this.input.keyboard) {
             this.input.keyboard.enabled = false;
-            // Remove global capture para não interferir com o browser
             this.input.keyboard.removeCapture('W,A,S,D,UP,DOWN,LEFT,RIGHT,SPACE');
 
             this.cursors = this.input.keyboard.createCursorKeys();
@@ -97,81 +69,42 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false) {
+    public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false): void {
+        const { px, py } = this.getWorldCoordinates(gridX, gridY);
+
+        if (!this.players[id]) {
+            this.spawnNewPlayer(id, px, py, isMe);
+        } else {
+            // Delega o movimento e a animação totalmente para a classe do jogador
+            this.players[id].move(px, py, this.minTimeBetweenMovesMs);
+        }
+    }
+
+    private getWorldCoordinates(gridX: number, gridY: number): { px: number, py: number } {
         const px = (gridX * GRID_SIZE + (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_X;
         const py = (-gridY * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
+        return { px, py };
+    }
 
-        if (!this.playerSprites[id]) {
-            const sprite = this.add.sprite(px, py, 'hero', 0);
-            sprite.setDisplaySize(GRID_SIZE * 1, GRID_SIZE * 1); // Aumentado para o novo spritesheet
+    private spawnNewPlayer(id: string, px: number, py: number, isMe: boolean): void {
+        // Instancia o objeto já passando o GRID_SIZE
+        const newPlayer = new Player(this, px, py, id, GRID_SIZE);
+        this.players[id] = newPlayer;
 
-            const nameText = this.add.text(px, py - (GRID_SIZE / 2 + 10), id, {
-                fontSize: '14px', color: '#fff', fontFamily: 'Inter'
-            }).setOrigin(0.5);
+        if (isMe) {
+            this.myId = id;
+            if (this.input.keyboard) this.input.keyboard.enabled = true;
 
-            this.playerSprites[id] = { sprite, nameText };
-            const p = this.playerSprites[id];
-            const startAnim = this.anims.get('walk-south');
-            const startFrame = startAnim.frames[1].textureFrame;
-            p.sprite.setFrame(startFrame);
-
-            if (isMe) {
-                this.myId = id;
-                if (this.input.keyboard) this.input.keyboard.enabled = true;
-                this.cameras.main.startFollow(sprite, true, 0.1, 0.1);
-            }
-        } else {
-            const p = this.playerSprites[id];
-
-            // Detecta direção para animação
-            let animKey = '';
-            const dx = px - p.sprite.x;
-            const dy = py - p.sprite.y;
-
-            // Só calcula a direção se houver algum movimento
-            if (dx !== 0 || dy !== 0) {
-                // Avalia qual eixo tem o maior deslocamento absoluto
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    // Movimento predominantemente horizontal
-                    animKey = dx > 0 ? 'walk-east' : 'walk-west';
-                } else {
-                    // Movimento predominantemente vertical (ou diagonal exata)
-                    animKey = dy > 0 ? 'walk-south' : 'walk-north';
-                }
-            }
-
-            if (animKey) {
-                p.sprite.play(animKey, true);
-            }
-
-            // Remove tweens ativos para evitar conflitos
-            this.tweens.killTweensOf([p.sprite, p.nameText]);
-
-            this.tweens.add({
-                targets: [p.sprite, p.nameText],
-                x: px,
-                y: (target: any) => target.type === 'Text' ? py - (GRID_SIZE / 2 + 10) : py,
-                duration: this.minTimeBetweenMovesMs,
-                ease: 'Linear',
-                onComplete: () => {
-                    p.sprite.stop(); // Para a animação ao chegar no tile
-
-                    // Verifica a animação atual e pega o 2º frame (índice 1) dela
-                    if (p.sprite.anims.currentAnim) {
-                        // frames[1] pega o segundo quadro da sequência atual
-                        const frameParado = p.sprite.anims.currentAnim.frames[1].textureFrame;
-                        p.sprite.setFrame(frameParado);
-                    }
-                }
-            });
+            // A câmera agora segue o Container inteiro (o Player)
+            this.cameras.main.startFollow(newPlayer, true, 0.1, 0.1);
         }
     }
 
     public removePlayer(id: string) {
-        if (this.playerSprites[id]) {
-            this.playerSprites[id].sprite.destroy();
-            this.playerSprites[id].nameText.destroy();
-            delete this.playerSprites[id];
+        if (this.players[id]) {
+            // Chama o método destroy() nativo do Phaser que nós sobrescrevemos na classe
+            this.players[id].destroy();
+            delete this.players[id];
         }
     }
 }
