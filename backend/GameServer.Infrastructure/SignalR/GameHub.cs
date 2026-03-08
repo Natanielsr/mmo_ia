@@ -4,6 +4,7 @@ using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.World;
 using System.Collections.Concurrent;
+using GameServerApp.Dtos;
 
 namespace GameServer.Infrastructure.SignalR
 {
@@ -25,21 +26,23 @@ namespace GameServer.Infrastructure.SignalR
         {
             // Simple logic: create or get player
             var player = _sessions.GetOrAdd(Context.ConnectionId, _ => new Player(playerName, new Position(0, 0)));
-            
+
             // Register player collision
             _collisionManager.RegisterObject(player);
-            
+
+            PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position };
+
             // 1. Notify caller they joined
-            await Clients.Caller.SendAsync("Joined", new { Name = player.Name, Position = player.Position });
+            await Clients.Caller.SendAsync("Joined", playerPositionData);
 
             // 2. Notify world events (which will notify other players)
-            _worldEvents.OnPlayerJoined(player.Name, player.Position);
+            _worldEvents.OnPlayerJoined(playerPositionData);
 
             // 3. Send all existing players to the new player
             var otherPlayers = _sessions.Values
-                .Where(p => p.Name != player.Name)
-                .Select(p => new { PlayerId = p.Name, X = p.Position.X, Y = p.Position.Y });
-            
+                .Where(p => p.Id != player.Id)
+                .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position });
+
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
         }
 
@@ -59,7 +62,7 @@ namespace GameServer.Infrastructure.SignalR
         {
             if (_sessions.TryRemove(Context.ConnectionId, out var player))
             {
-                _worldEvents.OnPlayerLeft(player.Name);
+                _worldEvents.OnPlayerLeft(player.Id);
                 _collisionManager.RemoveObject(player.Id);
             }
             await base.OnDisconnectedAsync(exception);

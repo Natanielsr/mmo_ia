@@ -42,8 +42,8 @@ mainScene.onRequestMove = (direction: string) => {
 };
 
 // --- Eventos do SignalR ---
-connection.on("Joined", (data: { name: string, position: { x: number, y: number } }) => {
-  addLog(`Entraste como ${data.name}!`);
+connection.on("Joined", (playerData: PlayerData) => {
+  addLog(`Entraste como ${playerData.name}!`);
   overlay.classList.add('hidden');
   gameContainer.classList.remove('hidden');
 
@@ -51,28 +51,27 @@ connection.on("Joined", (data: { name: string, position: { x: number, y: number 
   const container = document.getElementById('phaser-game');
   if (container) game.scale.resize(container.clientWidth, container.clientHeight);
 
-  mainScene.updatePlayerPosition(data.name, data.position.x, data.position.y, true);
+  mainScene.updatePlayerPosition(playerData, true);
 });
 
 connection.on("SyncPlayers", (playerList: PlayerData[]) => {
   playerList.forEach(p => {
-    if (p.x !== undefined && p.y !== undefined) {
-      mainScene.updatePlayerPosition(p.playerId, p.x, p.y, p.playerId === mainScene.myId);
+    if (p.position.x !== undefined && p.position.y !== undefined) {
+      mainScene.updatePlayerPosition(p);
     }
   });
 });
 
-connection.on("PlayerJoined", (data: PlayerData) => {
-  addLog(`${data.playerId} entrou no mundo!`);
-  if (data.x !== undefined && data.y !== undefined) {
-    mainScene.updatePlayerPosition(data.playerId, data.x, data.y);
+connection.on("PlayerJoined", (playerData: PlayerData) => {
+  addLog(`${playerData.name} entrou no mundo!`);
+  if (playerData.position.x !== undefined && playerData.position.y !== undefined) {
+    mainScene.updatePlayerPosition(playerData);
   }
 });
 
-connection.on("PlayerMoved", (data: PlayerData) => {
-  if (data.x !== undefined && data.y !== undefined) {
-    mainScene.updatePlayerPosition(data.playerId, data.x, data.y);
-  }
+connection.on("PlayerMoved", (playerData: PlayerData) => {
+  mainScene.updatePlayerPosition(playerData);
+
 });
 
 connection.on("PlayerLeft", (playerId: string) => {

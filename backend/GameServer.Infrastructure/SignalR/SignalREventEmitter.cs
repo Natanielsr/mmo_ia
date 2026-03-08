@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Dtos;
 
 namespace GameServer.Infrastructure.SignalR
 {
@@ -13,27 +14,17 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext = hubContext;
         }
 
-        public void OnPlayerMoved(string playerId, Position newPosition)
+        public void OnPlayerMoved(PlayerPositionData playerPositionData)
         {
-            _hubContext.Clients.All.SendAsync("PlayerMoved", new
-            {
-                PlayerId = playerId,
-                X = newPosition.X,
-                Y = newPosition.Y
-            });
+            _hubContext.Clients.All.SendAsync("PlayerMoved", playerPositionData);
         }
 
-        public void OnPlayerJoined(string playerId, Position spawnPosition)
+        public void OnPlayerJoined(PlayerPositionData playerPositionData)
         {
-            _hubContext.Clients.All.SendAsync("PlayerJoined", new
-            {
-                PlayerId = playerId,
-                X = spawnPosition.X,
-                Y = spawnPosition.Y
-            });
+            _hubContext.Clients.All.SendAsync("PlayerJoined", playerPositionData);
         }
 
-        public void OnPlayerAttacked(string attackerId, string targetId, int damage)
+        public void OnPlayerAttacked(Guid attackerId, Guid targetId, int damage)
         {
             _hubContext.Clients.All.SendAsync("PlayerAttacked", new
             {
@@ -43,21 +34,21 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnPlayerDied(string playerId)
+        public void OnPlayerDied(Guid playerId)
         {
             _hubContext.Clients.All.SendAsync("PlayerDied", playerId);
         }
 
-        public void OnPlayerExperienceGained(string playerId, long amount, long totalExperience)
+        public void OnPlayerExperienceGained(Guid playerId, long amount, long totalExperience)
         {
-            _hubContext.Clients.User(playerId).SendAsync("ExperienceGained", new
+            _hubContext.Clients.User(playerId.ToString()).SendAsync("ExperienceGained", new
             {
                 Amount = amount,
                 Total = totalExperience
             });
         }
 
-        public void OnPlayerLevelUp(string playerId, int newLevel)
+        public void OnPlayerLevelUp(Guid playerId, int newLevel)
         {
             _hubContext.Clients.All.SendAsync("PlayerLevelUp", new
             {
@@ -66,7 +57,7 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnPlayerLeft(string playerId)
+        public void OnPlayerLeft(Guid playerId)
         {
             _hubContext.Clients.All.SendAsync("PlayerLeft", playerId);
         }

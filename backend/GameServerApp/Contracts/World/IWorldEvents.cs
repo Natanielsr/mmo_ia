@@ -1,5 +1,6 @@
 using System;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Contracts.World
 {
@@ -8,12 +9,12 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player moves to a new position.
         /// </summary>
-        void OnPlayerMoved(Guid playerId, Position newPosition);
-        
+        void OnPlayerMoved(PlayerPositionData playerPositionData);
+
         /// <summary>
         /// Triggered when a player joins the world.
         /// </summary>
-        void OnPlayerJoined(Guid playerId, Position spawnPosition);
+        void OnPlayerJoined(PlayerPositionData playerPositionData);
 
         /// <summary>
         /// Triggered when a player attacks another player/target.

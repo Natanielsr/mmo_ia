@@ -3,21 +3,24 @@ import type { Position } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
+    public name: string;
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
     public serverPosition: Position;
     public worldPosition: Position;
 
     constructor(
-        scene: Phaser.Scene,
-        worldPosition: Position,
-        serverPosition: Position,
         id: string,
+        name: string,
+        serverPosition: Position,
+        worldPosition: Position,
+        scene: Phaser.Scene,
         gridSize: number) {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
         this.worldPosition = worldPosition
         this.serverPosition = serverPosition;
+        this.name = name
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
@@ -25,7 +28,7 @@ export class Player extends Phaser.GameObjects.Container {
 
         // 2. O Texto fica posicionado relativamente ao Sprite, usando o gridSize
         const textOffsetY = (gridSize / 2) + 10;
-        this.nameText = scene.add.text(0, -textOffsetY, id, {
+        this.nameText = scene.add.text(0, -textOffsetY, name, {
             fontSize: '14px', color: '#fff', fontFamily: 'Inter'
         }).setOrigin(0.5);
 

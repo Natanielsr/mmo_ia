@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Player } from './Player'; // Importe a nova classe aqui!
-import type { Position } from '../types';
+import type { PlayerData, Position } from '../types';
 
 const GRID_SIZE = 64;
 const PLAYER_POSITION_OFFSET_X = 0;
@@ -68,16 +68,16 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    public updatePlayerPosition(id: string, gridX: number, gridY: number, isMe: boolean = false): void {
-        const serverPosition = { x: gridX, y: gridY };
+    public updatePlayerPosition(playerData: PlayerData, isMe: boolean = false): void {
+        const serverPosition = playerData.position;
         const worldPos = this.getWorldCoordinates(serverPosition);
 
-        if (!this.players[id]) {
-            this.spawnNewPlayer(id, worldPos, serverPosition, isMe);
+        if (!this.players[playerData.id]) {
+            this.spawnNewPlayer(playerData.id, playerData.name, serverPosition, worldPos, isMe);
         } else {
             // Delega o movimento e a animação totalmente para a classe do jogador
-            this.players[id].serverPosition = serverPosition;
-            this.players[id].move(worldPos, this.minTimeBetweenMovesMs);
+            this.players[playerData.id].serverPosition = serverPosition;
+            this.players[playerData.id].move(worldPos, this.minTimeBetweenMovesMs);
         }
     }
 
@@ -89,12 +89,13 @@ export class MainScene extends Phaser.Scene {
 
     private spawnNewPlayer(
         id: string,
-        worldPosition: Position,
+        name: string,
         serverPosition: Position,
+        worldPosition: Position,
         isMe: boolean): void {
         // Instancia o objeto já passando o GRID_SIZE
 
-        const newPlayer = new Player(this, worldPosition, serverPosition, id, GRID_SIZE);
+        const newPlayer = new Player(id, name, serverPosition, worldPosition, this, GRID_SIZE);
         this.players[id] = newPlayer;
 
         if (isMe) {

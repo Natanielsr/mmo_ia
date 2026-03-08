@@ -2,6 +2,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Managers
 {
@@ -52,9 +53,9 @@ namespace GameServerApp.Managers
                 Position oldPos = player.Position;
                 player.Move(targetPos);
                 _collisionManager.UpdateObjectPosition(player, oldPos);
-                
+
                 // 4. Emit event
-                _worldEvents.OnPlayerMoved(player.Id, targetPos); 
+                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos });
                 return true;
             }
 
@@ -68,7 +69,7 @@ namespace GameServerApp.Managers
             // Simple combat logic integration
             // In a real scenario, this would involve more calculations
             player.Attack(target);
-            
+
             // Apply damage using CombatService
             // Note: Our CombatService currently just returns the new HP, 
             // the Player class handles the actual TakeDamage.
@@ -81,11 +82,11 @@ namespace GameServerApp.Managers
                 _gameStateManager.PlayerDied(target);
                 _gameStateManager.AddPlayerExperience(player, 100); // 100 XP reward
                 _gameStateManager.CheckForLevelUp(player);
-                
+
                 _worldEvents.OnPlayerDied(target.Id);
                 _worldEvents.OnPlayerExperienceGained(player.Id, 100, player.Experience);
             }
-            
+
             _worldEvents.OnPlayerAttacked(player.Id, target.Id, damage);
         }
 

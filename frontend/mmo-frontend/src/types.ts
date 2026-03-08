@@ -4,11 +4,9 @@ export interface Position {
 }
 
 export interface PlayerData {
-    playerId: string;
-    name?: string;
-    position?: Position;
-    x?: number;
-    y?: number;
+    id: string;
+    name: string;
+    position: Position;
 }
 
 export interface AttackData {
