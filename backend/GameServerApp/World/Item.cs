@@ -12,7 +12,7 @@ namespace GameServerApp.World
         public Position Position { get; set; }
         public float Weight { get; }
 
-        public Item(string id, string name, float weight, Position position = null)
+        public Item(string id, string name, float weight, Position position = null!)
         {
             Id = id;
             Name = name;
