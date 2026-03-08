@@ -1,3 +1,4 @@
+using System;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
@@ -7,8 +8,8 @@ namespace GameServerApp.World
 {
     public class Player : IPlayer
     {
+        public Guid Id { get; }
         public string Name { get; }
-        public string Id => Name;
         public ObjectType Type => ObjectType.Player;
         public bool IsPassable => false;
         public Size Size { get; } = new Size { Width = 1, Height = 1 };
@@ -27,6 +28,7 @@ namespace GameServerApp.World
 
         public Player(string name, Position startPosition, int maxHp = 100)
         {
+            Id = Guid.NewGuid();
             Name = name;
             Position = startPosition;
             MaxHp = maxHp;
@@ -34,6 +36,20 @@ namespace GameServerApp.World
             Level = 1;
             Experience = 0;
             Speed = 4.0; // Default speed: 4 positions per second
+            LastMoveTime = DateTime.MinValue;
+            State = PlayerState.Alive;
+        }
+
+        public Player(Guid id, string name, Position startPosition, int maxHp = 100)
+        {
+            Id = id;
+            Name = name;
+            Position = startPosition;
+            MaxHp = maxHp;
+            Hp = maxHp;
+            Level = 1;
+            Experience = 0;
+            Speed = 4.0; 
             LastMoveTime = DateTime.MinValue;
             State = PlayerState.Alive;
         }

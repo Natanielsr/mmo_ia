@@ -51,7 +51,7 @@ namespace GameServer.Tests.Managers
             var player = new Player("Hero", startPos);
             
             // Register a wall
-            var wall = new WorldObject("wall_1", ObjectType.Wall, targetPos, false);
+            var wall = new WorldObject(Guid.NewGuid(), "wall", ObjectType.Wall, targetPos, false);
             _collisionManager.RegisterObject(wall);
             
             bool moved = _processor.ProcessPlayerMovement(player, "east");

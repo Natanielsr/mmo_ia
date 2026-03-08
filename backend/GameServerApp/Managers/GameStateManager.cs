@@ -1,3 +1,4 @@
+using System;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
@@ -35,7 +36,7 @@ namespace GameServerApp.Managers
             _collisionManager.UpdateObjectPosition(player, oldPos);
         }
 
-        public void MonsterKilled(IPlayer killer, string monsterId)
+        public void MonsterKilled(IPlayer killer, Guid monsterId)
         {
         }
 

@@ -12,7 +12,6 @@ namespace GameServerApp.Contracts.World
 
     public interface IPlayer : IWorldObject
     {
-        string Name { get; }
         int Hp { get; }
         int MaxHp { get; }
         int Level { get; }

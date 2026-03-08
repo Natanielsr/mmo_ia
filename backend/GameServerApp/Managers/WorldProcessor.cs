@@ -54,7 +54,7 @@ namespace GameServerApp.Managers
                 _collisionManager.UpdateObjectPosition(player, oldPos);
                 
                 // 4. Emit event
-                _worldEvents.OnPlayerMoved(player.Name, targetPos); // Using player.Name as ID for now
+                _worldEvents.OnPlayerMoved(player.Id, targetPos); 
                 return true;
             }
 
@@ -82,11 +82,11 @@ namespace GameServerApp.Managers
                 _gameStateManager.AddPlayerExperience(player, 100); // 100 XP reward
                 _gameStateManager.CheckForLevelUp(player);
                 
-                _worldEvents.OnPlayerDied(target.Name);
-                _worldEvents.OnPlayerExperienceGained(player.Name, 100, player.Experience);
+                _worldEvents.OnPlayerDied(target.Id);
+                _worldEvents.OnPlayerExperienceGained(player.Id, 100, player.Experience);
             }
             
-            _worldEvents.OnPlayerAttacked(player.Name, target.Name, damage);
+            _worldEvents.OnPlayerAttacked(player.Id, target.Id, damage);
         }
 
         public void Tick()

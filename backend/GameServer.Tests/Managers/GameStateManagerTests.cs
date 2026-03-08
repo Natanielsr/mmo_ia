@@ -66,11 +66,11 @@ public class GameStateManagerTests
         var mock = new Mock<IGameStateManager>();
         var killer = new Mock<IPlayer>();
         killer.Setup(p => p.Name).Returns("Hero");
-        var monsterId = "goblin_001";
+        var monsterId = Guid.NewGuid();
 
         mock.Object.MonsterKilled(killer.Object, monsterId);
 
-        mock.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), "goblin_001"), Times.Once);
+        mock.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), monsterId), Times.Once);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class GameStateManagerTests
         // Simula o fluxo completo: player mata monstro -> recebe XP -> recebe item -> verifica level up
         var mockManager = new Mock<IGameStateManager>();
         var mockPlayer = new Mock<IPlayer>();
-        var monsterId = "goblin_002";
+        var monsterId = Guid.NewGuid();
         var dropPosition = new Position(20, 20);
         var itemDropped = "gold_coins";
         long xpReward = 250;
@@ -139,7 +139,7 @@ public class GameStateManagerTests
         mockManager.Object.AddPlayerExperience(mockPlayer.Object, xpReward);
         mockManager.Object.CheckForLevelUp(mockPlayer.Object);
 
-        mockManager.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), "goblin_002"), Times.Once);
+        mockManager.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), monsterId), Times.Once);
         mockManager.Verify(m => m.DropItem("gold_coins", It.IsAny<Position>()), Times.Once);
         mockManager.Verify(m => m.AddPlayerExperience(It.IsAny<IPlayer>(), 250), Times.Once);
         mockManager.Verify(m => m.CheckForLevelUp(It.IsAny<IPlayer>()), Times.Once);
@@ -171,7 +171,7 @@ public class GameStateManagerTests
         var mockManager = new Mock<IGameStateManager>();
         var player1 = new Mock<IPlayer>();
         var player2 = new Mock<IPlayer>();
-        var monsterId = "dragon_001";
+        var monsterId = Guid.NewGuid();
 
         player1.Setup(p => p.Name).Returns("Player1");
         player2.Setup(p => p.Name).Returns("Player2");
@@ -179,6 +179,6 @@ public class GameStateManagerTests
         mockManager.Object.MonsterKilled(player1.Object, monsterId);
         mockManager.Object.MonsterKilled(player2.Object, monsterId);
 
-        mockManager.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), "dragon_001"), Times.Exactly(2));
+        mockManager.Verify(m => m.MonsterKilled(It.IsAny<IPlayer>(), monsterId), Times.Exactly(2));
     }
 }

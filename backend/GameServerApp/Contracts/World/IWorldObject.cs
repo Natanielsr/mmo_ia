@@ -1,3 +1,4 @@
+using System;
 using GameServerApp.Contracts.Types;
 
 namespace GameServerApp.Contracts.World
@@ -14,7 +15,8 @@ namespace GameServerApp.Contracts.World
 
     public interface IWorldObject
     {
-        string Id { get; }
+        Guid Id { get; }
+        string Name { get; }
         ObjectType Type { get; }
         bool IsPassable { get; }
         Position Position { get; }

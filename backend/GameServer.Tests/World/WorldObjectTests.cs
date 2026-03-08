@@ -1,3 +1,4 @@
+using System;
 using Moq;
 using Xunit;
 using GameServerApp.Contracts.Managers;
@@ -87,7 +88,8 @@ public class WorldObjectTests
     {
         var mockCollisionManager = new Mock<ICollisionManager>();
         var mockWorldObject = new Mock<IWorldObject>();
-        mockWorldObject.Setup(o => o.Id).Returns("wall_001");
+        var wallId = Guid.NewGuid();
+        mockWorldObject.Setup(o => o.Id).Returns(wallId);
 
         mockCollisionManager.Object.RegisterObject(mockWorldObject.Object);
 
@@ -98,11 +100,10 @@ public class WorldObjectTests
     public void CollisionManager_Should_Remove_World_Object()
     {
         var mockCollisionManager = new Mock<ICollisionManager>();
-        var objectId = "obstacle_001";
-
+        var objectId = Guid.NewGuid();
         mockCollisionManager.Object.RemoveObject(objectId);
 
-        mockCollisionManager.Verify(m => m.RemoveObject("obstacle_001"), Times.Once);
+        mockCollisionManager.Verify(m => m.RemoveObject(objectId), Times.Once);
     }
 
     [Fact]
@@ -212,9 +213,9 @@ public class WorldObjectTests
         var chest = new Mock<IWorldObject>();
         var door = new Mock<IWorldObject>();
 
-        wall.Setup(o => o.Id).Returns("wall_001");
-        chest.Setup(o => o.Id).Returns("chest_001");
-        door.Setup(o => o.Id).Returns("door_001");
+        wall.Setup(o => o.Id).Returns(Guid.NewGuid());
+        chest.Setup(o => o.Id).Returns(Guid.NewGuid());
+        door.Setup(o => o.Id).Returns(Guid.NewGuid());
 
         mockCollisionManager.Object.RegisterObject(wall.Object);
         mockCollisionManager.Object.RegisterObject(chest.Object);

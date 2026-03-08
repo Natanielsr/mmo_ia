@@ -16,7 +16,7 @@ namespace GameServer.Tests.Managers
         public void CollisionManager_Should_Register_And_Find_Object()
         {
             var pos = new Position(10, 10);
-            var wall = new WorldObject("wall_1", ObjectType.Wall, pos, false);
+            var wall = new WorldObject(Guid.NewGuid(), "wall", ObjectType.Wall, pos, false);
             
             _collisionManager.RegisterObject(wall);
             
@@ -31,8 +31,8 @@ namespace GameServer.Tests.Managers
             var posBlocked = new Position(1, 1);
             var posFree = new Position(2, 2);
             
-            var wall = new WorldObject("wall", ObjectType.Wall, posBlocked, false);
-            var openDoor = new WorldObject("door", ObjectType.Door, posFree, true);
+            var wall = new WorldObject(Guid.NewGuid(), "wall", ObjectType.Wall, posBlocked, false);
+            var openDoor = new WorldObject(Guid.NewGuid(), "door", ObjectType.Door, posFree, true);
             
             _collisionManager.RegisterObject(wall);
             _collisionManager.RegisterObject(openDoor);
@@ -46,13 +46,14 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void CollisionManager_Should_Remove_Object()
         {
+            var obstacleId = Guid.NewGuid();
             var pos = new Position(5, 5);
-            var obstacle = new WorldObject("obs", ObjectType.Obstacle, pos, false);
+            var obstacle = new WorldObject(obstacleId, "obstacle", ObjectType.Obstacle, pos, false);
             
             _collisionManager.RegisterObject(obstacle);
             Assert.True(_collisionManager.IsPositionBlocked(pos));
             
-            _collisionManager.RemoveObject("obs");
+            _collisionManager.RemoveObject(obstacleId);
             Assert.False(_collisionManager.IsPositionBlocked(pos));
             Assert.Null(_collisionManager.GetObjectAt(pos));
         }

@@ -1,3 +1,4 @@
+using System;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
@@ -8,7 +9,7 @@ namespace GameServerApp.Managers
     public class CollisionManager : ICollisionManager
     {
         private readonly Dictionary<Position, List<IWorldObject>> _objects = new();
-        private readonly Dictionary<string, IWorldObject> _objectsById = new();
+        private readonly Dictionary<Guid, IWorldObject> _objectsById = new();
 
         public void RegisterObject(IWorldObject worldObject)
         {
@@ -28,7 +29,7 @@ namespace GameServerApp.Managers
             _objectsById[worldObject.Id] = worldObject;
         }
 
-        public void RemoveObject(string objectId)
+        public void RemoveObject(Guid objectId)
         {
             if (_objectsById.TryGetValue(objectId, out var obj))
             {

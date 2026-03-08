@@ -1,3 +1,4 @@
+using System;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 
@@ -8,7 +9,7 @@ namespace GameServerApp.Contracts.Managers
         void SpawnPlayer(IPlayer player, Position spawnPoint);
         void PlayerDied(IPlayer player);
         void SendPlayerToHospital(IPlayer player);
-        void MonsterKilled(IPlayer killer, string monsterId);
+        void MonsterKilled(IPlayer killer, Guid monsterId);
         void DropItem(string itemId, Position dropPosition);
         void PlayerPicksUpItem(IPlayer player, string itemId);
         void AddPlayerExperience(IPlayer player, long experienceAmount);
