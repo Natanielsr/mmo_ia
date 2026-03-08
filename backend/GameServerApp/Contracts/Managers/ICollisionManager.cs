@@ -7,7 +7,7 @@ namespace GameServerApp.Contracts.Managers
     public interface ICollisionManager
     {
         void RegisterObject(IWorldObject worldObject);
-        void RemoveObject(Guid objectId);
+        void RemoveObject(long objectId);
         void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition);
         bool CanPlayerMove(Position from, Position to);
         IWorldObject? GetObjectAt(Position position);

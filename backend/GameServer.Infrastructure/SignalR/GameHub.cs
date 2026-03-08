@@ -5,6 +5,8 @@ using GameServerApp.Contracts.Types;
 using GameServerApp.World;
 using System.Collections.Concurrent;
 using GameServerApp.Dtos;
+using GameServer.Infrastructure.Services;
+using GameServerApp.Contracts.Services;
 
 namespace GameServer.Infrastructure.SignalR
 {
@@ -13,19 +15,28 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IWorldProcessor _worldProcessor;
         private readonly IWorldEvents _worldEvents;
         private readonly ICollisionManager _collisionManager;
+        private readonly IIdGeneratorService _idGeneratorService;
         private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
 
-        public GameHub(IWorldProcessor worldProcessor, IWorldEvents worldEvents, ICollisionManager collisionManager)
+        public GameHub(
+            IWorldProcessor worldProcessor,
+            IWorldEvents worldEvents,
+            ICollisionManager collisionManager,
+            IIdGeneratorService idGeneratorService
+            )
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
             _collisionManager = collisionManager;
+            _idGeneratorService = idGeneratorService;
         }
 
         public async Task JoinGame(string playerName)
         {
+
             // Simple logic: create or get player
-            var player = _sessions.GetOrAdd(Context.ConnectionId, _ => new Player(playerName, new Position(0, 0)));
+            var player = _sessions.GetOrAdd(Context.ConnectionId,
+            _ => new Player(_idGeneratorService.GenerateId(), playerName, new Position(0, 0)));
 
             // Register player collision
             _collisionManager.RegisterObject(player);

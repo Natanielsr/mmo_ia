@@ -13,4 +13,12 @@
   <ItemGroup>
     <ProjectReference Include="..\GameServerApp\GameServerApp.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdGen" Version="3.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services/" />
+  </ItemGroup>
 </Project>

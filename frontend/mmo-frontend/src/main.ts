@@ -70,6 +70,7 @@ connection.on("PlayerJoined", (playerData: PlayerData) => {
 });
 
 connection.on("PlayerMoved", (playerData: PlayerData) => {
+  console.log(playerData);
   mainScene.updatePlayerPosition(playerData);
 
 });

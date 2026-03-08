@@ -20,8 +20,8 @@ public class GameStateImplTests
     private readonly Position _spawnPoint = new Position(10, 10);
     private readonly Position _hospitalPoint = new Position(50, 50);
 
-    private Player CreatePlayer(string name = "Hero") 
-        => new Player(name, new Position(0, 0));
+    private Player CreatePlayer(string name = "Hero")
+        => new Player(1, name, new Position(0, 0));
 
     [Fact]
     public void GameStateManager_Should_Spawn_Player_In_World()

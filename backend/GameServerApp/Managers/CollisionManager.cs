@@ -9,27 +9,27 @@ namespace GameServerApp.Managers
     public class CollisionManager : ICollisionManager
     {
         private readonly Dictionary<Position, List<IWorldObject>> _objects = new();
-        private readonly Dictionary<Guid, IWorldObject> _objectsById = new();
+        private readonly Dictionary<long, IWorldObject> _objectsById = new();
 
         public void RegisterObject(IWorldObject worldObject)
         {
             if (worldObject == null) return;
-            
+
             if (!_objects.TryGetValue(worldObject.Position, out var list))
             {
                 list = new List<IWorldObject>();
                 _objects[worldObject.Position] = list;
             }
-            
+
             if (!list.Contains(worldObject))
             {
                 list.Add(worldObject);
             }
-            
+
             _objectsById[worldObject.Id] = worldObject;
         }
 
-        public void RemoveObject(Guid objectId)
+        public void RemoveObject(long objectId)
         {
             if (_objectsById.TryGetValue(objectId, out var obj))
             {
@@ -48,7 +48,7 @@ namespace GameServerApp.Managers
         public void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition)
         {
             if (worldObject == null) return;
-            
+
             // Remove from old position list
             if (_objects.TryGetValue(oldPosition, out var oldList))
             {
@@ -65,7 +65,7 @@ namespace GameServerApp.Managers
                 newList = new List<IWorldObject>();
                 _objects[worldObject.Position] = newList;
             }
-            
+
             if (!newList.Contains(worldObject))
             {
                 newList.Add(worldObject);

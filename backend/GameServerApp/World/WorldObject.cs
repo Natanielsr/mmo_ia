@@ -8,7 +8,7 @@ namespace GameServerApp.World
 {
     public class WorldObject : IWorldObject
     {
-        public Guid Id { get; }
+        public long Id { get; }
         public string Name { get; }
         public ObjectType Type { get; }
         public bool IsPassable { get; }
@@ -16,7 +16,7 @@ namespace GameServerApp.World
         public Size Size { get; }
         public float Rotation { get; }
 
-        public WorldObject(Guid id, string name, ObjectType type, Position position, bool isPassable = false, float rotation = 0)
+        public WorldObject(long id, string name, ObjectType type, Position position, bool isPassable = false, float rotation = 0)
         {
             Id = id;
             Name = name;

@@ -15,7 +15,7 @@ namespace GameServerApp.Contracts.World
 
     public interface IWorldObject
     {
-        Guid Id { get; }
+        long Id { get; }
         string Name { get; }
         ObjectType Type { get; }
         bool IsPassable { get; }

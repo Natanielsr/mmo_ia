@@ -19,26 +19,26 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player attacks another player/target.
         /// </summary>
-        void OnPlayerAttacked(Guid attackerId, Guid targetId, int damage);
+        void OnPlayerAttacked(long attackerId, long targetId, int damage);
 
         /// <summary>
         /// Triggered when a player dies.
         /// </summary>
-        void OnPlayerDied(Guid playerId);
+        void OnPlayerDied(long playerId);
 
         /// <summary>
         /// Triggered when a player gains experience.
         /// </summary>
-        void OnPlayerExperienceGained(Guid playerId, long amount, long totalExperience);
+        void OnPlayerExperienceGained(long playerId, long amount, long totalExperience);
 
         /// <summary>
         /// Triggered when a player levels up.
         /// </summary>
-        void OnPlayerLevelUp(Guid playerId, int newLevel);
+        void OnPlayerLevelUp(long playerId, int newLevel);
 
         /// <summary>
         /// Triggered when a player leaves the world.
         /// </summary>
-        void OnPlayerLeft(Guid playerId);
+        void OnPlayerLeft(long playerId);
     }
 }

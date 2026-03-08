@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="GameServer.Infrastructure/GameServer.Infrastructure.csproj" />
   <Project Path="GameServer.Tests/GameServer.Tests.csproj" />
+  <Project Path="GameServer.Web/GameServer.Web.csproj" />
   <Project Path="GameServerApp/GameServerApp.csproj" />
 </Solution>

@@ -1,9 +1,11 @@
+using GameServer.Infrastructure.Services;
 using GameServer.Infrastructure.SignalR;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using IdGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,8 @@ builder.Services.AddSingleton<IWorldProcessor, WorldProcessor>();
 
 // Register Infrastructure implementations
 builder.Services.AddSingleton<IWorldEvents, SignalREventEmitter>();
+
+builder.Services.AddSingleton<IIdGeneratorService, IdGeneratorService>();
 
 var app = builder.Build();
 

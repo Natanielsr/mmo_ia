@@ -8,13 +8,13 @@ namespace GameServerApp.World
 {
     public class Player : IPlayer
     {
-        public Guid Id { get; }
+        public long Id { get; }
         public string Name { get; }
         public ObjectType Type => ObjectType.Player;
         public bool IsPassable => false;
         public Size Size { get; } = new Size { Width = 1, Height = 1 };
         public float Rotation { get; } = 0f;
-        
+
         public Position Position { get; private set; }
         public int Hp { get; private set; }
         public int MaxHp { get; private set; }
@@ -26,21 +26,7 @@ namespace GameServerApp.World
 
         private const long ExperiencePerLevel = 1000;
 
-        public Player(string name, Position startPosition, int maxHp = 100)
-        {
-            Id = Guid.NewGuid();
-            Name = name;
-            Position = startPosition;
-            MaxHp = maxHp;
-            Hp = maxHp;
-            Level = 1;
-            Experience = 0;
-            Speed = 4.0; // Default speed: 4 positions per second
-            LastMoveTime = DateTime.MinValue;
-            State = PlayerState.Alive;
-        }
-
-        public Player(Guid id, string name, Position startPosition, int maxHp = 100)
+        public Player(long id, string name, Position startPosition, int maxHp = 100)
         {
             Id = id;
             Name = name;
@@ -49,7 +35,7 @@ namespace GameServerApp.World
             Hp = maxHp;
             Level = 1;
             Experience = 0;
-            Speed = 4.0; 
+            Speed = 4.0;
             LastMoveTime = DateTime.MinValue;
             State = PlayerState.Alive;
         }

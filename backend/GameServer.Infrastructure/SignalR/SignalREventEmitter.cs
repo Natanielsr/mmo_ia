@@ -24,7 +24,7 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerJoined", playerPositionData);
         }
 
-        public void OnPlayerAttacked(Guid attackerId, Guid targetId, int damage)
+        public void OnPlayerAttacked(long attackerId, long targetId, int damage)
         {
             _hubContext.Clients.All.SendAsync("PlayerAttacked", new
             {
@@ -34,12 +34,12 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnPlayerDied(Guid playerId)
+        public void OnPlayerDied(long playerId)
         {
             _hubContext.Clients.All.SendAsync("PlayerDied", playerId);
         }
 
-        public void OnPlayerExperienceGained(Guid playerId, long amount, long totalExperience)
+        public void OnPlayerExperienceGained(long playerId, long amount, long totalExperience)
         {
             _hubContext.Clients.User(playerId.ToString()).SendAsync("ExperienceGained", new
             {
@@ -48,7 +48,7 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnPlayerLevelUp(Guid playerId, int newLevel)
+        public void OnPlayerLevelUp(long playerId, int newLevel)
         {
             _hubContext.Clients.All.SendAsync("PlayerLevelUp", new
             {
@@ -57,7 +57,7 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnPlayerLeft(Guid playerId)
+        public void OnPlayerLeft(long playerId)
         {
             _hubContext.Clients.All.SendAsync("PlayerLeft", playerId);
         }

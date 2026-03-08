@@ -12,7 +12,7 @@ public class PlayerImplTests
     private readonly Position _startPosition = new Position(0, 0);
 
     private Player CreatePlayer(string name = "TestPlayer", int maxHp = 100)
-        => new Player(name, _startPosition, maxHp);
+        => new Player(1, name, _startPosition, maxHp);
 
     [Fact]
     public void Player_Should_Start_Alive()

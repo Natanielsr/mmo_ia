@@ -4,7 +4,7 @@ export interface Position {
 }
 
 export interface PlayerData {
-    id: string;
+    id: number;
     name: string;
     position: Position;
 }
