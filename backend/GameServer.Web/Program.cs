@@ -26,6 +26,7 @@ builder.Services.AddCors(options =>
 // Register Core Services (Stateless)
 builder.Services.AddSingleton<IMovementService, MovementService>();
 builder.Services.AddSingleton<ICombatService, CombatService>();
+builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
@@ -45,6 +46,8 @@ builder.Services.AddSingleton<IIdGeneratorService, IdGeneratorService>();
 
 var app = builder.Build();
 
+InitializeProceduralMap(app.Services);
+
 app.UseCors("AllowAll");
 
 app.MapGet("/", () => "MMO Game Server is running!");
@@ -53,3 +56,24 @@ app.MapGet("/", () => "MMO Game Server is running!");
 app.MapHub<GameHub>("/gamehub");
 
 app.Run();
+
+static void InitializeProceduralMap(IServiceProvider services)
+{
+    var staticWorldManager = services.GetRequiredService<IStaticWorldManager>();
+    var collisionManager = services.GetRequiredService<ICollisionManager>();
+    var proceduralWorldService = services.GetRequiredService<IProceduralWorldService>();
+
+    // Ajuste estes valores conforme o tamanho do mapa desejado.
+    var obstacles = proceduralWorldService.GenerateRandomObstacles(
+        width: 80,
+        height: 80,
+        fillPercentage: 0.10,
+        safeSpawnRadius: 3,
+        seed: 20260309);
+
+    foreach (var obstacle in obstacles)
+    {
+        staticWorldManager.AddStaticObject(obstacle);
+        collisionManager.RegisterStaticObject(obstacle);
+    }
+}
