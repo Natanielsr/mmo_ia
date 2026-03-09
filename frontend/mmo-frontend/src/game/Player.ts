@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { Position } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
-    public id: string;
+    public id: number;
     public name: string;
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
@@ -10,7 +10,7 @@ export class Player extends Phaser.GameObjects.Container {
     public worldPosition: Position;
 
     constructor(
-        id: string,
+        id: number,
         name: string,
         serverPosition: Position,
         worldPosition: Position,

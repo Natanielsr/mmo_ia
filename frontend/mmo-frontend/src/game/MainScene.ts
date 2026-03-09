@@ -9,7 +9,7 @@ const PLAYER_POSITION_OFFSET_Y = 15;
 export class MainScene extends Phaser.Scene {
     // Agora armazenamos instâncias da classe Player diretamente
     private players: Record<string, Player> = {};
-    public myId: string | null = null;
+    public myId: number | null = null;
 
     private playerSpeed: number = 4.0;
     private minTimeBetweenMovesMs: number = 1000 / this.playerSpeed;
@@ -24,7 +24,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.spritesheet('hero', 'assets/player_sprite_16x16.png', {
+        this.load.spritesheet('hero', 'assets/human_base_16x18.png', {
             frameWidth: 16,
             frameHeight: 18
         });
@@ -35,9 +35,9 @@ export class MainScene extends Phaser.Scene {
 
         // Criação das animações mantém-se aqui, pois são recursos globais da Cena
         this.anims.create({ key: 'walk-north', frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }), frameRate: 16, repeat: -1 });
-        this.anims.create({ key: 'walk-east', frames: this.anims.generateFrameNumbers('hero', { start: 3, end: 5 }), frameRate: 16, repeat: -1 });
-        this.anims.create({ key: 'walk-south', frames: this.anims.generateFrameNumbers('hero', { start: 6, end: 8 }), frameRate: 16, repeat: -1 });
-        this.anims.create({ key: 'walk-west', frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-east', frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-south', frames: this.anims.generateFrameNumbers('hero', { start: 18, end: 20 }), frameRate: 16, repeat: -1 });
+        this.anims.create({ key: 'walk-west', frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 29 }), frameRate: 16, repeat: -1 });
 
         if (this.input.keyboard) {
             this.input.keyboard.enabled = false;
@@ -88,7 +88,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private spawnNewPlayer(
-        id: string,
+        id: number,
         name: string,
         serverPosition: Position,
         worldPosition: Position,
