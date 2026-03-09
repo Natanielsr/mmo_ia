@@ -73,5 +73,9 @@ namespace GameServerApp.Managers
             _blockedPositions.Clear();
             _staticObjects.Clear();
         }
+
+        // Método auxiliar para obter todos os objetos (usado para o controller)
+        public IReadOnlyDictionary<Position, IStaticWorldObject> GetAllObjects() => _staticObjects;
+
     }
 }

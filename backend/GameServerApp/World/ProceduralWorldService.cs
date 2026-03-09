@@ -1,6 +1,8 @@
+using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.World;
 
@@ -8,12 +10,17 @@ public class ProceduralWorldService : IProceduralWorldService
 {
     private static readonly string[] ObstacleNames = ["Tree", "Rock", "Bush", "Pillar"];
     private readonly IIdGeneratorService _idGeneratorService;
+    private readonly IStaticWorldManager _staticWorldManager;
 
     private static readonly Position PlayserSpawnPosition = new Position(0, 0);
 
-    public ProceduralWorldService(IIdGeneratorService idGeneratorService)
+    public ProceduralWorldService(
+        IIdGeneratorService idGeneratorService,
+        IStaticWorldManager staticWorldManager
+        )
     {
         _idGeneratorService = idGeneratorService;
+        _staticWorldManager = staticWorldManager;
     }
 
     public IReadOnlyCollection<IStaticWorldObject> GenerateRandomObstacles(
@@ -68,5 +75,28 @@ public class ProceduralWorldService : IProceduralWorldService
         }
 
         return generated;
+    }
+
+    public IReadOnlyCollection<MapObjectData> GetAllMapObjects()
+    {
+        var allObjects = new List<MapObjectData>();
+
+        // O método internal GetAllObjects() está no StaticWorldManager
+        // Mas estamos acessando ele pelo acesso ao dicionário direto para simplificar
+
+        foreach (var kvp in _staticWorldManager.GetAllObjects().Where(x => x.Value != null))
+        {
+            var obj = kvp.Value;
+            allObjects.Add(new MapObjectData
+            {
+                Id = obj.Id,
+                Name = obj.Name,
+                Position = obj.Position,
+                Type = obj.Type,
+                IsPassable = obj.IsPassable
+            });
+        }
+
+        return allObjects;
     }
 }

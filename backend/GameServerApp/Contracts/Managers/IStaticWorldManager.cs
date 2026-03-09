@@ -13,6 +13,7 @@ namespace GameServerApp.Contracts.Managers
     {
         bool IsBlocked(Position position);
         bool IsPassable(Position position);
+        IReadOnlyDictionary<Position, IStaticWorldObject> GetAllObjects();
         IStaticWorldObject? GetObjectAt(Position position);
         IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight);
         void AddStaticObject(IStaticWorldObject staticObject);

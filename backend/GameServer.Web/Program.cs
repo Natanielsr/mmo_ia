@@ -55,6 +55,9 @@ app.MapGet("/", () => "MMO Game Server is running!");
 // Map SignalR Hub
 app.MapHub<GameHub>("/gamehub");
 
+// Map Controller
+app.MapControllers();
+
 app.Run();
 
 static void InitializeProceduralMap(IServiceProvider services)

@@ -1,4 +1,7 @@
+using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.World;
 
 namespace GameServer.Tests.World;
@@ -10,7 +13,7 @@ public class ProceduralWorldServiceTests
     {
         // Arrange
         var idGenerator = new FakeIdGeneratorService();
-        var service = new ProceduralWorldService(idGenerator);
+        var service = new ProceduralWorldService(idGenerator, new FakeStaticWorldManager());
 
         // Act
         var obstacles = service.GenerateRandomObstacles(
@@ -31,8 +34,8 @@ public class ProceduralWorldServiceTests
     public void GenerateRandomObstacles_WithSameSeed_ShouldGenerateSamePositions()
     {
         // Arrange
-        var serviceA = new ProceduralWorldService(new FakeIdGeneratorService());
-        var serviceB = new ProceduralWorldService(new FakeIdGeneratorService());
+        var serviceA = new ProceduralWorldService(new FakeIdGeneratorService(), new FakeStaticWorldManager());
+        var serviceB = new ProceduralWorldService(new FakeIdGeneratorService(), new FakeStaticWorldManager());
 
         // Act
         var obstaclesA = serviceA.GenerateRandomObstacles(20, 20, 0.10, 2, seed: 999);
@@ -49,7 +52,7 @@ public class ProceduralWorldServiceTests
     public void GenerateRandomObstacles_ShouldGenerateUniquePositions()
     {
         // Arrange
-        var service = new ProceduralWorldService(new FakeIdGeneratorService());
+        var service = new ProceduralWorldService(new FakeIdGeneratorService(), new FakeStaticWorldManager());
 
         // Act
         var obstacles = service.GenerateRandomObstacles(25, 25, 0.20, 1, seed: 777);
@@ -64,5 +67,48 @@ public class ProceduralWorldServiceTests
         private long _nextId = 1;
 
         public long GenerateId() => _nextId++;
+    }
+
+    private sealed class FakeStaticWorldManager : IStaticWorldManager
+    {
+        public void AddStaticObject(IStaticWorldObject staticObject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IReadOnlyDictionary<Position, IStaticWorldObject> GetAllObjects()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStaticWorldObject? GetObjectAt(Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsBlocked(Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsPassable(Position position)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveObjectAt(Position position)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

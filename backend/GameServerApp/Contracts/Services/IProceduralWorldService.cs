@@ -1,4 +1,5 @@
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Contracts.Services;
 
@@ -10,4 +11,5 @@ public interface IProceduralWorldService
         double fillPercentage,
         int safeSpawnRadius,
         int? seed = null);
+    IReadOnlyCollection<MapObjectData> GetAllMapObjects();
 }
