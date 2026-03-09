@@ -28,6 +28,11 @@ namespace GameServerApp.World
 
         public Player(long id, string name, Position startPosition, int maxHp = 100)
         {
+            if (startPosition == null)
+            {
+                throw new NullReferenceException("Player Start position can´t be null!");
+            }
+
             Id = id;
             Name = name;
             Position = startPosition;

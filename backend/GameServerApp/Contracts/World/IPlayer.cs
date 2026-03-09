@@ -10,7 +10,7 @@ namespace GameServerApp.Contracts.World
         Resting
     }
 
-    public interface IPlayer : IWorldObject
+    public interface IPlayer : IDynamicWorldObject
     {
         int Hp { get; }
         int MaxHp { get; }

@@ -21,20 +21,41 @@ namespace GameServerApp.Managers
 
         public void RegisterObject(IWorldObject worldObject)
         {
-            if (worldObject == null) return;
+            if (worldObject is IDynamicWorldObject dynamicWorldObject)
+            {
+                RegisterDynamicObject(dynamicWorldObject);
+            }
+            else if (worldObject is IStaticWorldObject staticWorldObject)
+            {
+                RegisterStaticObject(staticWorldObject);
+            }
+            else
+            {
+                throw new Exception("Invalid object type must be Dynamic or Static world object");
+            }
+        }
 
-            if (!_dynamicObjects.TryGetValue(worldObject.Position, out var list))
+        public void RegisterDynamicObject(IDynamicWorldObject dynamicWorldObject)
+        {
+            if (dynamicWorldObject == null) return;
+
+            if (!_dynamicObjects.TryGetValue(dynamicWorldObject.Position, out var list))
             {
                 list = new List<IWorldObject>();
-                _dynamicObjects[worldObject.Position] = list;
+                _dynamicObjects[dynamicWorldObject.Position] = list;
             }
 
-            if (!list.Contains(worldObject))
+            if (!list.Contains(dynamicWorldObject))
             {
-                list.Add(worldObject);
+                list.Add(dynamicWorldObject);
             }
 
-            _objectsById[worldObject.Id] = worldObject;
+            _objectsById[dynamicWorldObject.Id] = dynamicWorldObject;
+        }
+
+        public void RegisterStaticObject(IStaticWorldObject staticWorldObject)
+        {
+            _staticWorld.AddStaticObject(staticWorldObject);
         }
 
         public void RemoveObject(long objectId)
@@ -131,5 +152,6 @@ namespace GameServerApp.Managers
                 }
             }
         }
+
     }
 }

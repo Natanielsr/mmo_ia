@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.World;
 
 namespace GameServerApp.Managers
@@ -14,18 +15,18 @@ namespace GameServerApp.Managers
     public class StaticWorldManager : IStaticWorldManager
     {
         private readonly HashSet<Position> _blockedPositions = new();
-        private readonly Dictionary<Position, StaticObject> _staticObjects = new();
+        private readonly Dictionary<Position, IStaticWorldObject> _staticObjects = new();
 
         public bool IsBlocked(Position position) => _blockedPositions.Contains(position);
 
         public bool IsPassable(Position position) => !_blockedPositions.Contains(position);
 
-        public StaticObject? GetObjectAt(Position position)
+        public IStaticWorldObject? GetObjectAt(Position position)
         {
             return _staticObjects.TryGetValue(position, out var obj) ? obj : null;
         }
 
-        public IEnumerable<StaticObject> GetObjectsInArea(Position topLeft, Position bottomRight)
+        public IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight)
         {
             // Implementação simples - percorre todos os objetos
             // Otimização futura: se muitos objetos, usar spatial index ou chunks
@@ -39,19 +40,7 @@ namespace GameServerApp.Managers
             }
         }
 
-        public void AddObstacle(Position position, bool isBlocking = true)
-        {
-            if (isBlocking)
-            {
-                _blockedPositions.Add(position);
-            }
-            else
-            {
-                _blockedPositions.Remove(position);
-            }
-        }
-
-        public void AddStaticObject(StaticObject staticObject)
+        public void AddStaticObject(IStaticWorldObject staticObject)
         {
             if (staticObject == null) return;
 

@@ -8,7 +8,7 @@ namespace GameServerApp.World;
 /// Representa um objeto estático do mundo (árvores, pedras, muros, etc.)
 /// Objetos estáticos não se movem e geralmente são carregados do mapa
 /// </summary>
-public class StaticObject : IWorldObject
+public class StaticObject : IStaticWorldObject
 {
     public long Id { get; }
     public Position Position { get; }

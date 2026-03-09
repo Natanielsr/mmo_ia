@@ -19,7 +19,7 @@ namespace GameServerApp.Managers
         public void SpawnPlayer(IPlayer player, Position spawnPoint)
         {
             player.Move(spawnPoint);
-            _collisionManager.RegisterObject(player);
+            _collisionManager.RegisterDynamicObject(player);
         }
 
         public void PlayerDied(IPlayer player)

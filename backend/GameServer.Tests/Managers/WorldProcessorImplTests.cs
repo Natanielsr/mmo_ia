@@ -115,7 +115,7 @@ namespace GameServer.Tests.Managers
             var player2 = new Player(2, "Blocker", targetPos);
 
             // Register player2 as an obstacle
-            _collisionManager.RegisterObject(player2);
+            _collisionManager.RegisterDynamicObject(player2);
 
             bool moved = _processor.ProcessPlayerMovement(player1, "east");
 

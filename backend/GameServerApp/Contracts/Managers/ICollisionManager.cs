@@ -6,6 +6,8 @@ namespace GameServerApp.Contracts.Managers
 {
     public interface ICollisionManager
     {
+        void RegisterDynamicObject(IDynamicWorldObject dynamicWorldObject);
+        void RegisterStaticObject(IStaticWorldObject staticWorldObject);
         void RegisterObject(IWorldObject worldObject);
         void RemoveObject(long objectId);
         void UpdateObjectPosition(IWorldObject worldObject, Position oldPosition);

@@ -84,16 +84,16 @@ public class WorldObjectTests
     }
 
     [Fact]
-    public void CollisionManager_Should_Register_World_Object()
+    public void CollisionManager_Should_Register_Dynamic_World_Object()
     {
         var mockCollisionManager = new Mock<ICollisionManager>();
-        var mockWorldObject = new Mock<IWorldObject>();
+        var mockDynamicWorldObject = new Mock<IDynamicWorldObject>();
         var wallId = 1;
-        mockWorldObject.Setup(o => o.Id).Returns(wallId);
+        mockDynamicWorldObject.Setup(o => o.Id).Returns(wallId);
 
-        mockCollisionManager.Object.RegisterObject(mockWorldObject.Object);
+        mockCollisionManager.Object.RegisterDynamicObject(mockDynamicWorldObject.Object);
 
-        mockCollisionManager.Verify(m => m.RegisterObject(It.IsAny<IWorldObject>()), Times.Once);
+        mockCollisionManager.Verify(m => m.RegisterDynamicObject(It.IsAny<IDynamicWorldObject>()), Times.Once);
     }
 
     [Fact]
@@ -206,22 +206,22 @@ public class WorldObjectTests
     }
 
     [Fact]
-    public void CollisionManager_Should_Handle_Multiple_Objects()
+    public void CollisionManager_Should_Handle_Multiple_Dynamic_Objects()
     {
         var mockCollisionManager = new Mock<ICollisionManager>();
-        var wall = new Mock<IWorldObject>();
-        var chest = new Mock<IWorldObject>();
-        var door = new Mock<IWorldObject>();
+        var player1 = new Mock<IDynamicWorldObject>();
+        var player2 = new Mock<IDynamicWorldObject>();
+        var player3 = new Mock<IDynamicWorldObject>();
 
-        wall.Setup(o => o.Id).Returns(1);
-        chest.Setup(o => o.Id).Returns(2);
-        door.Setup(o => o.Id).Returns(3);
+        player1.Setup(o => o.Id).Returns(1);
+        player2.Setup(o => o.Id).Returns(2);
+        player3.Setup(o => o.Id).Returns(3);
 
-        mockCollisionManager.Object.RegisterObject(wall.Object);
-        mockCollisionManager.Object.RegisterObject(chest.Object);
-        mockCollisionManager.Object.RegisterObject(door.Object);
+        mockCollisionManager.Object.RegisterDynamicObject(player1.Object);
+        mockCollisionManager.Object.RegisterDynamicObject(player2.Object);
+        mockCollisionManager.Object.RegisterDynamicObject(player3.Object);
 
-        mockCollisionManager.Verify(m => m.RegisterObject(It.IsAny<IWorldObject>()), Times.Exactly(3));
+        mockCollisionManager.Verify(m => m.RegisterDynamicObject(It.IsAny<IDynamicWorldObject>()), Times.Exactly(3));
     }
 
     [Fact]

@@ -6,7 +6,7 @@ using GameServerApp.Contracts.Types;
 
 namespace GameServerApp.World
 {
-    public class WorldObject : IWorldObject
+    public class WorldObject : IStaticWorldObject
     {
         public long Id { get; }
         public string Name { get; }

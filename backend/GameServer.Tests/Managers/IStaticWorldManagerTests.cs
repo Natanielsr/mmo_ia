@@ -103,20 +103,6 @@ namespace GameServer.Tests.Managers
         }
 
         [Fact]
-        public void AddObstacle_ShouldBeCalled()
-        {
-            // Arrange
-            var position = new Position(10, 10);
-            _mockManager.Setup(m => m.AddObstacle(position, true));
-
-            // Act
-            _mockManager.Object.AddObstacle(position, true);
-
-            // Assert
-            _mockManager.Verify(m => m.AddObstacle(position, true), Times.Once);
-        }
-
-        [Fact]
         public void AddStaticObject_ShouldBeCalled()
         {
             // Arrange

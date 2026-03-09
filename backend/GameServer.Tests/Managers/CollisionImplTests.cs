@@ -37,8 +37,8 @@ namespace GameServer.Tests.Managers
             var wall = new WorldObject(1, "wall", ObjectType.Wall, posBlocked, false);
             var openDoor = new WorldObject(2, "door", ObjectType.Door, posFree, true);
 
-            _collisionManager.RegisterObject(wall);
-            _collisionManager.RegisterObject(openDoor);
+            _collisionManager.RegisterStaticObject(wall);
+            _collisionManager.RegisterStaticObject(openDoor);
 
             Assert.True(_collisionManager.IsPositionBlocked(posBlocked));
             Assert.False(_collisionManager.IsPositionBlocked(posFree));
@@ -47,16 +47,16 @@ namespace GameServer.Tests.Managers
         }
 
         [Fact]
-        public void CollisionManager_Should_Remove_Object()
+        public void CollisionManager_Should_Remove_Dynamic_Object()
         {
-            var obstacleId = 1;
+            var id = 1;
             var pos = new Position(5, 5);
-            var obstacle = new WorldObject(obstacleId, "obstacle", ObjectType.Obstacle, pos, false);
+            var player = new Player(id, "player", pos);
 
-            _collisionManager.RegisterObject(obstacle);
+            _collisionManager.RegisterDynamicObject(player);
             Assert.True(_collisionManager.IsPositionBlocked(pos));
 
-            _collisionManager.RemoveObject(obstacleId);
+            _collisionManager.RemoveObject(id);
             Assert.False(_collisionManager.IsPositionBlocked(pos));
             Assert.Null(_collisionManager.GetObjectAt(pos));
         }
@@ -77,8 +77,8 @@ namespace GameServer.Tests.Managers
             var player1 = new Player(1, "Player 1", spawnPos);
             var player2 = new Player(2, "Player 2", spawnPos);
 
-            _collisionManager.RegisterObject(player1);
-            _collisionManager.RegisterObject(player2);
+            _collisionManager.RegisterDynamicObject(player1);
+            _collisionManager.RegisterDynamicObject(player2);
 
             // Both at spawn: position is blocked
             Assert.True(_collisionManager.IsPositionBlocked(spawnPos));

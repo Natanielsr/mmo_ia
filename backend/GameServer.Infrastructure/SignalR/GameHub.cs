@@ -39,7 +39,7 @@ namespace GameServer.Infrastructure.SignalR
             _ => new Player(_idGeneratorService.GenerateId(), playerName, new Position(0, 0)));
 
             // Register player collision
-            _collisionManager.RegisterObject(player);
+            _collisionManager.RegisterDynamicObject(player);
 
             PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position };
 

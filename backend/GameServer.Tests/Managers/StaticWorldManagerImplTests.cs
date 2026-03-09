@@ -52,48 +52,6 @@ namespace GameServer.Tests.Managers
         }
 
         [Fact]
-        public void AddObstacle_ShouldMarkPositionAsBlocked()
-        {
-            // Arrange
-            var position = new Position(5, 5);
-
-            // Act
-            _manager.AddObstacle(position, isBlocking: true);
-
-            // Assert
-            Assert.True(_manager.IsBlocked(position));
-            Assert.False(_manager.IsPassable(position));
-        }
-
-        [Fact]
-        public void AddObstacle_WithIsBlockingFalse_ShouldNotBlock()
-        {
-            // Arrange
-            var position = new Position(5, 5);
-
-            // Act
-            _manager.AddObstacle(position, isBlocking: false);
-
-            // Assert
-            Assert.False(_manager.IsBlocked(position));
-            Assert.True(_manager.IsPassable(position));
-        }
-
-        [Fact]
-        public void AddObstacle_ShouldBeIdempotent()
-        {
-            // Arrange
-            var position = new Position(5, 5);
-
-            // Act
-            _manager.AddObstacle(position, isBlocking: true);
-            _manager.AddObstacle(position, isBlocking: true); // adiciona de novo
-
-            // Assert
-            Assert.True(_manager.IsBlocked(position));
-        }
-
-        [Fact]
         public void AddStaticObject_ShouldStoreObject()
         {
             // Arrange

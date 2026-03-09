@@ -1,5 +1,6 @@
 // backend/GameServerApp/Contracts/Managers/IStaticWorldManager.cs
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.World;
 
 namespace GameServerApp.Contracts.Managers
@@ -12,10 +13,9 @@ namespace GameServerApp.Contracts.Managers
     {
         bool IsBlocked(Position position);
         bool IsPassable(Position position);
-        StaticObject? GetObjectAt(Position position);
-        IEnumerable<StaticObject> GetObjectsInArea(Position topLeft, Position bottomRight);
-        void AddObstacle(Position position, bool isBlocking = true);
-        void AddStaticObject(StaticObject staticObject);
+        IStaticWorldObject? GetObjectAt(Position position);
+        IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight);
+        void AddStaticObject(IStaticWorldObject staticObject);
         bool RemoveObjectAt(Position position);
         void Clear();
     }
