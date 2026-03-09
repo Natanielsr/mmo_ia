@@ -1,6 +1,3 @@
-using Xunit;
-using GameServerApp.Contracts.Managers;
-using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Managers;
@@ -10,11 +7,13 @@ namespace GameServer.Tests.Managers;
 
 public class GameStateImplTests
 {
-    private readonly CollisionManager _collisionManager = new();
+    private readonly StaticWorldManager _staticWorldManager = new();
+    private readonly CollisionManager _collisionManager;
     private readonly GameStateManager _manager;
 
     public GameStateImplTests()
     {
+        _collisionManager = new(_staticWorldManager);
         _manager = new GameStateManager(_collisionManager);
     }
     private readonly Position _spawnPoint = new Position(10, 10);

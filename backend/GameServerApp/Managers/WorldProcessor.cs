@@ -1,3 +1,4 @@
+// backend/GameServerApp/Managers/WorldProcessor.cs
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
@@ -13,48 +14,47 @@ namespace GameServerApp.Managers
         private readonly ICombatService _combatService;
         private readonly IGameStateManager _gameStateManager;
         private readonly IWorldEvents _worldEvents;
+        private readonly IStaticWorldManager _staticWorldManager;
 
         public WorldProcessor(
             IMovementService movementService,
             ICollisionManager collisionManager,
             ICombatService combatService,
             IGameStateManager gameStateManager,
-            IWorldEvents worldEvents)
+            IWorldEvents worldEvents,
+            IStaticWorldManager staticWorldManager)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
             _combatService = combatService;
             _gameStateManager = gameStateManager;
             _worldEvents = worldEvents;
+            _staticWorldManager = staticWorldManager;
         }
 
+        // ... resto do código permanece igual
         public bool ProcessPlayerMovement(IPlayer player, string direction)
         {
             if (player.State == PlayerState.Dead) return false;
 
             // Enforce speed limit:
-            // Calculate minimum time between moves based on Speed (positions per second)
             if (player.Speed > 0)
             {
                 double minTimeBetweenMovesSec = 1.0 / player.Speed;
                 if ((DateTime.UtcNow - player.LastMoveTime).TotalSeconds < minTimeBetweenMovesSec)
                 {
-                    return false; // Moving too fast
+                    return false;
                 }
             }
 
-            // 1. Calculate target position
             Position targetPos = _movementService.Move(player.Position, direction);
 
-            // 2. Validate collision
             if (!_collisionManager.IsPositionBlocked(targetPos))
             {
-                // 3. Update player position
                 Position oldPos = player.Position;
                 player.Move(targetPos);
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
-                // 4. Emit event
                 _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos });
                 return true;
             }
@@ -66,21 +66,14 @@ namespace GameServerApp.Managers
         {
             if (player.State == PlayerState.Dead || target.State == PlayerState.Dead) return;
 
-            // Simple combat logic integration
-            // In a real scenario, this would involve more calculations
             player.Attack(target);
-
-            // Apply damage using CombatService
-            // Note: Our CombatService currently just returns the new HP, 
-            // the Player class handles the actual TakeDamage.
-            // We could refine this integration later.
-            int damage = 10; // Placeholder damage
+            int damage = 10;
             target.TakeDamage(damage);
 
             if (target.State == PlayerState.Dead)
             {
                 _gameStateManager.PlayerDied(target);
-                _gameStateManager.AddPlayerExperience(player, 100); // 100 XP reward
+                _gameStateManager.AddPlayerExperience(player, 100);
                 _gameStateManager.CheckForLevelUp(player);
 
                 _worldEvents.OnPlayerDied(target.Id);

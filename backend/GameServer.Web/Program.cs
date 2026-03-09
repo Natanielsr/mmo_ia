@@ -5,7 +5,6 @@ using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
 using GameServerApp.World;
-using IdGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +29,14 @@ builder.Services.AddSingleton<ICombatService, CombatService>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
-builder.Services.AddSingleton<ICollisionManager, CollisionManager>();
 builder.Services.AddSingleton<IWorldProcessor, WorldProcessor>();
+builder.Services.AddSingleton<IStaticWorldManager, StaticWorldManager>();
+
+// CollisionManager depende de IStaticWorldManager
+builder.Services.AddSingleton<ICollisionManager>(sp =>
+    new CollisionManager(sp.GetRequiredService<IStaticWorldManager>()));
+
+
 
 // Register Infrastructure implementations
 builder.Services.AddSingleton<IWorldEvents, SignalREventEmitter>();

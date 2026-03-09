@@ -1,6 +1,3 @@
-using Xunit;
-using GameServerApp.Contracts.Managers;
-using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Managers;
@@ -10,7 +7,13 @@ namespace GameServer.Tests.Managers
 {
     public class CollisionImplTests
     {
-        private readonly CollisionManager _collisionManager = new();
+        private readonly StaticWorldManager _staticWorldManager = new();
+        private readonly CollisionManager _collisionManager;
+
+        public CollisionImplTests()
+        {
+            _collisionManager = new(_staticWorldManager);
+        }
 
         [Fact]
         public void CollisionManager_Should_Register_And_Find_Object()

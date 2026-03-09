@@ -1,6 +1,8 @@
+// backend/GameServerApp/Managers/CollisionManager.cs
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using GameServerApp.Contracts.Managers;
-using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 
@@ -8,17 +10,23 @@ namespace GameServerApp.Managers
 {
     public class CollisionManager : ICollisionManager
     {
-        private readonly Dictionary<Position, List<IWorldObject>> _objects = new();
+        private readonly Dictionary<Position, List<IWorldObject>> _dynamicObjects = new();
         private readonly Dictionary<long, IWorldObject> _objectsById = new();
+        private readonly IStaticWorldManager _staticWorld;
+
+        public CollisionManager(IStaticWorldManager staticWorld)
+        {
+            _staticWorld = staticWorld ?? throw new ArgumentNullException(nameof(staticWorld));
+        }
 
         public void RegisterObject(IWorldObject worldObject)
         {
             if (worldObject == null) return;
 
-            if (!_objects.TryGetValue(worldObject.Position, out var list))
+            if (!_dynamicObjects.TryGetValue(worldObject.Position, out var list))
             {
                 list = new List<IWorldObject>();
-                _objects[worldObject.Position] = list;
+                _dynamicObjects[worldObject.Position] = list;
             }
 
             if (!list.Contains(worldObject))
@@ -33,12 +41,12 @@ namespace GameServerApp.Managers
         {
             if (_objectsById.TryGetValue(objectId, out var obj))
             {
-                if (_objects.TryGetValue(obj.Position, out var list))
+                if (_dynamicObjects.TryGetValue(obj.Position, out var list))
                 {
                     list.Remove(obj);
                     if (list.Count == 0)
                     {
-                        _objects.Remove(obj.Position);
+                        _dynamicObjects.Remove(obj.Position);
                     }
                 }
                 _objectsById.Remove(objectId);
@@ -50,20 +58,20 @@ namespace GameServerApp.Managers
             if (worldObject == null) return;
 
             // Remove from old position list
-            if (_objects.TryGetValue(oldPosition, out var oldList))
+            if (_dynamicObjects.TryGetValue(oldPosition, out var oldList))
             {
                 oldList.Remove(worldObject);
                 if (oldList.Count == 0)
                 {
-                    _objects.Remove(oldPosition);
+                    _dynamicObjects.Remove(oldPosition);
                 }
             }
 
             // Add to new position list
-            if (!_objects.TryGetValue(worldObject.Position, out var newList))
+            if (!_dynamicObjects.TryGetValue(worldObject.Position, out var newList))
             {
                 newList = new List<IWorldObject>();
-                _objects[worldObject.Position] = newList;
+                _dynamicObjects[worldObject.Position] = newList;
             }
 
             if (!newList.Contains(worldObject))
@@ -76,7 +84,12 @@ namespace GameServerApp.Managers
 
         public bool IsPositionBlocked(Position position)
         {
-            if (_objects.TryGetValue(position, out var list))
+            // Primeiro verifica objetos estáticos (mais rápido)
+            if (_staticWorld.IsBlocked(position))
+                return true;
+
+            // Depois verifica objetos dinâmicos (players, items móveis)
+            if (_dynamicObjects.TryGetValue(position, out var list))
             {
                 return list.Any(obj => !obj.IsPassable);
             }
@@ -90,11 +103,33 @@ namespace GameServerApp.Managers
 
         public IWorldObject? GetObjectAt(Position position)
         {
-            if (_objects.TryGetValue(position, out var list))
+            // Primeiro verifica objetos estáticos
+            var staticObj = _staticWorld.GetObjectAt(position);
+            if (staticObj != null) return staticObj;
+
+            // Depois verifica objetos dinâmicos
+            if (_dynamicObjects.TryGetValue(position, out var list))
             {
                 return list.FirstOrDefault();
             }
             return null;
+        }
+
+        public IEnumerable<IWorldObject> GetDynamicObjectsInArea(Position topLeft, Position bottomRight)
+        {
+            // Retorna apenas objetos dinâmicos na área
+            foreach (var kvp in _dynamicObjects)
+            {
+                var pos = kvp.Key;
+                if (pos.X >= topLeft.X && pos.X <= bottomRight.X &&
+                    pos.Y >= topLeft.Y && pos.Y <= bottomRight.Y)
+                {
+                    foreach (var obj in kvp.Value)
+                    {
+                        yield return obj;
+                    }
+                }
+            }
         }
     }
 }

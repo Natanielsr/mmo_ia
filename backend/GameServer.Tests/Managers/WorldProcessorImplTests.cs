@@ -1,6 +1,3 @@
-using Xunit;
-using GameServerApp.Contracts.Managers;
-using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using Moq;
@@ -13,20 +10,25 @@ namespace GameServer.Tests.Managers
     {
         private readonly WorldProcessor _processor;
         private readonly MovementService _movementService = new();
-        private readonly CollisionManager _collisionManager = new();
+        private readonly StaticWorldManager staticWorldManager = new();
+        private readonly CollisionManager _collisionManager;
         private readonly CombatService _combatService = new();
         private readonly GameStateManager _gameStateManager;
         private readonly Mock<IWorldEvents> _mockEvents = new();
 
+
+
         public WorldProcessorImplTests()
         {
+            _collisionManager = new(staticWorldManager);
             _gameStateManager = new GameStateManager(_collisionManager);
             _processor = new WorldProcessor(
                 _movementService,
                 _collisionManager,
                 _combatService,
                 _gameStateManager,
-                _mockEvents.Object
+                _mockEvents.Object,
+                staticWorldManager
             );
         }
 
