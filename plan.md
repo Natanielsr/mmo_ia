@@ -2,6 +2,28 @@
 
 Este arquivo serve como memória de planejamento para o projeto situado em `/home/niel/projects/mmo`.
 
+## Resumo executivo
+
+- Propósito: planejar e documentar decisões, arquitetura e próximos passos do projeto MMO.
+- Estado atual: esboço de arquitetura e scaffolding do repositório.
+- Objetivo de curto prazo: iniciar scaffold do repositório, definir stack e preparar PoC (WebSocket + movimentação básica).
+
+## Sumário
+
+- Objetivos Iniciais
+- Etapas Propostas
+- Arquitetura Sugerida para MMORPG Web
+- Estrutura de Pastas Atual (Repositório Atualizado)
+- Próximos Passos
+- Qualidade e Testes
+- Metodologia XP
+- Arquitetura do Projeto (Manager/Service/Entity)
+- Regras e Gameplay Inspiradas em Tibia
+- Como usar este arquivo
+- Histórico de Git
+- Branches e Pull Requests
+- Observação final
+
 ## Objetivos Iniciais
 
 - Entender os requisitos do usuário.
@@ -79,8 +101,7 @@ O backend será desenvolvido em **C# / .NET**, usando ASP.NET Core para o servid
 5. Eventos (chat, loot, spawn) são propagados por WebSocket.
 
 ### Estrutura de Pastas Atual (Repositório Atualizado)
-
-```
+```text
 /mmo
 ├── backend/
 │   ├── GameServer.slnx                            # Solução .NET com todos os projetos
@@ -308,43 +329,69 @@ O repositório foi inicializado e commits foram feitos em etapas para refletir o
 > o commit anterior agrupou várias adições (novos contratos + testes) em único envio; isso é apenas um ponto histórico e não será repetido.
 
 
+### Análise de Melhorias para o Projeto
+
 Após analisar o projeto Antigravity MMO, identifiquei pontos positivos na arquitetura (separação clara de responsabilidades no backend, uso de interfaces e serviços injetados), mas também áreas críticas que podem ser melhoradas para escalabilidade, jogabilidade e segurança.
 
 Abaixo estão as principais sugestões de melhoria divididas por categorias:
 
-1. Backend (.NET / SignalR)
-Validação de Movimento (Anti-Cheat):
-No WorldProcessor.cs, o servidor já verifica o tempo entre movimentos baseado na velocidade do jogador. No entanto, o SignalREventEmitter envia a posição para todos os outros clientes assim que o movimento é processado.
-Melhoria: Implementar uma fila de comandos ou um buffer. Atualmente, se um jogador tiver latência alta, seus movimentos parecerão "teleportes" para os outros.
-Identificação de Jogadores:
-O GameHub.cs usa Context.ConnectionId para o dicionário de sessões, mas player.Name como ID para eventos de rede. Se dois jogadores escolherem o mesmo nome, haverá conflitos visuais no frontend.
-Melhoria: Usar um Guid único internamente e tratar o Name apenas como metadado visual.
-Loop de Jogo (Game Loop):
-O WorldProcessor.Tick() está vazio. Em um MMO, NPCs e estados de mundo (como regeneração de HP) devem rodar em um loop fixo no servidor (ex: 20Hz ou 60Hz), independente das requisições dos clientes.
-Melhoria: Implementar um BackgroundService (.NET Worker) que chama o Tick() do WorldProcessor em intervalos fixos.
-2. Frontend (Phaser 3 / TypeScript)
-Interpolação e Predição (Client-Side Prediction):
-Atualmente, o cliente envia o comando de movimento e espera a resposta do servidor para mover o sprite (updatePlayerPosition). Isso causa uma sensação de "input lag" (atraso entre apertar a tecla e o personagem se mover).
-Melhoria: Mover o sprite localmente de forma imediata (predição) e corrigir a posição caso o servidor envie um MoveFailed ou uma posição diferente (reconciliação).
-Gerenciamento de Assets:
-O MainScene.ts carrega apenas hero.png. Para um MMO, será necessário um sistema de Atlas (Spritesheets) para reduzir as chamadas de rede e permitir animações de caminhada/ataque.
-Câmera e Zoom:
-A câmera segue o jogador, mas não há limites de mundo configurados (setBounds), o que permite que o jogador veja o "vazio" se chegar nas bordas da grid.
-3. Arquitetura de Dados
-Persistência:
-Atualmente, o estado do mundo (_sessions) está em um ConcurrentDictionary na memória do Hub. Se o servidor resetar, todo o progresso (XP, posição, inventário) é perdido.
-Melhoria: Integrar um banco de dados (Entity Framework com PostgreSQL ou Redis para estado em tempo real) para salvar o estado dos jogadores.
-Sincronização Inicial:
-Ao entrar (JoinGame), o jogador recebe todos os outros jogadores de uma vez. Em um mapa grande, isso enviaria dados de milhares de jogadores desnecessariamente.
-Melhoria: Implementar AOI (Area of Interest). O servidor deve enviar apenas os dados dos jogadores que estão dentro do raio de visão do cliente.
-4. Experiência do Desenvolvedor (DevExp)
-Logs e Debug:
-Faltam logs estruturados no backend (usando ILogger). É difícil diagnosticar problemas de colisão ou falhas de movimento sem logs no console do servidor.
-Scripts de Build:
-O run_dev.sh é excelente para produtividade. Uma melhoria seria adicionar um comando de lint e type-check para o frontend antes de subir o servidor, garantindo que erros de TS não passem despercebidos.
-Próximos Passos Sugeridos:
-Implementar Animações: Adicionar suporte a spritesheets no Phaser para o movimento não ser apenas um deslize de imagem estática.
-Sistema de Combate: Expandir a CombatService para incluir cooldowns e diferentes tipos de ataque.
-Persistência Básica: Adicionar uma camada de repositório para salvar a posição do jogador ao desconectar.
-Gostaria que eu implementasse alguma dessas melhorias agora? (Ex: O sistema de predição no frontend ou o Worker de Tick no backend).
+#### 1. Backend (.NET / SignalR)
+
+**Validação de Movimento (Anti-Cheat):**  
+No `WorldProcessor.cs`, o servidor já verifica o tempo entre movimentos baseado na velocidade do jogador. No entanto, o `SignalREventEmitter` envia a posição para todos os outros clientes assim que o movimento é processado.  
+**Melhoria:** Implementar uma fila de comandos ou um buffer. Atualmente, se um jogador tiver latência alta, seus movimentos parecerão "teleportes" para os outros.
+
+**Identificação de Jogadores:**  
+O `GameHub.cs` usa `Context.ConnectionId` para o dicionário de sessões, mas `player.Name` como ID para eventos de rede. Se dois jogadores escolherem o mesmo nome, haverá conflitos visuais no frontend.  
+**Melhoria já implementada:** Alterado para usar `long` (tipo `Int64`) como ID único numérico sequencial, em vez de `Guid`. O `Name` continua apenas como metadado visual.
+
+---
+### Decisões Tomadas
+
+- **ID dos jogadores**: Implementado como `long` (tipo `Int64`), garantindo unicidade e melhor performance em serialização e persistência. IDs sequenciais numéricos são suficientes para um sistema fechado e facilitam operações com banco de dados.
+- **Geração de ID**: O `Player.Id` do tipo `long` é gerado automaticamente pelo repositório/banco de dados, garantindo unicidade independente do nome escolhido pelo jogador.
+
+**Loop de Jogo (Game Loop):**  
+O `WorldProcessor.Tick()` está vazio. Em um MMO, NPCs e estados de mundo (como regeneração de HP) devem rodar em um loop fixo no servidor (ex: 20Hz ou 60Hz), independente das requisições dos clientes.  
+**Melhoria:** Implementar um `BackgroundService` (.NET Worker) que chama o `Tick()` do `WorldProcessor` em intervalos fixos.
+
+#### 2. Frontend (Phaser 3 / TypeScript)
+
+**Interpolação e Predição (Client-Side Prediction):**  
+Atualmente, o cliente envia o comando de movimento e espera a resposta do servidor para mover o sprite (`updatePlayerPosition`). Isso causa uma sensação de "input lag" (atraso entre apertar a tecla e o personagem se mover).  
+**Melhoria:** Mover o sprite localmente de forma imediata (predição) e corrigir a posição caso o servidor envie um `MoveFailed` ou uma posição diferente (reconciliação).
+
+**Gerenciamento de Assets:**  
+O `MainScene.ts` carrega apenas `hero.png`. Para um MMO, será necessário um sistema de Atlas (Spritesheets) para reduzir as chamadas de rede e permitir animações de caminhada/ataque.
+
+**Câmera e Zoom:**  
+A câmera segue o jogador, mas não há limites de mundo configurados (`setBounds`), o que permite que o jogador veja o "vazio" se chegar nas bordas da grid.
+
+#### 3. Arquitetura de Dados
+
+**Persistência:**  
+Atualmente, o estado do mundo (`_sessions`) está em um `ConcurrentDictionary` na memória do Hub. Se o servidor resetar, todo o progresso (XP, posição, inventário) é perdido.  
+**Melhoria:** Integrar um banco de dados (Entity Framework com PostgreSQL ou Redis para estado em tempo real) para salvar o estado dos jogadores.
+
+**Sincronização Inicial:**  
+Ao entrar (`JoinGame`), o jogador recebe todos os outros jogadores de uma vez. Em um mapa grande, isso enviaria dados de milhares de jogadores desnecessariamente.  
+**Melhoria:** Implementar AOI (Area of Interest). O servidor deve enviar apenas os dados dos jogadores que estão dentro do raio de visão do cliente.
+
+#### 4. Experiência do Desenvolvedor (DevExp)
+
+**Logs e Debug:**  
+Faltam logs estruturados no backend (usando `ILogger`). É difícil diagnosticar problemas de colisão ou falhas de movimento sem logs no console do servidor.
+
+**Scripts de Build:**  
+O `run_dev.sh` é excelente para produtividade. Uma melhoria seria adicionar um comando de lint e type-check para o frontend antes de subir o servidor, garantindo que erros de TS não passem despercebidos.
+
+#### Próximos Passos Sugeridos
+
+- **Implementar Animações:** Adicionar suporte a spritesheets no Phaser para o movimento não ser apenas um deslize de imagem estática.
+- **Sistema de Combate:** Expandir o `CombatService` para incluir cooldowns e diferentes tipos de ataque.
+- **Persistência Básica:** Adicionar uma camada de repositório para salvar a posição do jogador ao desconectar.
+
+#### Considerações Finais
+
+- **MessagePack:** Usar no futuro para transporte de dados binários, melhorando performance de rede. 
 
