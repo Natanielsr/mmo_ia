@@ -19,7 +19,7 @@ namespace GameServer.Tests.Managers
         public void CollisionManager_Should_Register_And_Find_Object()
         {
             var pos = new Position(10, 10);
-            var wall = new WorldObject(1, "wall", ObjectType.Wall, pos, false);
+            var wall = new StaticObject(1, pos, "wall", false);
 
             _collisionManager.RegisterObject(wall);
 
@@ -34,8 +34,8 @@ namespace GameServer.Tests.Managers
             var posBlocked = new Position(1, 1);
             var posFree = new Position(2, 2);
 
-            var wall = new WorldObject(1, "wall", ObjectType.Wall, posBlocked, false);
-            var openDoor = new WorldObject(2, "door", ObjectType.Door, posFree, true);
+            var wall = new StaticObject(1, posBlocked, "wall", false, false);
+            var openDoor = new StaticObject(2, posFree, "door", true, true);
 
             _collisionManager.RegisterStaticObject(wall);
             _collisionManager.RegisterStaticObject(openDoor);

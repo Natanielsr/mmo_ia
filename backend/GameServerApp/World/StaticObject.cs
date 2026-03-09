@@ -17,15 +17,13 @@ public class StaticObject : IStaticWorldObject
     public bool IsPassable { get; }
     public float Rotation { get; } = 0f;
     public string Name { get; }
-    public string Sprite { get; }
     public bool IsInteractive { get; }
 
-    public StaticObject(long id, Position position, string name, string sprite, bool isPassable = false, bool isInteractive = false)
+    public StaticObject(long id, Position position, string name, bool isPassable = false, bool isInteractive = false)
     {
         Id = id;
         Position = position;
         Name = name;
-        Sprite = sprite;
         IsPassable = isPassable;
         IsInteractive = isInteractive;
     }
