@@ -14,3 +14,11 @@ export interface AttackData {
     targetId: string;
     damage: number;
 }
+
+export interface MapObjectData {
+    id: number;
+    name: string;
+    position: Position;
+    type: string;
+    isPassable: boolean;
+}
