@@ -10,6 +10,7 @@ namespace GameServerApp.World
     {
         public long Id { get; }
         public string Name { get; }
+        public string ObjectCode { get; }
         public ObjectType Type => ObjectType.Player;
         public bool IsPassable => false;
         public Size Size { get; } = new Size { Width = 1, Height = 1 };

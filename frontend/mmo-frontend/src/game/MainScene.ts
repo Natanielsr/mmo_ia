@@ -31,13 +31,17 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
+    public async loadMap() {
+        // Carrega os objetos do mapa
+        const mapLoader = MapLoader.getInstance();
+        await mapLoader.loadMapObjects();
+        mapLoader.renderMapObjects(this);
+    }
+
     async create() {
         this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x0f172a, 1, 0xffffff, 0.05);
 
-        // Carrega os objetos do mapa
-        const mapLoader = MapLoader.getInstance();
-        const mapObjects = await mapLoader.loadMapObjects();
-        mapLoader.renderMapObjects(this);
+
 
         // Criação das animações mantém-se aqui, pois são recursos globais da Cena
         this.anims.create({ key: 'walk-north', frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }), frameRate: 16, repeat: -1 });

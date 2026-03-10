@@ -7,6 +7,7 @@ public record class MapObjectData
 {
     public required long Id { get; init; }
     public required string Name { get; init; }
+    public required string ObjectCode { get; init; }
     public required Position Position { get; init; }
     public required ObjectType Type { get; init; }
     public required bool IsPassable { get; init; }

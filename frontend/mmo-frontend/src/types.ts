@@ -18,6 +18,7 @@ export interface AttackData {
 export interface MapObjectData {
     id: number;
     name: string;
+    objectCode: string;
     position: Position;
     type: string;
     isPassable: boolean;

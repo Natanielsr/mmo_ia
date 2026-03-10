@@ -56,7 +56,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var staticObject = new StaticObject(1, position, "Tree", isPassable: false);
+            var staticObject = new StaticObject(1, position, "Tree", "Tree", isPassable: false);
 
             // Act
             _manager.AddStaticObject(staticObject);
@@ -73,7 +73,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var staticObject = new StaticObject(1, position, "Wall", isPassable: false);
+            var staticObject = new StaticObject(1, position, "Wall", "Wall", isPassable: false);
 
             // Act
             _manager.AddStaticObject(staticObject);
@@ -88,7 +88,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var staticObject = new StaticObject(1, position, "Flower", isPassable: true);
+            var staticObject = new StaticObject(1, position, "Flower", "Flower", isPassable: true);
 
             // Act
             _manager.AddStaticObject(staticObject);
@@ -103,8 +103,8 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var obj1 = new StaticObject(1, position, "Tree");
-            var obj2 = new StaticObject(2, position, "Rock");
+            var obj1 = new StaticObject(1, position, "Tree", "Tree");
+            var obj2 = new StaticObject(2, position, "Rock", "Rock");
 
             // Act
             _manager.AddStaticObject(obj1);
@@ -122,7 +122,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var staticObject = new StaticObject(1, position, "Tree", isPassable: false);
+            var staticObject = new StaticObject(1, position, "Tree", "Tree", isPassable: false);
             _manager.AddStaticObject(staticObject);
 
             // Act
@@ -153,7 +153,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(10, 10);
-            var staticObject = new StaticObject(1, position, "Flower", isPassable: true);
+            var staticObject = new StaticObject(1, position, "Flower", "Flower", isPassable: true);
             _manager.AddStaticObject(staticObject);
 
             // Act
@@ -181,10 +181,10 @@ namespace GameServer.Tests.Managers
         public void GetObjectsInArea_ShouldReturnAllObjectsInArea()
         {
             // Arrange
-            _manager.AddStaticObject(new StaticObject(1, new Position(5, 5), "Tree1"));
-            _manager.AddStaticObject(new StaticObject(2, new Position(10, 10), "Tree2"));
-            _manager.AddStaticObject(new StaticObject(3, new Position(20, 20), "Tree3"));
-            _manager.AddStaticObject(new StaticObject(4, new Position(3, 8), "Tree4"));
+            _manager.AddStaticObject(new StaticObject(1, new Position(5, 5), "Tree1", "Tree"));
+            _manager.AddStaticObject(new StaticObject(2, new Position(10, 10), "Tree2", "Tree"));
+            _manager.AddStaticObject(new StaticObject(3, new Position(20, 20), "Tree3", "Tree"));
+            _manager.AddStaticObject(new StaticObject(4, new Position(3, 8), "Tree4", "Tree"));
 
             var topLeft = new Position(0, 0);
             var bottomRight = new Position(15, 15);

@@ -71,6 +71,7 @@ public class ProceduralWorldService : IProceduralWorldService
                 id: _idGeneratorService.GenerateId(),
                 position: pos,
                 name: obstacleName,
+                objectCode: obstacleName,
                 isPassable: false));
         }
 
@@ -91,6 +92,7 @@ public class ProceduralWorldService : IProceduralWorldService
             {
                 Id = obj.Id,
                 Name = obj.Name,
+                ObjectCode = obj.ObjectCode,
                 Position = obj.Position,
                 Type = obj.Type,
                 IsPassable = obj.IsPassable

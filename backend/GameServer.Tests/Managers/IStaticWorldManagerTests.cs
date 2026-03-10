@@ -52,7 +52,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var position = new Position(5, 5);
-            var expectedObject = new StaticObject(1, position, "Tree", isPassable: false);
+            var expectedObject = new StaticObject(1, position, "Tree", "Tree", isPassable: false);
             _mockManager.Setup(m => m.GetObjectAt(position)).Returns(expectedObject);
 
             // Act
@@ -85,9 +85,9 @@ namespace GameServer.Tests.Managers
             var topLeft = new Position(0, 0);
             var bottomRight = new Position(10, 10);
 
-            var obj1 = new StaticObject(1, new Position(5, 5), "Tree1");
-            var obj2 = new StaticObject(2, new Position(15, 15), "Tree2"); // fora da área
-            var obj3 = new StaticObject(3, new Position(3, 3), "Tree3");
+            var obj1 = new StaticObject(1, new Position(5, 5), "Tree1", "Tree");
+            var obj2 = new StaticObject(2, new Position(15, 15), "Tree2", "Tree"); // fora da área
+            var obj3 = new StaticObject(3, new Position(3, 3), "Tree3", "Tree");
 
             _mockManager.Setup(m => m.GetObjectsInArea(topLeft, bottomRight))
                 .Returns(new List<StaticObject> { obj1, obj3 });
@@ -106,7 +106,7 @@ namespace GameServer.Tests.Managers
         public void AddStaticObject_ShouldBeCalled()
         {
             // Arrange
-            var obj = new StaticObject(1, new Position(5, 5), "Tree");
+            var obj = new StaticObject(1, new Position(5, 5), "Tree", "Tree");
             _mockManager.Setup(m => m.AddStaticObject(obj));
 
             // Act

@@ -17,6 +17,7 @@ namespace GameServerApp.Contracts.World
     {
         long Id { get; }
         string Name { get; }
+        string ObjectCode { get; }
         ObjectType Type { get; }
         bool IsPassable { get; }
         Position Position { get; }

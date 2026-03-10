@@ -53,7 +53,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", startPos);
 
             // Register a wall
-            var wall = new StaticObject(2, targetPos, "wall", false);
+            var wall = new StaticObject(2, targetPos, "wall", "wall", false);
             _worldManager.InstantiateObject(wall);
 
             bool moved = _worldManager.ProcessPlayerMovement(player, "east");

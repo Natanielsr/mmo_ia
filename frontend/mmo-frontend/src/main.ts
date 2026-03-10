@@ -43,6 +43,7 @@ mainScene.onRequestMove = (direction: string) => {
 
 // --- Eventos do SignalR ---
 connection.on("Joined", (playerData: PlayerData) => {
+  mainScene.loadMap();
   addLog(`Entraste como ${playerData.name}!`);
   overlay.classList.add('hidden');
   gameContainer.classList.remove('hidden');
@@ -70,7 +71,6 @@ connection.on("PlayerJoined", (playerData: PlayerData) => {
 });
 
 connection.on("PlayerMoved", (playerData: PlayerData) => {
-  console.log(playerData);
   mainScene.updatePlayerPosition(playerData);
 
 });

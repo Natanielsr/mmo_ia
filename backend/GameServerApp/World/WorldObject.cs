@@ -10,6 +10,7 @@ namespace GameServerApp.World
     {
         public long Id { get; }
         public string Name { get; }
+        public string ObjectCode { get; }
         public ObjectType Type { get; }
         public bool IsPassable { get; }
         public Position Position { get; set; }

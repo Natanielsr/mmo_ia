@@ -69,8 +69,8 @@ static void InitializeProceduralMap(IServiceProvider services)
 
     // Ajuste estes valores conforme o tamanho do mapa desejado.
     var obstacles = proceduralWorldService.GenerateRandomObstacles(
-        width: 80,
-        height: 80,
+        width: 32,
+        height: 32,
         fillPercentage: 0.10,
         safeSpawnRadius: 3,
         seed: 20260309);

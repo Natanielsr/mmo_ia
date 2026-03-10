@@ -20,17 +20,23 @@ export class Player extends Phaser.GameObjects.Container {
         this.id = id;
         this.worldPosition = worldPosition
         this.serverPosition = serverPosition;
-        this.name = name
+        this.name = name;
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
         this.sprite.setDisplaySize(gridSize, gridSize);
+
+        // Garante que o sprite do jogador esteja acima dos objetos do mapa
+        this.sprite.setDepth(1000); // Profundidade alta
 
         // 2. O Texto fica posicionado relativamente ao Sprite, usando o gridSize
         const textOffsetY = (gridSize / 2) + 10;
         this.nameText = scene.add.text(0, -textOffsetY, name, {
             fontSize: '14px', color: '#fff', fontFamily: 'Inter'
         }).setOrigin(0.5);
+
+        // Garante também que o texto esteja acima dos objetos do mapa
+        this.nameText.setDepth(1001);
 
         // 3. Adiciona os elementos visuais como filhos deste Container
         this.add([this.sprite, this.nameText]);
