@@ -6,6 +6,7 @@ export class Player extends Phaser.GameObjects.Container {
     public name: string;
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
+    private nameTextOffsetY: number;
     public serverPosition: Position;
     public worldPosition: Position;
 
@@ -26,20 +27,27 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
         this.sprite.setDisplaySize(gridSize, gridSize);
 
-        // 2. O Texto fica posicionado relativamente ao Sprite, usando o gridSize
-        const textOffsetY = (gridSize / 2) + 10;
-        this.nameText = scene.add.text(0, -textOffsetY, name, {
+
+
+
+        // 2. Texto do nome fica FORA do container para controlar depth global da cena
+        this.nameTextOffsetY = (gridSize / 2) + 10;
+        this.nameText = scene.add.text(worldPosition.x, worldPosition.y - this.nameTextOffsetY, name, {
             fontSize: '14px', color: '#fff', fontFamily: 'Inter'
         }).setOrigin(0.5);
+        this.nameText.setDepth(10000); // acima de tudo
 
-        // 3. Adiciona os elementos visuais como filhos deste Container
-        this.add([this.sprite, this.nameText]);
+
+
+        // 3. Adiciona apenas o sprite como filho do Container
+        this.add([this.sprite]);
 
         // 4. Registra este Container na Cena para ser renderizado
         scene.add.existing(this);
 
-        // 5. setDepth no Container — é o que controla a ordem de renderização
-        //    em relação ao resto da cena. setDepth nos filhos não tem efeito.
+
+
+        // 5. Container do player acima dos objetos do mapa
         this.setDepth(1000);
 
         // Define a pose inicial
@@ -63,10 +71,13 @@ export class Player extends Phaser.GameObjects.Container {
             this.sprite.play(animKey, true);
         }
 
-        // Limpa tweens anteriores DESTE container especificamente
-        this.scene.tweens.killTweensOf(this);
 
-        // Move o Container (Sprite e Texto vão juntos automaticamente!)
+        // Limpa tweens anteriores
+        this.scene.tweens.killTweensOf(this);
+        this.scene.tweens.killTweensOf(this.nameText);
+
+
+        // Move o container do player
         this.scene.tweens.add({
             targets: this,
             x: worldPos.x,
@@ -74,6 +85,15 @@ export class Player extends Phaser.GameObjects.Container {
             duration: duration,
             ease: 'Linear',
             onComplete: () => this.stopWalking()
+        });
+
+        // Move o texto do nome junto, mantendo offset vertical
+        this.scene.tweens.add({
+            targets: this.nameText,
+            x: worldPos.x,
+            y: worldPos.y - this.nameTextOffsetY,
+            duration: duration,
+            ease: 'Linear'
         });
     }
 
