@@ -2,7 +2,7 @@ import './css/style.css'; // O Vite lida com a importação de CSS automaticamen
 import Phaser from 'phaser';
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from './game/MainScene';
-import type { PlayerData, AttackData } from './types';
+import type { PlayerData, AttackData, MonsterData } from './types';
 
 // Elementos da UI
 const overlay = document.getElementById('login-overlay') as HTMLDivElement;
@@ -72,16 +72,41 @@ connection.on("PlayerJoined", (playerData: PlayerData) => {
 
 connection.on("PlayerMoved", (playerData: PlayerData) => {
   mainScene.updatePlayerPosition(playerData);
-
 });
 
-connection.on("PlayerLeft", (playerId: string) => {
+connection.on("PlayerLeft", (playerId: number) => {
   addLog(`${playerId} saiu do mundo.`);
   mainScene.removePlayer(playerId);
 });
 
 connection.on("PlayerAttacked", (data: AttackData) => {
   addLog(`${data.attackerId} atacou ${data.targetId} causando ${data.damage} de dano!`);
+});
+
+// --- Eventos de Monstros ---
+connection.on("SyncMonsters", (monsterList: MonsterData[]) => {
+  console.log(monsterList);
+  mainScene.syncMonsters(monsterList);
+  addLog(`Sincronizados ${monsterList.length} monstros no mundo.`, "info");
+});
+
+connection.on("MonsterSpawned", (monsterData: MonsterData) => {
+  mainScene.monsterSpawned(monsterData);
+  addLog(`Monstro ${monsterData.name} apareceu!`, "info");
+});
+
+connection.on("MonsterMoved", (monsterData: MonsterData) => {
+  mainScene.monsterMoved(monsterData);
+});
+
+connection.on("MonsterDied", (monsterId: number) => {
+  mainScene.monsterDied(monsterId);
+  addLog(`Monstro ID ${monsterId} foi derrotado!`, "success");
+});
+
+connection.on("MonsterDamaged", (data: { monsterId: number; damage: number; currentHp: number }) => {
+  mainScene.monsterDamaged(data);
+  addLog(`Monstro ID ${data.monsterId} sofreu ${data.damage} de dano!`, "info");
 });
 
 // Funções de UI

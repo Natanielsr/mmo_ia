@@ -2,25 +2,25 @@ import Phaser from 'phaser';
 import type { Position } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
-    public id: number;
+    public id: string;
     public name: string;
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
     private nameTextOffsetY: number;
-    public serverPosition: Position;
+    public gridPosition: Position; // Renamed from serverPosition
     public worldPosition: Position;
 
     constructor(
-        id: number,
+        id: string,
         name: string,
-        serverPosition: Position,
+        gridPosition: Position, // Renamed from serverPosition
         worldPosition: Position,
         scene: Phaser.Scene,
         gridSize: number) {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
         this.worldPosition = worldPosition
-        this.serverPosition = serverPosition;
+        this.gridPosition = gridPosition; // Updated
         this.name = name;
 
         // 1. O Sprite fica na coordenada (0,0) local do Container

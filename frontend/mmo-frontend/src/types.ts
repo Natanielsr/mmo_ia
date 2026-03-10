@@ -4,7 +4,7 @@ export interface Position {
 }
 
 export interface PlayerData {
-    id: number;
+    id: string;
     name: string;
     position: Position;
 }
@@ -16,10 +16,21 @@ export interface AttackData {
 }
 
 export interface MapObjectData {
-    id: number;
+    id: string;
     name: string;
     objectCode: string;
     position: Position;
     type: string;
     isPassable: boolean;
+}
+
+export interface MonsterData {
+    id: string;
+    name: string;
+    objectCode: string;
+    position: Position;
+    hp: number;
+    maxHp: number;
+    attackPower: number;
+    isDead: boolean;
 }
