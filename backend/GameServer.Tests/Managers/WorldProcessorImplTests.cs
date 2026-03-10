@@ -3,6 +3,7 @@ using GameServerApp.Contracts.Types;
 using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using GameServerApp.Services;
 
 namespace GameServer.Tests.Managers
 {

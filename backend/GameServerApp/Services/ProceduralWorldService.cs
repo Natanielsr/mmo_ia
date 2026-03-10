@@ -3,8 +3,9 @@ using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 using GameServerApp.Dtos;
+using GameServerApp.World;
 
-namespace GameServerApp.World;
+namespace GameServerApp.Services;
 
 public class ProceduralWorldService : IProceduralWorldService
 {

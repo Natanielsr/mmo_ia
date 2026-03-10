@@ -1,9 +1,7 @@
-using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
-using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 
-namespace GameServerApp.World
+namespace GameServerApp.Services
 {
     public class MovementService : IMovementService
     {

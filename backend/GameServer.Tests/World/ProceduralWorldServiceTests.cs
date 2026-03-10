@@ -2,6 +2,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
+using GameServerApp.Services;
 using GameServerApp.World;
 
 namespace GameServer.Tests.World;

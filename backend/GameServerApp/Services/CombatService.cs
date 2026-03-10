@@ -1,8 +1,6 @@
-using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
-using GameServerApp.Contracts.World;
 
-namespace GameServerApp.World
+namespace GameServerApp.Services
 {
     public class CombatService : ICombatService
     {

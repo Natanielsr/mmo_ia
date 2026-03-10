@@ -1,6 +1,5 @@
-using Xunit;
 using GameServerApp.Contracts.Types;
-using GameServerApp.World;
+using GameServerApp.Services;
 
 namespace GameServer.Tests.World;
 

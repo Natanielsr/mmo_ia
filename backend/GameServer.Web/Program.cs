@@ -4,6 +4,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
+using GameServerApp.Services;
 using GameServerApp.World;
 
 var builder = WebApplication.CreateBuilder(args);
