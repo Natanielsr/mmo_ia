@@ -7,7 +7,7 @@ using GameServerApp.Dtos;
 
 namespace GameServerApp.Managers
 {
-    public class WorldProcessor : IWorldProcessor
+    public class WorldManager : IWorldManager
     {
         private readonly IMovementService _movementService;
         private readonly ICollisionManager _collisionManager;
@@ -16,7 +16,7 @@ namespace GameServerApp.Managers
         private readonly IWorldEvents _worldEvents;
         private readonly IStaticWorldManager _staticWorldManager;
 
-        public WorldProcessor(
+        public WorldManager(
             IMovementService movementService,
             ICollisionManager collisionManager,
             ICombatService combatService,
@@ -86,6 +86,22 @@ namespace GameServerApp.Managers
         public void Tick()
         {
             // Future logic for NPCs, respawns, etc.
+        }
+
+        public void InstantiateObject(IWorldObject worldObject)
+        {
+            if (worldObject is IDynamicWorldObject dynamicWorldObject)
+            {
+                _collisionManager.RegisterDynamicObject(dynamicWorldObject);
+            }
+            else if (worldObject is IStaticWorldObject staticWorldObject)
+            {
+                _staticWorldManager.AddStaticObject(staticWorldObject);
+            }
+            else
+            {
+                throw new Exception("Invalid object type must be Dynamic or Static world object");
+            }
         }
     }
 }

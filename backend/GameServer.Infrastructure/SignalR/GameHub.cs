@@ -12,14 +12,14 @@ namespace GameServer.Infrastructure.SignalR
 {
     public class GameHub : Hub
     {
-        private readonly IWorldProcessor _worldProcessor;
+        private readonly IWorldManager _worldProcessor;
         private readonly IWorldEvents _worldEvents;
         private readonly ICollisionManager _collisionManager;
         private readonly IIdGeneratorService _idGeneratorService;
         private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
 
         public GameHub(
-            IWorldProcessor worldProcessor,
+            IWorldManager worldProcessor,
             IWorldEvents worldEvents,
             ICollisionManager collisionManager,
             IIdGeneratorService idGeneratorService

@@ -2,7 +2,7 @@ using GameServerApp.Contracts.World;
 
 namespace GameServerApp.Contracts.Managers
 {
-    public interface IWorldProcessor
+    public interface IWorldManager
     {
         /// <summary>
         /// Processes a movement request from a player.
@@ -13,10 +13,12 @@ namespace GameServerApp.Contracts.Managers
         /// Processes an attack action between a player and a target.
         /// </summary>
         void ProcessPlayerAttack(IPlayer player, IPlayer target);
-        
+
         /// <summary>
         /// Executes a global world tick (processing monsters, respawns, etc.)
         /// </summary>
         void Tick();
+
+        void InstantiateObject(IWorldObject worldObject);
     }
 }

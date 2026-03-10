@@ -8,7 +8,7 @@ namespace GameServer.Tests.Managers
 {
     public class WorldProcessorImplTests
     {
-        private readonly WorldProcessor _processor;
+        private readonly WorldManager _worldManager;
         private readonly MovementService _movementService = new();
         private readonly StaticWorldManager staticWorldManager = new();
         private readonly CollisionManager _collisionManager;
@@ -22,7 +22,7 @@ namespace GameServer.Tests.Managers
         {
             _collisionManager = new(staticWorldManager);
             _gameStateManager = new GameStateManager(_collisionManager);
-            _processor = new WorldProcessor(
+            _worldManager = new WorldManager(
                 _movementService,
                 _collisionManager,
                 _combatService,
@@ -38,7 +38,7 @@ namespace GameServer.Tests.Managers
             var startPos = new Position(0, 0);
             var player = new Player(1, "Hero", startPos);
 
-            bool moved = _processor.ProcessPlayerMovement(player, "east");
+            bool moved = _worldManager.ProcessPlayerMovement(player, "east");
 
             Assert.True(moved);
             Assert.Equal(1, player.Position.X);
@@ -54,9 +54,9 @@ namespace GameServer.Tests.Managers
 
             // Register a wall
             var wall = new StaticObject(2, targetPos, "wall", false);
-            _collisionManager.RegisterObject(wall);
+            _worldManager.InstantiateObject(wall);
 
-            bool moved = _processor.ProcessPlayerMovement(player, "east");
+            bool moved = _worldManager.ProcessPlayerMovement(player, "east");
 
             Assert.False(moved);
             Assert.Equal(0, player.Position.X); // Stayed at 0
@@ -71,7 +71,7 @@ namespace GameServer.Tests.Managers
 
             long initialXp = player.Experience;
 
-            _processor.ProcessPlayerAttack(player, monster);
+            _worldManager.ProcessPlayerAttack(player, monster);
 
             Assert.Equal(PlayerState.Dead, monster.State);
             Assert.True(player.Experience > initialXp);
@@ -83,7 +83,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Ghost", new Position(0, 0));
             player.Die();
 
-            bool moved = _processor.ProcessPlayerMovement(player, "east");
+            bool moved = _worldManager.ProcessPlayerMovement(player, "east");
 
             Assert.False(moved);
             Assert.Equal(0, player.Position.X);
@@ -96,12 +96,12 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Speedster", startPos); // Speed is 2.0 (1 move every 0.5s)
 
             // First move should succeed
-            bool moved1 = _processor.ProcessPlayerMovement(player, "east");
+            bool moved1 = _worldManager.ProcessPlayerMovement(player, "east");
             Assert.True(moved1);
             Assert.Equal(1, player.Position.X);
 
             // Immediate second move should fail due to speed limit
-            bool moved2 = _processor.ProcessPlayerMovement(player, "east");
+            bool moved2 = _worldManager.ProcessPlayerMovement(player, "east");
             Assert.False(moved2);
             Assert.Equal(1, player.Position.X); // Position should not change
         }
@@ -117,7 +117,7 @@ namespace GameServer.Tests.Managers
             // Register player2 as an obstacle
             _collisionManager.RegisterDynamicObject(player2);
 
-            bool moved = _processor.ProcessPlayerMovement(player1, "east");
+            bool moved = _worldManager.ProcessPlayerMovement(player1, "east");
 
             Assert.False(moved);
             Assert.Equal(0, player1.Position.X); // Stayed at 0
