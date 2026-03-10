@@ -40,5 +40,25 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player leaves the world.
         /// </summary>
         void OnPlayerLeft(long playerId);
+
+        /// <summary>
+        /// Triggered when a monster spawns.
+        /// </summary>
+        void OnMonsterSpawned(MonsterData monsterData);
+
+        /// <summary>
+        /// Triggered when a monster moves.
+        /// </summary>
+        void OnMonsterMoved(MonsterData monsterData);
+
+        /// <summary>
+        /// Triggered when a monster dies.
+        /// </summary>
+        void OnMonsterDied(long monsterId);
+
+        /// <summary>
+        /// Triggered when a monster takes damage.
+        /// </summary>
+        void OnMonsterDamaged(long monsterId, int damage, int currentHp);
     }
 }

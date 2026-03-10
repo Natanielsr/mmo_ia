@@ -16,19 +16,22 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IWorldEvents _worldEvents;
         private readonly ICollisionManager _collisionManager;
         private readonly IIdGeneratorService _idGeneratorService;
+        private readonly IMonsterManager _monsterManager;
         private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
 
         public GameHub(
             IWorldManager worldProcessor,
             IWorldEvents worldEvents,
             ICollisionManager collisionManager,
-            IIdGeneratorService idGeneratorService
+            IIdGeneratorService idGeneratorService,
+            IMonsterManager monsterManager
             )
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
             _collisionManager = collisionManager;
             _idGeneratorService = idGeneratorService;
+            _monsterManager = monsterManager;
         }
 
         public async Task JoinGame(string playerName)
@@ -55,6 +58,22 @@ namespace GameServer.Infrastructure.SignalR
                 .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position });
 
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
+
+            // 4. Send all monsters to the new player
+            var allMonsters = _monsterManager.GetAllMonsters();
+            var monsterDataList = allMonsters.Select(monster => new MonsterData
+            {
+                Id = monster.Id.ToString(),
+                Name = monster.Name,
+                ObjectCode = monster.ObjectCode,
+                Position = monster.Position,
+                Hp = monster.Hp,
+                MaxHp = monster.MaxHp,
+                AttackPower = monster.AttackPower,
+                IsDead = monster.IsDead
+            }).ToList();
+
+            await Clients.Caller.SendAsync("SyncMonsters", monsterDataList);
         }
 
         public async Task RequestMove(string direction)

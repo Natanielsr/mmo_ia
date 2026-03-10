@@ -10,7 +10,7 @@ namespace GameServerApp.World
     {
         public long Id { get; }
         public string Name { get; }
-        public string ObjectCode { get; }
+        public string ObjectCode { get; } = "player";
         public ObjectType Type => ObjectType.Player;
         public bool IsPassable => false;
         public Size Size { get; } = new Size { Width = 1, Height = 1 };
@@ -138,6 +138,7 @@ namespace GameServerApp.World
 
         private void CheckLevelUp()
         {
+            const long ExperiencePerLevel = 1000;
             while (Experience >= Level * ExperiencePerLevel)
             {
                 Level++;

@@ -5,7 +5,7 @@ using GameServerApp.Dtos;
 
 namespace GameServer.Infrastructure.SignalR
 {
-    public class SignalREventEmitter : IWorldEvents
+    public partial class SignalREventEmitter : IWorldEvents
     {
         private readonly IHubContext<GameHub> _hubContext;
 

@@ -35,6 +35,7 @@ builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>()
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
 builder.Services.AddSingleton<IWorldManager, WorldManager>();
 builder.Services.AddSingleton<IStaticWorldManager, StaticWorldManager>();
+builder.Services.AddSingleton<IMonsterManager, MonsterManager>();
 
 // CollisionManager depende de IStaticWorldManager
 builder.Services.AddSingleton<ICollisionManager>(sp =>
@@ -50,6 +51,7 @@ builder.Services.AddSingleton<IIdGeneratorService, IdGeneratorService>();
 var app = builder.Build();
 
 InitializeProceduralMap(app.Services);
+InitializeRandomMonsters(app.Services);
 
 app.UseCors("AllowAll");
 
@@ -68,7 +70,6 @@ static void InitializeProceduralMap(IServiceProvider services)
     var worldManager = services.GetRequiredService<IWorldManager>();
     var proceduralWorldService = services.GetRequiredService<IProceduralWorldService>();
 
-    // Ajuste estes valores conforme o tamanho do mapa desejado.
     var obstacles = proceduralWorldService.GenerateRandomObstacles(
         width: 32,
         height: 32,
@@ -80,4 +81,16 @@ static void InitializeProceduralMap(IServiceProvider services)
     {
         worldManager.InstantiateObject(obstacle);
     }
+}
+
+static void InitializeRandomMonsters(IServiceProvider services)
+{
+    var monsterManager = services.GetRequiredService<IMonsterManager>();
+
+    monsterManager.SpawnRandomMonsters(
+        count: 15,
+        width: 32,
+        height: 32,
+        safeSpawnRadius: 4,
+        seed: 20260310);
 }
