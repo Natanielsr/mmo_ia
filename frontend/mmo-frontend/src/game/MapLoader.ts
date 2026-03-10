@@ -76,8 +76,7 @@ export class MapLoader {
             case 'Pillar':
                 return 0xFFFFFF; // Branco para pilares
             default:
-
-                return 0x008000; // Verde para outros obstáculos
+                return 0x000000; // preto para outros obstáculos
         }
     }
 }
