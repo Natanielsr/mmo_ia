@@ -23,6 +23,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddControllers();
+
 // Register Core Services (Stateless)
 builder.Services.AddSingleton<IMovementService, MovementService>();
 builder.Services.AddSingleton<ICombatService, CombatService>();
@@ -30,7 +32,7 @@ builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>()
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
-builder.Services.AddSingleton<IWorldProcessor, WorldProcessor>();
+builder.Services.AddSingleton<IWorldManager, WorldManager>();
 builder.Services.AddSingleton<IStaticWorldManager, StaticWorldManager>();
 
 // CollisionManager depende de IStaticWorldManager
@@ -62,8 +64,7 @@ app.Run();
 
 static void InitializeProceduralMap(IServiceProvider services)
 {
-    var staticWorldManager = services.GetRequiredService<IStaticWorldManager>();
-    var collisionManager = services.GetRequiredService<ICollisionManager>();
+    var worldManager = services.GetRequiredService<IWorldManager>();
     var proceduralWorldService = services.GetRequiredService<IProceduralWorldService>();
 
     // Ajuste estes valores conforme o tamanho do mapa desejado.
@@ -76,7 +77,6 @@ static void InitializeProceduralMap(IServiceProvider services)
 
     foreach (var obstacle in obstacles)
     {
-        staticWorldManager.AddStaticObject(obstacle);
-        collisionManager.RegisterStaticObject(obstacle);
+        worldManager.InstantiateObject(obstacle);
     }
 }

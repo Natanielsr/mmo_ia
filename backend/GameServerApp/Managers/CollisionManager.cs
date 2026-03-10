@@ -19,22 +19,6 @@ namespace GameServerApp.Managers
             _staticWorld = staticWorld ?? throw new ArgumentNullException(nameof(staticWorld));
         }
 
-        public void RegisterObject(IWorldObject worldObject)
-        {
-            if (worldObject is IDynamicWorldObject dynamicWorldObject)
-            {
-                RegisterDynamicObject(dynamicWorldObject);
-            }
-            else if (worldObject is IStaticWorldObject staticWorldObject)
-            {
-                RegisterStaticObject(staticWorldObject);
-            }
-            else
-            {
-                throw new Exception("Invalid object type must be Dynamic or Static world object");
-            }
-        }
-
         public void RegisterDynamicObject(IDynamicWorldObject dynamicWorldObject)
         {
             if (dynamicWorldObject == null) return;
@@ -51,11 +35,6 @@ namespace GameServerApp.Managers
             }
 
             _objectsById[dynamicWorldObject.Id] = dynamicWorldObject;
-        }
-
-        public void RegisterStaticObject(IStaticWorldObject staticWorldObject)
-        {
-            _staticWorld.AddStaticObject(staticWorldObject);
         }
 
         public void RemoveObject(long objectId)

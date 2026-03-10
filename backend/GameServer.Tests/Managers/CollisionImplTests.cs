@@ -21,7 +21,7 @@ namespace GameServer.Tests.Managers
             var pos = new Position(10, 10);
             var wall = new StaticObject(1, pos, "wall", false);
 
-            _collisionManager.RegisterObject(wall);
+            _staticWorldManager.AddStaticObject(wall);
 
             var found = _collisionManager.GetObjectAt(pos);
             Assert.Same(wall, found);
@@ -37,8 +37,8 @@ namespace GameServer.Tests.Managers
             var wall = new StaticObject(1, posBlocked, "wall", false, false);
             var openDoor = new StaticObject(2, posFree, "door", true, true);
 
-            _collisionManager.RegisterStaticObject(wall);
-            _collisionManager.RegisterStaticObject(openDoor);
+            _staticWorldManager.AddStaticObject(wall);
+            _staticWorldManager.AddStaticObject(openDoor);
 
             Assert.True(_collisionManager.IsPositionBlocked(posBlocked));
             Assert.False(_collisionManager.IsPositionBlocked(posFree));
