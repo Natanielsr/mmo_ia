@@ -13,14 +13,17 @@ export class PreloadScene extends Phaser.Scene {
         });
 
         // Futuro: outros assets podem ser carregados aqui
-        // this.load.image('monster', 'assets/monster_sprite.png');
+        this.load.image('rat', 'assets/rat.png');
+        this.load.image('wolf', 'assets/wolf.png');
+        this.load.image('orc', 'assets/orc.png');
+        this.load.image('spider', 'assets/spider.png');
         // this.load.audio('backgroundMusic', 'assets/music.mp3');
     }
 
     create() {
         // Cria todas as animações para o personagem
         this.createHeroAnimations();
-        
+
         // Começa a cena principal
         this.scene.start('MainScene');
     }
