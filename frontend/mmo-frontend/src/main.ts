@@ -1,6 +1,7 @@
 import './css/style.css'; // O Vite lida com a importação de CSS automaticamente
 import Phaser from 'phaser';
 import * as signalR from '@microsoft/signalr';
+import { PreloadScene } from './game/PreloadScene';
 import { MainScene } from './game/MainScene';
 import type { PlayerData, AttackData, MonsterData } from './types';
 
@@ -18,6 +19,7 @@ inputName.addEventListener('keyup', (e) => e.stopPropagation());
 inputName.addEventListener('keypress', (e) => e.stopPropagation());
 
 // Inicializa o Phaser
+const preloadScene = new PreloadScene();
 const mainScene = new MainScene();
 const phaserConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -26,7 +28,7 @@ const phaserConfig: Phaser.Types.Core.GameConfig = {
   height: '100%',
   pixelArt: true,
   backgroundColor: '#1e293b',
-  scene: [mainScene]
+  scene: [preloadScene, mainScene]
 };
 const game = new Phaser.Game(phaserConfig);
 
