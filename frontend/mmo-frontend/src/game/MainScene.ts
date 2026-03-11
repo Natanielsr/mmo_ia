@@ -36,7 +36,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     async create() {
-        this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x0f172a, 1, 0xffffff, 0.05);
+        this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x165227, 1, 0xffffff, 0.05).setDepth(-100000);
 
         if (this.input.keyboard) {
             this.input.keyboard.enabled = false;
