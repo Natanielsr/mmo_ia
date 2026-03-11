@@ -9,7 +9,7 @@ namespace GameServerApp.Services;
 
 public class ProceduralWorldService : IProceduralWorldService
 {
-    private static readonly string[] ObstacleNames = ["Tree", "Rock", "Bush", "Pillar"];
+    private static readonly string[] ObstacleNames = ["tree", "rock", "bush", "pillar"];
     private readonly IIdGeneratorService _idGeneratorService;
     private readonly IStaticWorldManager _staticWorldManager;
 

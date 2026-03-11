@@ -45,38 +45,20 @@ export class MapLoader {
             const worldX = object.position.x * GRID_SIZE + (GRID_SIZE / 2);
             const worldY = -object.position.y * GRID_SIZE - (GRID_SIZE / 2);
 
-            // Aqui você pode criar diferentes sprites dependendo do tipo de objeto
-            // Por agora vamos usar um quadrado colorido simples
-            const color = this.getObjectColor(object.objectCode);
-            const graphics = scene.add.graphics();
-            graphics.fillStyle(color, 1);
-            graphics.fillRect(worldX - GRID_SIZE / 2, worldY - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
+            // Usa object.objectCode como a chave (key) da textura do sprite
+            const sprite = scene.add.sprite(worldX, worldY, object.objectCode);
 
-            // Para melhor visibilidade do objeto, vamos adicionar uma borda
-            graphics.lineStyle(2, 0x000000, 1);
-            graphics.strokeRect(worldX - GRID_SIZE / 2, worldY - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
+            // Ajusta o tamanho do sprite para ocupar o espaço de um tile do grid
+            sprite.setDisplaySize(GRID_SIZE, GRID_SIZE);
+
+            // Mantém a tua lógica de Y-sorting (profundidade baseada no eixo Y)
+            sprite.setDepth(worldY);
 
             // Define uma profundidade baixa para os objetos do mapa (mais atrás)
-            graphics.setDepth(worldY); // Profundidade menor
+            sprite.setDepth(worldY); // Profundidade menor
 
             // Armazena referência para controle futuro (opcional)
-            (graphics as any).objectId = object.id;
+            (sprite as any).objectId = object.id;
         });
-    }
-
-    private getObjectColor(objectCode: string): number {
-        // "Tree", "Rock", "Bush", "Pillar"
-        switch (objectCode) {
-            case 'Tree':
-                return 0x8B4513; // Marrom para arvores
-            case 'Rock':
-                return 0x757575; // Cinza para obstáculos
-            case 'Bush':
-                return 0x008000; // Verde para arbusto
-            case 'Pillar':
-                return 0xFFFFFF; // Branco para pilares
-            default:
-                return 0x000000; // preto para outros obstáculos
-        }
     }
 }

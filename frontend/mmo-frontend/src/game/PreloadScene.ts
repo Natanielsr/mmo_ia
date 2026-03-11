@@ -17,6 +17,11 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('wolf', 'assets/wolf.png');
         this.load.image('orc', 'assets/orc.png');
         this.load.image('spider', 'assets/spider.png');
+
+        this.load.image('tree', 'assets/tree.png');
+        this.load.image('rock', 'assets/rock.png');
+        this.load.image('bush', 'assets/bush.png');
+        this.load.image('pillar', 'assets/pillar.png');
         // this.load.audio('backgroundMusic', 'assets/music.mp3');
     }
 
