@@ -57,7 +57,7 @@ export class MapLoader {
             graphics.strokeRect(worldX - GRID_SIZE / 2, worldY - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
 
             // Define uma profundidade baixa para os objetos do mapa (mais atrás)
-            graphics.setDepth(100); // Profundidade menor
+            graphics.setDepth(worldY); // Profundidade menor
 
             // Armazena referência para controle futuro (opcional)
             (graphics as any).objectId = object.id;

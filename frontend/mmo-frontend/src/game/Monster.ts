@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { Position, MonsterData } from '../types';
 
 const GRID_SIZE = 64;
+const Y_POS_OFFSET = 15;
 
 export class Monster extends Phaser.GameObjects.Container {
     public id: string;
@@ -31,17 +32,17 @@ export class Monster extends Phaser.GameObjects.Container {
         this.isDead = monsterData.isDead;
 
         // 1. Sprite do monstro (placeholder - será melhorado com sprites reais)
-        this.sprite = scene.add.sprite(0, 0, 'hero', 0);
+        this.sprite = scene.add.sprite(0, 0, this.objectCode, 0);
         this.sprite.setDisplaySize(GRID_SIZE, GRID_SIZE);
-        this.sprite.setTint(0xFF0000); // Vermelho para diferenciar de players
+        // this.sprite.setTint(0xFF0000); // Vermelho para diferenciar de players
 
         // 2. Barra de vida
         this.hpBar = scene.add.graphics();
         this.updateHpBar();
 
         // 3. Nome do monstro
-        const textOffsetY = (GRID_SIZE / 2) + 15;
-        this.nameText = scene.add.text(0, -textOffsetY, `${this.name} (${this.hp}/${this.maxHp})`, {
+        const textOffsetY = (GRID_SIZE / 2) + 20;
+        this.nameText = scene.add.text(0, -textOffsetY, `${this.name} (${this.hp}/${this.maxHp}) 💀`, {
             fontSize: '12px',
             color: '#fff',
             fontFamily: 'Inter',
@@ -50,13 +51,23 @@ export class Monster extends Phaser.GameObjects.Container {
         }).setOrigin(0.5);
 
         // 4. Adiciona todos ao container
+        // Importante: adiciona em ordem para garantir profundidade correta
+        // sprite -> hpBar -> nameText (para nameText ficar acima)
         this.add([this.sprite, this.hpBar, this.nameText]);
 
         // 5. Registra o container na cena
         scene.add.existing(this);
 
-        // 6. Define profundidade para ficar acima dos objetos do mapa, mas abaixo dos players
-        this.setDepth(500);
+        // 6. Define profundidade correta:
+        // O sprite deve ter profundidade menor (abaixo)
+        // O hpBar e nameText devem ter profundidade maior (acima do sprite)
+        this.sprite.setDepth(499); // Um pouco abaixo do container
+        this.hpBar.setDepth(501);  // Acima do sprite
+        this.nameText.setDepth(502); // Acima do hpBar (fica como interface acima do sprite)
+
+        // O container em si tem profundidade 500, então os filhos devem seguir essa ordem
+        // para que o nome fique acima do sprite
+        this.setDepth(worldPos.y);
     }
 
     private updateHpBar(): void {
@@ -102,12 +113,15 @@ export class Monster extends Phaser.GameObjects.Container {
             x: worldPos.x,
             y: worldPos.y,
             duration: 500,
-            ease: 'Power2'
+            ease: 'Power2',
+            onUpdate: () => {
+                this.setDepth(this.y);
+            }
         });
 
         // Atualiza o texto do nome com HP atual
         if (!this.isDead) {
-            this.nameText.setText(`${this.name} (${this.hp}/${this.maxHp})`);
+            this.nameText.setText(`${this.name} (${this.hp}/${this.maxHp}) 💀`);
         } else {
             this.nameText.setText(`${this.name} 💀`);
             this.sprite.setAlpha(0.5);
@@ -143,7 +157,7 @@ export class Monster extends Phaser.GameObjects.Container {
 
     private static getWorldCoordinates(serverPosition: Position): Position {
         const px = serverPosition.x * GRID_SIZE + (GRID_SIZE / 2);
-        const py = -serverPosition.y * GRID_SIZE - (GRID_SIZE / 2);
+        const py = -serverPosition.y * GRID_SIZE - (GRID_SIZE / 2) - Y_POS_OFFSET;
         return { x: px, y: py };
     }
 

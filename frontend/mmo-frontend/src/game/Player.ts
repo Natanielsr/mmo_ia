@@ -26,8 +26,7 @@ export class Player extends Phaser.GameObjects.Container {
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
         this.sprite.setDisplaySize(gridSize, gridSize);
-
-
+        this.sprite.setDepth(499); // Abaixo do texto
 
 
         // 2. Texto do nome fica FORA do container para controlar depth global da cena
@@ -48,7 +47,7 @@ export class Player extends Phaser.GameObjects.Container {
 
 
         // 5. Container do player acima dos objetos do mapa
-        this.setDepth(1000);
+        this.setDepth(worldPosition.y);
 
         // Define a pose inicial
         this.setInitialPose();
@@ -84,6 +83,9 @@ export class Player extends Phaser.GameObjects.Container {
             y: worldPos.y,
             duration: duration,
             ease: 'Linear',
+            onUpdate: () => {
+                this.setDepth(this.y);
+            },
             onComplete: () => this.stopWalking()
         });
 
