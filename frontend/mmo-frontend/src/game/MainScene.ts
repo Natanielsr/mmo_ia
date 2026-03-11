@@ -38,6 +38,8 @@ export class MainScene extends Phaser.Scene {
     async create() {
         this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x165227, 1, 0xffffff, 0.05).setDepth(-100000);
 
+        this.generateRandomGrass();
+
         if (this.input.keyboard) {
             this.input.keyboard.enabled = false;
             this.input.keyboard.removeCapture('W,A,S,D,UP,DOWN,LEFT,RIGHT,SPACE');
@@ -49,6 +51,31 @@ export class MainScene extends Phaser.Scene {
                 left: Phaser.Input.Keyboard.KeyCodes.A,
                 right: Phaser.Input.Keyboard.KeyCodes.D
             }) as Record<string, Phaser.Input.Keyboard.Key>;
+        }
+    }
+
+    generateRandomGrass() {
+        // 1. Array com os nomes das chaves que carregamos ('grass1', 'grass2', etc)
+        const grassTypes = Array.from({ length: 12 }, (_, i) => `grass${i + 1}`);
+
+        const mapSize = 2048;
+        const halfMap = mapSize / 2; // 1024
+
+        // 2. Loop varrendo do extremo esquerdo (-1024) até o extremo direito (1024)
+        for (let x = -halfMap; x < halfMap; x += GRID_SIZE) {
+
+            // Loop varrendo do extremo superior (-1024) até o extremo inferior (1024)
+            for (let y = -halfMap; y < halfMap; y += GRID_SIZE) {
+
+                // Escolhe um nome de grama aleatório do array
+                const randomGrass = Phaser.Math.RND.pick(grassTypes);
+
+                // Adiciona a imagem. Somamos GRID_SIZE/2 para que o centro da imagem 
+                // fique exatamente no meio do "quadrado" do grid.
+                this.add.image(x + (GRID_SIZE / 2), y + (GRID_SIZE / 2), randomGrass)
+                    .setDisplaySize(GRID_SIZE, GRID_SIZE) // Garante que tem 64x64
+                    .setDepth(-100000); // Garante que fica no fundo
+            }
         }
     }
 
