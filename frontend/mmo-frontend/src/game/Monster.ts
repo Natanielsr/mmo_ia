@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import type { Position, MonsterData } from '../types';
 
 const GRID_SIZE = 64;
-const Y_POS_OFFSET = 15;
+const Y_POS_OFFSET = 0;
 
 export class Monster extends Phaser.GameObjects.Container {
     public id: string;
