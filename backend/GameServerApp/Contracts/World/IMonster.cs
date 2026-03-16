@@ -8,8 +8,17 @@ public interface IMonster : IDynamicWorldObject
     int MaxHp { get; }
     int AttackPower { get; }
     bool IsDead { get; }
+    Position SpawnPosition { get; }
+    MonsterState State { get; }
+    MonsterBehavior Behavior { get; }
+    DateTime LastMovementTime { get; set; }
+    DateTime LastAttackTime { get; }
 
-    void MoveTo(Position newPosition);
+    void Move(Position newPosition);
     void TakeDamage(int damage);
     void Heal(int amount);
+    void SetBehavior(MonsterBehavior behavior);
+    bool CanMove();
+    bool CanAttack();
+    void Attack(IPlayer target);
 }
