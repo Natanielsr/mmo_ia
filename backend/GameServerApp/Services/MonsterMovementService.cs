@@ -11,22 +11,25 @@ namespace GameServerApp.Services
         private readonly ICollisionManager _collisionManager;
         private readonly IMovementService _movementService;
         private readonly IPlayerManager _playerManager;
+        private readonly IPathfindingService _pathfindingService;
         private readonly Random _random;
         
         // Configurações de comportamento
         private const int MOVEMENT_COOLDOWN_TICKS = 10; // A cada 10 ticks do sistema
         private const int MAX_MOVEMENT_RANGE = 7; // Máxima distância que um monstro pode se afastar da posição inicial
         private const int AGGRO_RANGE = 5; // Distância para começar a seguir um jogador
-        private const double AGGRESSIVE_CHANCE = 0.3; // 30% chance de movimento aleatório quando agressivo mas sem alvo
+        private const int PATHFINDING_MAX_DEPTH = 30; // Limite de nós explorados pelo A*
 
         public MonsterMovementService(
             ICollisionManager collisionManager, 
             IMovementService movementService,
-            IPlayerManager playerManager)
+            IPlayerManager playerManager,
+            IPathfindingService pathfindingService)
         {
             _collisionManager = collisionManager;
             _movementService = movementService;
             _playerManager = playerManager;
+            _pathfindingService = pathfindingService;
             _random = new Random();
         }
 
@@ -68,8 +71,17 @@ namespace GameServerApp.Services
             
             if (target != null)
             {
-                // Se encontrou um jogador, segue ele
-                return CalculatePathTowards(currentPosition, target.Position);
+                // Usa A* para encontrar caminho livre até o jogador
+                var path = _pathfindingService.FindPath(currentPosition, target.Position, PATHFINDING_MAX_DEPTH);
+                
+                if (path != null && path.Count > 0)
+                {
+                    // Retorna apenas o próximo passo do caminho
+                    return path[0];
+                }
+                
+                // Fallback: se A* não encontrou caminho, tenta mover diretamente
+                return CalculateDirectMove(currentPosition, target.Position);
             }
             
             // Comportamento baseado no tipo de monstro caso não tenha alvo
@@ -110,7 +122,7 @@ namespace GameServerApp.Services
             return closest;
         }
 
-        private Position CalculatePathTowards(Position current, Position target)
+        private Position CalculateDirectMove(Position current, Position target)
         {
             var dx = target.X - current.X;
             var dy = target.Y - current.Y;
@@ -156,7 +168,7 @@ namespace GameServerApp.Services
             if (Math.Abs(current.X - spawn.X) > MAX_MOVEMENT_RANGE || 
                 Math.Abs(current.Y - spawn.Y) > MAX_MOVEMENT_RANGE)
             {
-                return CalculatePathTowards(current, spawn);
+                return CalculateDirectMove(current, spawn);
             }
             
             return current;
