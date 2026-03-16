@@ -34,6 +34,7 @@ builder.Services.AddSingleton<IMovementService, MovementService>();
 builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>();
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
+builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
