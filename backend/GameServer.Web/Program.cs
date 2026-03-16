@@ -26,10 +26,14 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+// Add Hosted Service for game loop
+builder.Services.AddHostedService<GameLoopService>();
+
 // Register Core Services (Stateless)
 builder.Services.AddSingleton<IMovementService, MovementService>();
 builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>();
+builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();

@@ -1,5 +1,7 @@
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Services;
 using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
@@ -16,6 +18,8 @@ namespace GameServer.Tests.Managers
         private readonly CombatService _combatService = new();
         private readonly GameStateManager _gameStateManager;
         private readonly Mock<IWorldEvents> _mockEvents = new();
+        private readonly Mock<IMonsterMovementService> _mockMonsterMovementService = new();
+        private readonly Mock<IMonsterManager> _mockMonsterManager = new();
 
 
 
@@ -29,7 +33,9 @@ namespace GameServer.Tests.Managers
                 _combatService,
                 _gameStateManager,
                 _mockEvents.Object,
-                staticWorldManager
+                staticWorldManager,
+                _mockMonsterMovementService.Object,
+                _mockMonsterManager.Object
             );
         }
 

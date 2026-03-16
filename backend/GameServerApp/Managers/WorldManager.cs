@@ -4,6 +4,7 @@ using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Dtos;
+using GameServerApp.World;
 
 namespace GameServerApp.Managers
 {
@@ -15,6 +16,8 @@ namespace GameServerApp.Managers
         private readonly IGameStateManager _gameStateManager;
         private readonly IWorldEvents _worldEvents;
         private readonly IStaticWorldManager _staticWorldManager;
+        private readonly IMonsterMovementService _monsterMovementService;
+        private readonly IMonsterManager _monsterManager;
 
         public WorldManager(
             IMovementService movementService,
@@ -22,7 +25,9 @@ namespace GameServerApp.Managers
             ICombatService combatService,
             IGameStateManager gameStateManager,
             IWorldEvents worldEvents,
-            IStaticWorldManager staticWorldManager)
+            IStaticWorldManager staticWorldManager,
+            IMonsterMovementService monsterMovementService,
+            IMonsterManager monsterManager)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -30,6 +35,8 @@ namespace GameServerApp.Managers
             _gameStateManager = gameStateManager;
             _worldEvents = worldEvents;
             _staticWorldManager = staticWorldManager;
+            _monsterMovementService = monsterMovementService;
+            _monsterManager = monsterManager;
         }
 
         // ... resto do código permanece igual
@@ -85,7 +92,51 @@ namespace GameServerApp.Managers
 
         public void Tick()
         {
-            // Future logic for NPCs, respawns, etc.
+            // Processa movimento dos monstros
+            ProcessMonsterMovement();
+
+            // Processa ataques dos monstros
+            ProcessMonsterCombat();
+
+            // Respawn de monstros mortos
+            ProcessMonsterRespawn();
+        }
+
+        private void ProcessMonsterMovement()
+        {
+            var monsters = _monsterManager.GetAllMonsters();
+            foreach (var monster in monsters)
+            {
+                if (monster.State != MonsterState.Dead && monster.CanMove())
+                {
+                    _monsterMovementService.UpdateMonster(monster);
+
+                    // Notifica os clientes sobre o movimento do monstro
+                    _worldEvents.OnMonsterMoved(new MonsterData
+                    {
+                        Id = monster.Id.ToString(),
+                        Name = monster.Name,
+                        ObjectCode = monster.ObjectCode,
+                        Position = monster.Position,
+                        Hp = monster.Hp,
+                        MaxHp = monster.MaxHp,
+                        AttackPower = monster.AttackPower,
+                        IsDead = monster.IsDead
+                    });
+                }
+            }
+        }
+
+        private void ProcessMonsterCombat()
+        {
+            // TODO: Implementar lógica de combate monstro-jogador
+            // Verificar proximidade entre monstros e jogadores
+            // Se monstro for agressivo e estiver próximo, atacar
+        }
+
+        private void ProcessMonsterRespawn()
+        {
+            // TODO: Implementar respawn de monstros mortos após um tempo
         }
 
         public void InstantiateObject(IWorldObject worldObject)
