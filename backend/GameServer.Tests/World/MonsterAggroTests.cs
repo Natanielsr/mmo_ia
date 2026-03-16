@@ -22,10 +22,15 @@ namespace GameServer.Tests.World
             _collisionManagerMock = new Mock<ICollisionManager>();
             _movementServiceMock = new Mock<IMovementService>();
             _playerManager = new PlayerManager();
+
+            // A* pathfinding real para os testes de aggro
+            var pathfindingService = new AStarPathfindingService(_collisionManagerMock.Object);
+
             _monsterMovementService = new MonsterMovementService(
                 _collisionManagerMock.Object,
                 _movementServiceMock.Object,
-                _playerManager);
+                _playerManager,
+                pathfindingService);
         }
 
         [Fact]
