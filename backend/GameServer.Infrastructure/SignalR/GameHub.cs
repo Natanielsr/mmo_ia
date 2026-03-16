@@ -17,14 +17,15 @@ namespace GameServer.Infrastructure.SignalR
         private readonly ICollisionManager _collisionManager;
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly IMonsterManager _monsterManager;
-        private static readonly ConcurrentDictionary<string, IPlayer> _sessions = new();
+        private readonly IPlayerManager _playerManager;
 
         public GameHub(
             IWorldManager worldProcessor,
             IWorldEvents worldEvents,
             ICollisionManager collisionManager,
             IIdGeneratorService idGeneratorService,
-            IMonsterManager monsterManager
+            IMonsterManager monsterManager,
+            IPlayerManager playerManager
             )
         {
             _worldProcessor = worldProcessor;
@@ -32,14 +33,19 @@ namespace GameServer.Infrastructure.SignalR
             _collisionManager = collisionManager;
             _idGeneratorService = idGeneratorService;
             _monsterManager = monsterManager;
+            _playerManager = playerManager;
         }
 
         public async Task JoinGame(string playerName)
         {
 
             // Simple logic: create or get player
-            var player = _sessions.GetOrAdd(Context.ConnectionId,
-            _ => new Player(_idGeneratorService.GenerateId(), playerName, new Position(0, 0)));
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player == null)
+            {
+                player = new Player(_idGeneratorService.GenerateId(), playerName, new Position(0, 0));
+                _playerManager.AddPlayer(Context.ConnectionId, player);
+            }
 
             // Register player collision
             _collisionManager.RegisterDynamicObject(player);
@@ -53,7 +59,7 @@ namespace GameServer.Infrastructure.SignalR
             _worldEvents.OnPlayerJoined(playerPositionData);
 
             // 3. Send all existing players to the new player
-            var otherPlayers = _sessions.Values
+            var otherPlayers = _playerManager.GetAllPlayers()
                 .Where(p => p.Id != player.Id)
                 .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position });
 
@@ -78,7 +84,8 @@ namespace GameServer.Infrastructure.SignalR
 
         public async Task RequestMove(string direction)
         {
-            if (_sessions.TryGetValue(Context.ConnectionId, out var player))
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
             {
                 bool success = _worldProcessor.ProcessPlayerMovement(player, direction);
                 if (!success)
@@ -90,7 +97,7 @@ namespace GameServer.Infrastructure.SignalR
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            if (_sessions.TryRemove(Context.ConnectionId, out var player))
+            if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)
             {
                 _worldEvents.OnPlayerLeft(player.Id);
                 _collisionManager.RemoveObject(player.Id);
