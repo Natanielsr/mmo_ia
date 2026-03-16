@@ -10,17 +10,23 @@ namespace GameServerApp.Services
     {
         private readonly ICollisionManager _collisionManager;
         private readonly IMovementService _movementService;
+        private readonly IPlayerManager _playerManager;
         private readonly Random _random;
         
         // Configurações de comportamento
         private const int MOVEMENT_COOLDOWN_TICKS = 10; // A cada 10 ticks do sistema
-        private const int MAX_MOVEMENT_RANGE = 5; // Máxima distância que um monstro pode se afastar da posição inicial
-        private const double AGGRESSIVE_CHANCE = 0.3; // 30% chance de movimento agressivo
+        private const int MAX_MOVEMENT_RANGE = 7; // Máxima distância que um monstro pode se afastar da posição inicial
+        private const int AGGRO_RANGE = 5; // Distância para começar a seguir um jogador
+        private const double AGGRESSIVE_CHANCE = 0.3; // 30% chance de movimento aleatório quando agressivo mas sem alvo
 
-        public MonsterMovementService(ICollisionManager collisionManager, IMovementService movementService)
+        public MonsterMovementService(
+            ICollisionManager collisionManager, 
+            IMovementService movementService,
+            IPlayerManager playerManager)
         {
             _collisionManager = collisionManager;
             _movementService = movementService;
+            _playerManager = playerManager;
             _random = new Random();
         }
 
@@ -39,6 +45,9 @@ namespace GameServerApp.Services
 
             var newPosition = CalculateNewPosition(monster);
             
+            // Se a posição for a mesma, não faz nada
+            if (newPosition == monster.Position) return;
+
             // Verifica se a nova posição está bloqueada
             if (!_collisionManager.IsPositionBlocked(newPosition))
             {
@@ -53,15 +62,22 @@ namespace GameServerApp.Services
         {
             var currentPosition = monster.Position;
             var spawnPosition = monster.SpawnPosition;
+
+            // Tenta encontrar um alvo (jogador próximo)
+            var target = FindClosestPlayer(monster, AGGRO_RANGE);
             
-            // Comportamento baseado no tipo de monstro
+            if (target != null)
+            {
+                // Se encontrou um jogador, segue ele
+                return CalculatePathTowards(currentPosition, target.Position);
+            }
+            
+            // Comportamento baseado no tipo de monstro caso não tenha alvo
             switch (monster.Behavior)
             {
                 case MonsterBehavior.Patrolling:
+                case MonsterBehavior.Aggressive: // Agressivo sem alvo se comporta como patrulha
                     return CalculatePatrollingPosition(monster, currentPosition, spawnPosition);
-                    
-                case MonsterBehavior.Aggressive:
-                    return CalculateAggressivePosition(monster, currentPosition, spawnPosition);
                     
                 case MonsterBehavior.Passive:
                 default:
@@ -69,10 +85,58 @@ namespace GameServerApp.Services
             }
         }
 
+        private IPlayer? FindClosestPlayer(IMonster monster, int range)
+        {
+            IPlayer? closest = null;
+            double minDistance = double.MaxValue;
+
+            foreach (var player in _playerManager.GetAllPlayers())
+            {
+                if (player.State == PlayerState.Dead) continue;
+
+                var dx = player.Position.X - monster.Position.X;
+                var dy = player.Position.Y - monster.Position.Y;
+                
+                // Distância de Chebyshev (máximo entre X e Y) - comum em jogos de grid
+                var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+
+                if (distance <= range && distance < minDistance)
+                {
+                    minDistance = distance;
+                    closest = player;
+                }
+            }
+
+            return closest;
+        }
+
+        private Position CalculatePathTowards(Position current, Position target)
+        {
+            var dx = target.X - current.X;
+            var dy = target.Y - current.Y;
+
+            // Se já está na mesma posição, não move
+            if (dx == 0 && dy == 0) return current;
+
+            string direction;
+
+            // Prioriza mover no eixo com maior distância
+            if (Math.Abs(dx) >= Math.Abs(dy))
+            {
+                direction = dx > 0 ? "east" : "west";
+            }
+            else
+            {
+                direction = dy > 0 ? "north" : "south";
+            }
+
+            return _movementService.Move(current, direction);
+        }
+
         private Position CalculatePatrollingPosition(IMonster monster, Position current, Position spawn)
         {
             // Patrulha aleatória dentro de um raio
-            if (_random.NextDouble() < 0.7) // 70% chance de se mover
+            if (_random.NextDouble() < 0.4) // 40% chance de se mover em cada tentativa
             {
                 // Escolhe direção aleatória
                 var directions = new[] { "north", "south", "east", "west" };
@@ -80,7 +144,7 @@ namespace GameServerApp.Services
                 
                 var newPos = _movementService.Move(current, direction);
                 
-                // Verifica se está dentro do alcance máximo
+                // Verifica se está dentro do alcance máximo do spawn
                 if (Math.Abs(newPos.X - spawn.X) <= MAX_MOVEMENT_RANGE && 
                     Math.Abs(newPos.Y - spawn.Y) <= MAX_MOVEMENT_RANGE)
                 {
@@ -88,48 +152,20 @@ namespace GameServerApp.Services
                 }
             }
             
-            // Retorna para a posição inicial se estiver muito longe
+            // Se estiver muito longe do spawn, tende a voltar
             if (Math.Abs(current.X - spawn.X) > MAX_MOVEMENT_RANGE || 
                 Math.Abs(current.Y - spawn.Y) > MAX_MOVEMENT_RANGE)
             {
-                // Move em direção à posição de spawn
-                var directionX = spawn.X > current.X ? "east" : "west";
-                var directionY = spawn.Y > current.Y ? "south" : "north";
-                
-                // Prioriza mover na direção com maior diferença
-                if (Math.Abs(spawn.X - current.X) > Math.Abs(spawn.Y - current.Y))
-                {
-                    return _movementService.Move(current, directionX);
-                }
-                else
-                {
-                    return _movementService.Move(current, directionY);
-                }
+                return CalculatePathTowards(current, spawn);
             }
             
-            return current; // Fica parado
-        }
-
-        private Position CalculateAggressivePosition(IMonster monster, Position current, Position spawn)
-        {
-            // Comportamento agressivo - tenta encontrar jogadores
-            // Por enquanto, movimento aleatório com tendência agressiva
-            if (_random.NextDouble() < AGGRESSIVE_CHANCE)
-            {
-                // Em uma implementação futura, podemos buscar jogadores próximos
-                // e mover em direção a eles
-                var directions = new[] { "north", "south", "east", "west" };
-                var direction = directions[_random.Next(directions.Length)];
-                return _movementService.Move(current, direction);
-            }
-            
-            return CalculatePatrollingPosition(monster, current, spawn);
+            return current;
         }
 
         private Position CalculatePassivePosition(IMonster monster, Position current, Position spawn)
         {
             // Comportamento passivo - movimento menos frequente
-            if (_random.NextDouble() < 0.3) // 30% chance de se mover
+            if (_random.NextDouble() < 0.1) // 10% chance de se mover
             {
                 var directions = new[] { "north", "south", "east", "west" };
                 var direction = directions[_random.Next(directions.Length)];
