@@ -167,7 +167,7 @@ public class MonsterSyncIntegrationTests
         Assert.NotNull(monster);
 
         var newPosition = new Position(monster.Position.X + 5, monster.Position.Y + 3);
-        monster.MoveTo(newPosition);
+        monster.Move(newPosition);
 
         // Act - Get monsters for sync after movement
         var allMonsters = _monsterManager.GetAllMonsters();

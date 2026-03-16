@@ -16,18 +16,18 @@ public partial class SignalREventEmitter
         _hubContext?.Clients.All.SendAsync("MonsterMoved", monsterData);
     }
 
-    public void OnMonsterDied(long monsterId)
+    public void OnMonsterDied(string monsterId)
     {
         _hubContext?.Clients.All.SendAsync("MonsterDied", monsterId);
     }
 
-    public void OnMonsterDamaged(long monsterId, int damage, int currentHp)
+    public void OnMonsterDamaged(string monsterId, int damage, int currentHp)
     {
-        _hubContext?.Clients.All.SendAsync("MonsterDamaged", new 
-        { 
-            MonsterId = monsterId, 
-            Damage = damage, 
-            CurrentHp = currentHp 
+        _hubContext?.Clients.All.SendAsync("MonsterDamaged", new
+        {
+            MonsterId = monsterId,
+            Damage = damage,
+            CurrentHp = currentHp
         });
     }
 }

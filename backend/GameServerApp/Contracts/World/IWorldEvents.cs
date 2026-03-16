@@ -54,11 +54,11 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a monster dies.
         /// </summary>
-        void OnMonsterDied(long monsterId);
+        void OnMonsterDied(string monsterId);
 
         /// <summary>
         /// Triggered when a monster takes damage.
         /// </summary>
-        void OnMonsterDamaged(long monsterId, int damage, int currentHp);
+        void OnMonsterDamaged(string monsterId, int damage, int currentHp);
     }
 }
