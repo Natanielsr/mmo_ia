@@ -1,4 +1,5 @@
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Contracts.Managers;
 
@@ -12,6 +13,8 @@ public interface IMonsterManager
         int? seed = null);
 
     IReadOnlyCollection<IMonster> GetAllMonsters();
+    IReadOnlyCollection<MonsterData> GetAllMonstersAsData();
     IMonster? GetMonsterById(long id);
+    MonsterData? GetMonsterDataById(long id);
     bool RemoveMonster(long monsterId);
 }

@@ -3,6 +3,7 @@ using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 using GameServerApp.World;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Managers;
 
@@ -96,6 +97,11 @@ public class MonsterManager : IMonsterManager
 
     public IReadOnlyCollection<IMonster> GetAllMonsters() => _monsters.Values.ToList();
 
+    public IReadOnlyCollection<MonsterData> GetAllMonstersAsData()
+    {
+        return _monsters.Values.Select(monster => ToMonsterData(monster)).ToList();
+    }
+
     public IMonster? GetMonsterById(long id)
     {
         return _monsters.TryGetValue(id, out var monster) ? monster : null;
@@ -110,5 +116,25 @@ public class MonsterManager : IMonsterManager
 
         _collisionManager.RemoveObject(monsterId);
         return true;
+    }
+
+    private MonsterData ToMonsterData(IMonster monster)
+    {
+        return new MonsterData
+        {
+            Id = monster.Id.ToString(),
+            Name = monster.Name,
+            ObjectCode = monster.ObjectCode,
+            Position = monster.Position,
+            Hp = monster.Hp,
+            MaxHp = monster.MaxHp,
+            AttackPower = monster.AttackPower,
+            IsDead = monster.IsDead
+        };
+    }
+
+    public MonsterData? GetMonsterDataById(long id)
+    {
+        return GetMonsterById(id) is { } monster ? ToMonsterData(monster) : null;
     }
 }
