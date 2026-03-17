@@ -50,7 +50,7 @@ namespace GameServer.Infrastructure.SignalR
             // Register player collision
             _collisionManager.RegisterDynamicObject(player);
 
-            PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position };
+            PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position, Hp = player.Hp, MaxHp = player.MaxHp, IsDead = player.IsDead };
 
             // 1. Notify caller they joined
             await Clients.Caller.SendAsync("Joined", playerPositionData);
@@ -61,7 +61,7 @@ namespace GameServer.Infrastructure.SignalR
             // 3. Send all existing players to the new player
             var otherPlayers = _playerManager.GetAllPlayers()
                 .Where(p => p.Id != player.Id)
-                .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position });
+                .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position, Hp = p.Hp, MaxHp = p.MaxHp, IsDead = p.IsDead });
 
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
 
