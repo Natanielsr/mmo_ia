@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Player } from './Player';
 import { Monster } from './Monster';
 import { MapLoader } from './MapLoader';
-import type { PlayerData, Position, MonsterData } from '../types';
+import type { PlayerPosData, Position, MonsterData } from '../types';
 
 const GRID_SIZE = 64;
 const PLAYER_POSITION_OFFSET_X = 0;
@@ -135,12 +135,12 @@ export class MainScene extends Phaser.Scene {
     private spawnNewPlayer(
         id: string,
         name: string,
-        playerData: PlayerData,
+        playerPosData: PlayerPosData,
         worldPosition: Position,
         isMe: boolean): void {
         // Instancia o objeto já passando o GRID_SIZE
 
-        const newPlayer = new Player(id, name, playerData, worldPosition, this, GRID_SIZE); // Updated
+        const newPlayer = new Player(id, name, playerPosData, worldPosition, this, GRID_SIZE); // Updated
         this.players[id] = newPlayer;
 
         if (isMe) {

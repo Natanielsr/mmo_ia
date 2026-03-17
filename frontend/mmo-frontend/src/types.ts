@@ -3,7 +3,7 @@ export interface Position {
     y: number;
 }
 
-export interface PlayerData {
+export interface PlayerPosData {
     id: string;
     name: string;
     position: Position;

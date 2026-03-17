@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import * as signalR from '@microsoft/signalr';
 import { PreloadScene } from './game/PreloadScene';
 import { MainScene } from './game/MainScene';
-import type { PlayerData, MonsterData } from './types';
+import type { PlayerPosData, MonsterData } from './types';
 
 // Elementos da UI
 const overlay = document.getElementById('login-overlay') as HTMLDivElement;
@@ -106,10 +106,10 @@ connection.on("SyncPlayerStatuses", (statusList: any[]) => {
   });
 });
 
-connection.on("PlayerJoined", (playerData: PlayerData) => {
-  addLog(`${playerData.name} entrou no mundo!`);
-  if (playerData.position.x !== undefined && playerData.position.y !== undefined) {
-    mainScene.updatePlayerPosition(playerData);
+connection.on("PlayerJoined", (playerPosData: PlayerPosData) => {
+  addLog(`${playerPosData.name} entrou no mundo!`);
+  if (playerPosData.position.x !== undefined && playerPosData.position.y !== undefined) {
+    mainScene.updatePlayerPosition(playerPosData);
   }
 });
 

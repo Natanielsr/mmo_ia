@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { Position, PlayerData } from '../types';
+import type { Position, PlayerPosData } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
@@ -18,17 +18,17 @@ export class Player extends Phaser.GameObjects.Container {
     constructor(
         id: string,
         name: string,
-        playerData: PlayerData, // Modified to receive entire playerData
+        playerPosData: PlayerPosData, // Modified to receive entire playerData
         worldPosition: Position,
         scene: Phaser.Scene,
         gridSize: number) {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
         this.worldPosition = worldPosition
-        this.gridPosition = playerData.position;
+        this.gridPosition = playerPosData.position;
         this.name = name;
         // Inicializa com valores seguros, buscando do playerData se ainda estiverem lá (casing flexível)
-        const data = playerData as any;
+        const data = playerPosData as any;
         this.hp = Number(data.hp ?? data.Hp ?? 100);
         this.maxHp = Number(data.maxHp ?? data.MaxHp ?? 100);
         this.isDead = Boolean(data.isDead ?? data.IsDead ?? false);
