@@ -7,6 +7,9 @@ export interface PlayerData {
     id: string;
     name: string;
     position: Position;
+    hp: number;
+    maxHp: number;
+    isDead: boolean;
 }
 
 export interface AttackData {

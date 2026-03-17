@@ -14,6 +14,7 @@ namespace GameServerApp.Contracts.World
     {
         int Hp { get; }
         int MaxHp { get; }
+        bool IsDead { get; }
         int Level { get; }
         long Experience { get; }
         double Speed { get; }

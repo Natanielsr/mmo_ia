@@ -24,6 +24,7 @@ namespace GameServerApp.World
         public double Speed { get; private set; }
         public DateTime LastMoveTime { get; private set; }
         public PlayerState State { get; private set; }
+        public bool IsDead => State == PlayerState.Dead;
 
         private const long ExperiencePerLevel = 1000;
 
