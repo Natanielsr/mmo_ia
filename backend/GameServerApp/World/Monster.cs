@@ -17,7 +17,7 @@ public class Monster : IMonster
     public MonsterState State => IsDead ? MonsterState.Dead : MonsterState.Alive;
     public MonsterBehavior Behavior { get; private set; }
     public DateTime LastMovementTime { get; set; }
-    public DateTime LastAttackTime { get; private set; }
+    public DateTime LastAttackTime { get; set; }
 
     public int Hp { get; private set; }
     public int MaxHp { get; }

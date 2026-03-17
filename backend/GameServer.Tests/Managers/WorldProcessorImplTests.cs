@@ -20,6 +20,7 @@ namespace GameServer.Tests.Managers
         private readonly Mock<IWorldEvents> _mockEvents = new();
         private readonly Mock<IMonsterMovementService> _mockMonsterMovementService = new();
         private readonly Mock<IMonsterManager> _mockMonsterManager = new();
+        private readonly Mock<IPlayerManager> _mockPlayerManager = new();
 
 
 
@@ -35,7 +36,8 @@ namespace GameServer.Tests.Managers
                 _mockEvents.Object,
                 staticWorldManager,
                 _mockMonsterMovementService.Object,
-                _mockMonsterManager.Object
+                _mockMonsterManager.Object,
+                _mockPlayerManager.Object
             );
         }
 
@@ -128,6 +130,26 @@ namespace GameServer.Tests.Managers
 
             Assert.False(moved);
             Assert.Equal(0, player1.Position.X); // Stayed at 0
+        }
+
+        [Fact]
+        public void Monster_Should_Attack_Adjacent_Player()
+        {
+            var playerPos = new Position(0, 0);
+            var monsterPos = new Position(1, 1); // Adjacent
+            var player = new Player(1, "Hero", playerPos);
+            var monster = new Monster(2, "Rat", "rat", monsterPos, 30, 10);
+            monster.LastAttackTime = DateTime.UtcNow.AddSeconds(-2); // Reset cooldown
+
+            _mockMonsterManager.Setup(m => m.GetAllMonsters()).Returns(new List<IMonster> { monster });
+            _mockPlayerManager.Setup(m => m.GetAllPlayers()).Returns(new List<IPlayer> { player });
+
+            int initialHp = player.Hp;
+
+            _worldManager.Tick();
+
+            Assert.Equal(initialHp - 10, player.Hp);
+            _mockEvents.Verify(e => e.OnPlayerAttacked(monster.Id, player.Id, 10), Times.Once);
         }
     }
 }

@@ -71,6 +71,11 @@ namespace GameServerApp.Services
             
             if (target != null)
             {
+                // Se já estiver adjacente ao alvo, não precisa se mover
+                var dx = Math.Abs(target.Position.X - currentPosition.X);
+                var dy = Math.Abs(target.Position.Y - currentPosition.Y);
+                if (dx <= 1 && dy <= 1) return currentPosition;
+
                 // Usa A* para encontrar caminho livre até o jogador
                 var path = _pathfindingService.FindPath(currentPosition, target.Position, PATHFINDING_MAX_DEPTH);
                 

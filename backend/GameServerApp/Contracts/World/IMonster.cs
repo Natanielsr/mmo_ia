@@ -12,7 +12,7 @@ public interface IMonster : IDynamicWorldObject
     MonsterState State { get; }
     MonsterBehavior Behavior { get; }
     DateTime LastMovementTime { get; set; }
-    DateTime LastAttackTime { get; }
+    DateTime LastAttackTime { get; set; }
 
     void Move(Position newPosition);
     void TakeDamage(int damage);

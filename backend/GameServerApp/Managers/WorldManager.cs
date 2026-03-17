@@ -18,6 +18,7 @@ namespace GameServerApp.Managers
         private readonly IStaticWorldManager _staticWorldManager;
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IMonsterManager _monsterManager;
+        private readonly IPlayerManager _playerManager;
 
         public WorldManager(
             IMovementService movementService,
@@ -27,7 +28,8 @@ namespace GameServerApp.Managers
             IWorldEvents worldEvents,
             IStaticWorldManager staticWorldManager,
             IMonsterMovementService monsterMovementService,
-            IMonsterManager monsterManager)
+            IMonsterManager monsterManager,
+            IPlayerManager playerManager)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -37,6 +39,7 @@ namespace GameServerApp.Managers
             _staticWorldManager = staticWorldManager;
             _monsterMovementService = monsterMovementService;
             _monsterManager = monsterManager;
+            _playerManager = playerManager;
         }
 
         // ... resto do código permanece igual
@@ -62,7 +65,7 @@ namespace GameServerApp.Managers
                 player.Move(targetPos);
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
-                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos });
+                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos, Hp = player.Hp, MaxHp = player.MaxHp, IsDead = player.IsDead });
                 return true;
             }
 
@@ -129,9 +132,39 @@ namespace GameServerApp.Managers
 
         private void ProcessMonsterCombat()
         {
-            // TODO: Implementar lógica de combate monstro-jogador
-            // Verificar proximidade entre monstros e jogadores
-            // Se monstro for agressivo e estiver próximo, atacar
+            var monsters = _monsterManager.GetAllMonsters();
+            var players = _playerManager.GetAllPlayers();
+
+            foreach (var monster in monsters)
+            {
+                if (monster.State == MonsterState.Dead || !monster.CanAttack())
+                    continue;
+
+                foreach (var player in players)
+                {
+                    if (player.State == PlayerState.Dead)
+                        continue;
+
+                    var dx = Math.Abs(monster.Position.X - player.Position.X);
+                    var dy = Math.Abs(monster.Position.Y - player.Position.Y);
+                    
+                    // Adjacente (incluindo diagonais se for grid de 1 casa)
+                    if (dx <= 1 && dy <= 1)
+                    {
+                        monster.Attack(player);
+                        _worldEvents.OnPlayerAttacked(monster.Id, player.Id, monster.AttackPower);
+
+                        if (player.State == PlayerState.Dead)
+                        {
+                            _gameStateManager.PlayerDied(player);
+                            _worldEvents.OnPlayerDied(player.Id);
+                        }
+                        
+                        // O monstro ataca apenas um player por tick
+                        break; 
+                    }
+                }
+            }
         }
 
         private void ProcessMonsterRespawn()
