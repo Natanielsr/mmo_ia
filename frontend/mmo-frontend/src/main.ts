@@ -1,9 +1,9 @@
-import './css/style.css'; // O Vite lida com a importação de CSS automaticamente
+import './css/style.css';
 import Phaser from 'phaser';
 import * as signalR from '@microsoft/signalr';
 import { PreloadScene } from './game/PreloadScene';
 import { MainScene } from './game/MainScene';
-import type { PlayerData, AttackData, MonsterData } from './types';
+import type { PlayerData, MonsterData } from './types';
 
 // Elementos da UI
 const overlay = document.getElementById('login-overlay') as HTMLDivElement;
@@ -12,6 +12,29 @@ const btnJoin = document.getElementById('btn-join') as HTMLButtonElement;
 const inputName = document.getElementById('username') as HTMLInputElement;
 const logContent = document.getElementById('log-content') as HTMLDivElement;
 const errorBanner = document.getElementById('connection-error') as HTMLDivElement;
+
+function updateUIHealthBar(hp: any, maxHp: any) {
+  // Garantir que temos números válidos
+  const currentHp = Number(hp ?? 0);
+  const totalHp = Number(maxHp ?? 100);
+
+  const percent = Math.max(0, (currentHp / (totalHp || 1)) * 100);
+
+  const fill = document.getElementById('hp-fill');
+  const text = document.getElementById('hp-text');
+
+  if (fill) {
+    fill.style.width = isNaN(percent) ? "0%" : `${percent}%`;
+  } else {
+    console.error("hp-fill element NOT FOUND in DOM!");
+  }
+
+  if (text) {
+    text.innerText = `${isNaN(currentHp) ? 0 : Math.ceil(currentHp)} / ${isNaN(totalHp) ? 100 : totalHp}`;
+  } else {
+    console.error("hp-text element NOT FOUND in DOM!");
+  }
+}
 
 // Impede que o Phaser capture as teclas enquanto o utilizador digita no input
 inputName.addEventListener('keydown', (e) => e.stopPropagation());
@@ -44,7 +67,7 @@ mainScene.onRequestMove = (direction: string) => {
 };
 
 // --- Eventos do SignalR ---
-connection.on("Joined", (playerData: PlayerData) => {
+connection.on("Joined", (playerData: any) => {
   mainScene.loadMap();
   addLog(`Entraste como ${playerData.name}!`);
   overlay.classList.add('hidden');
@@ -55,12 +78,16 @@ connection.on("Joined", (playerData: PlayerData) => {
   if (container) game.scale.resize(container.clientWidth, container.clientHeight);
 
   mainScene.updatePlayerPosition(playerData, true);
+  updateUIHealthBar(playerData.hp ?? playerData.Hp, playerData.maxHp ?? playerData.MaxHp);
 });
 
-connection.on("SyncPlayers", (playerList: PlayerData[]) => {
+connection.on("SyncPlayers", (playerList: any[]) => {
   playerList.forEach(p => {
-    if (p.position.x !== undefined && p.position.y !== undefined) {
+    if (p.position && (p.position.x !== undefined || p.position.X !== undefined)) {
       mainScene.updatePlayerPosition(p);
+      if (mainScene.myId === p.id.toString()) {
+        updateUIHealthBar(p.hp ?? p.Hp, p.maxHp ?? p.MaxHp);
+      }
     }
   });
 });
@@ -72,8 +99,11 @@ connection.on("PlayerJoined", (playerData: PlayerData) => {
   }
 });
 
-connection.on("PlayerMoved", (playerData: PlayerData) => {
+connection.on("PlayerMoved", (playerData: any) => {
   mainScene.updatePlayerPosition(playerData);
+  if (mainScene.myId === playerData.id.toString()) {
+    updateUIHealthBar(playerData.hp ?? playerData.Hp, playerData.maxHp ?? playerData.MaxHp);
+  }
 });
 
 connection.on("PlayerLeft", (playerId: number) => {
@@ -81,8 +111,32 @@ connection.on("PlayerLeft", (playerId: number) => {
   mainScene.removePlayer(playerId);
 });
 
-connection.on("PlayerAttacked", (data: AttackData) => {
-  addLog(`${data.attackerId} atacou ${data.targetId} causando ${data.damage} de dano!`);
+connection.on("PlayerAttacked", (data: any) => {
+  const attacker = data.attackerId ?? data.AttackerId;
+  const target = data.targetId ?? data.TargetId;
+  const dmg = data.damage ?? data.Damage;
+
+  mainScene.playerAttacked({ attackerId: attacker, targetId: target, damage: dmg });
+  addLog(`${attacker} atacou ${target} causando ${dmg} de dano!`);
+
+  const myPlayer = mainScene.getMyPlayer();
+  if (myPlayer) {
+    const targetIdStr = String(target);
+    const myIdStr = String(myPlayer.id);
+
+    if (targetIdStr === myIdStr) {
+      updateUIHealthBar(myPlayer.hp, myPlayer.maxHp);
+    }
+  }
+});
+
+connection.on("PlayerDied", (playerId: number) => {
+  mainScene.playerDied(playerId);
+  addLog(`O jogador ${playerId} morreu!`, "error");
+
+  if (mainScene.myId === playerId.toString()) {
+    updateUIHealthBar(0, 100); // Or get maxHp from somewhere
+  }
 });
 
 // --- Eventos de Monstros ---

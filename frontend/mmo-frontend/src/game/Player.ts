@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { Position } from '../types';
+import type { Position, PlayerData } from '../types';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
@@ -7,50 +7,96 @@ export class Player extends Phaser.GameObjects.Container {
     private sprite: Phaser.GameObjects.Sprite;
     private nameText: Phaser.GameObjects.Text;
     private nameTextOffsetY: number;
-    public gridPosition: Position; // Renamed from serverPosition
+    public gridPosition: Position;
     public worldPosition: Position;
+    public hp: number;
+    public maxHp: number;
+    public isDead: boolean = false;
+    private healthBar: Phaser.GameObjects.Graphics;
+    private healthBarBackground: Phaser.GameObjects.Graphics;
 
     constructor(
         id: string,
         name: string,
-        gridPosition: Position, // Renamed from serverPosition
+        playerData: PlayerData, // Modified to receive entire playerData
         worldPosition: Position,
         scene: Phaser.Scene,
         gridSize: number) {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
         this.worldPosition = worldPosition
-        this.gridPosition = gridPosition; // Updated
+        this.gridPosition = playerData.position;
         this.name = name;
+        this.hp = playerData.hp;
+        this.maxHp = playerData.maxHp;
+        this.isDead = playerData.isDead;
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
         this.sprite.setDisplaySize(gridSize, gridSize);
         this.sprite.setDepth(499); // Abaixo do texto
 
-
         // 2. Texto do nome fica FORA do container para controlar depth global da cena
-        this.nameTextOffsetY = (gridSize / 2) + 10;
+        this.nameTextOffsetY = (gridSize / 2) + 15;
         this.nameText = scene.add.text(worldPosition.x, worldPosition.y - this.nameTextOffsetY, name, {
-            fontSize: '14px', color: '#fff', fontFamily: 'Inter'
+            fontSize: '14px', color: '#fff', fontFamily: 'Inter', stroke: '#000', strokeThickness: 2
         }).setOrigin(0.5);
         this.nameText.setDepth(10000); // acima de tudo
 
+        // 3. Health bar (Background)
+        this.healthBarBackground = scene.add.graphics();
+        this.healthBarBackground.fillStyle(0x000000, 0.5);
+        this.healthBarBackground.fillRect(-25, -gridSize / 2 - 5, 50, 6);
 
+        // 4. Health bar (Foreground)
+        this.healthBar = scene.add.graphics();
+        this.updateHealthBar();
 
-        // 3. Adiciona apenas o sprite como filho do Container
-        this.add([this.sprite]);
+        // 5. Adiciona sprite e barras como filhos do Container
+        this.add([this.sprite, this.healthBarBackground, this.healthBar]);
 
-        // 4. Registra este Container na Cena para ser renderizado
+        // 6. Registra este Container na Cena para ser renderizado
         scene.add.existing(this);
 
-
-
-        // 5. Container do player acima dos objetos do mapa
+        // 7. Container do player acima dos objetos do mapa
         this.setDepth(worldPosition.y);
 
         // Define a pose inicial
         this.setInitialPose();
+    }
+
+    public updateHealthBar() {
+        this.healthBar.clear();
+        const healthPercent = Math.max(0, this.hp / this.maxHp);
+        const color = healthPercent > 0.5 ? 0x00ff00 : (healthPercent > 0.25 ? 0xffff00 : 0xff0000);
+
+        this.healthBar.fillStyle(color, 1);
+        this.healthBar.fillRect(-25, -37, 50 * healthPercent, 6);
+    }
+
+    public takeDamage(damage: number): void {
+        this.hp = Math.max(0, this.hp - damage);
+        this.updateHealthBar();
+
+        // Flash vermelho no sprite
+        this.scene.tweens.add({
+            targets: this.sprite,
+            tint: 0xff0000,
+            duration: 100,
+            yoyo: true,
+            onComplete: () => {
+                if (!this.isDead) this.sprite.clearTint();
+            }
+        });
+    }
+
+    public die(): void {
+        if (this.isDead) return;
+        this.isDead = true;
+        this.sprite.setAngle(90); // Deita o personagem
+        this.sprite.setTint(0x666666);
+        this.nameText.setText(`${this.name} 💀`);
+        this.updateHealthBar();
     }
 
     private setInitialPose(): void {

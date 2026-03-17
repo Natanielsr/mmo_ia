@@ -193,10 +193,24 @@ input {
     overflow: hidden;
 }
 
+.hp-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 .hp-bar div {
     height: 100%;
-    background: #ef4444;
+    background: linear-gradient(90deg, #ef4444, #f87171);
     transition: width 0.3s ease;
+}
+
+#hp-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-align: right;
 }
 
 .game-log {

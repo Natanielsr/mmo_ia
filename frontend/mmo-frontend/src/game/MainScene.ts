@@ -95,16 +95,27 @@ export class MainScene extends Phaser.Scene {
     }
 
     // Métodos para jogadores
-    public updatePlayerPosition(playerData: PlayerData, isMe: boolean = false): void {
-        const gridPosition = playerData.position; // Updated variable name
+    public updatePlayerPosition(playerData: any, isMe: boolean = false): void {
+        const id = playerData.id ?? playerData.Id;
+        const pos = playerData.position ?? playerData.Position;
+        if (!pos) return;
+
+        const gridPosition = {
+            x: pos.x ?? pos.X,
+            y: pos.y ?? pos.Y
+        };
         const worldPos = this.getWorldCoordinates(gridPosition);
 
-        if (!this.players[playerData.id]) {
-            this.spawnNewPlayer(playerData.id, playerData.name, gridPosition, worldPos, isMe);
+        if (!this.players[id]) {
+            this.spawnNewPlayer(id, playerData.name ?? playerData.Name, playerData, worldPos, isMe);
         } else {
-            // Delega o movimento e a animação totalmente para a classe do jogador
-            this.players[playerData.id].gridPosition = gridPosition; // Updated property name
-            this.players[playerData.id].move(worldPos, this.minTimeBetweenMovesMs);
+            const player = this.players[id];
+            player.gridPosition = gridPosition;
+            player.hp = playerData.hp ?? playerData.Hp ?? player.hp;
+            player.maxHp = playerData.maxHp ?? playerData.MaxHp ?? player.maxHp;
+            player.isDead = playerData.isDead ?? playerData.IsDead ?? player.isDead;
+            player.updateHealthBar();
+            player.move(worldPos, this.minTimeBetweenMovesMs);
         }
     }
 
@@ -117,12 +128,12 @@ export class MainScene extends Phaser.Scene {
     private spawnNewPlayer(
         id: string,
         name: string,
-        gridPosition: Position, // Updated parameter name
+        playerData: PlayerData,
         worldPosition: Position,
         isMe: boolean): void {
         // Instancia o objeto já passando o GRID_SIZE
 
-        const newPlayer = new Player(id, name, gridPosition, worldPosition, this, GRID_SIZE); // Updated
+        const newPlayer = new Player(id, name, playerData, worldPosition, this, GRID_SIZE); // Updated
         this.players[id] = newPlayer;
 
         if (isMe) {
@@ -132,6 +143,11 @@ export class MainScene extends Phaser.Scene {
             // A câmera agora segue o Container inteiro (o Player)
             this.cameras.main.startFollow(newPlayer, true, 0.1, 0.1);
         }
+    }
+
+    public getMyPlayer(): Player | null {
+        if (!this.myId) return null;
+        return this.players[this.myId] || null;
     }
 
     public removePlayer(id: number) {
@@ -200,6 +216,22 @@ export class MainScene extends Phaser.Scene {
 
             // Mostra dano flutuante
             this.showDamageText(data.damage, monster.x, monster.y);
+        }
+    }
+
+    public playerAttacked(data: { attackerId: string; targetId: string; damage: number }): void {
+        const targetId = data.targetId.toString();
+        if (this.players[targetId]) {
+            const player = this.players[targetId];
+            player.takeDamage(data.damage);
+            this.showDamageText(data.damage, player.x, player.y);
+        }
+    }
+
+    public playerDied(playerId: number): void {
+        const idStr = playerId.toString();
+        if (this.players[idStr]) {
+            this.players[idStr].die();
         }
     }
 
