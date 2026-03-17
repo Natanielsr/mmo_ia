@@ -29,14 +29,9 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerJoined", playerPositionData);
         }
 
-        public void OnPlayerAttacked(long attackerId, long targetId, int damage)
+        public void OnPlayerAttacked(PlayerAttackData attackData)
         {
-            _hubContext.Clients.All.SendAsync("PlayerAttacked", new
-            {
-                AttackerId = attackerId,
-                TargetId = targetId,
-                Damage = damage
-            });
+            _hubContext.Clients.All.SendAsync("PlayerAttacked", attackData);
         }
 
         public void OnPlayerDied(long playerId)

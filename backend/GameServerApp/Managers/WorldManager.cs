@@ -90,7 +90,14 @@ namespace GameServerApp.Managers
                 _worldEvents.OnPlayerExperienceGained(player.Id, 100, player.Experience);
             }
 
-            _worldEvents.OnPlayerAttacked(player.Id, target.Id, damage);
+            _worldEvents.OnPlayerAttacked(new PlayerAttackData
+            {
+                AttackerId = player.Id,
+                AttackerName = player.Name,
+                TargetId = target.Id,
+                TargetName = target.Name,
+                Damage = damage
+            });
         }
 
         public void Tick()
@@ -152,7 +159,14 @@ namespace GameServerApp.Managers
                     if (dx <= 1 && dy <= 1)
                     {
                         monster.Attack(player);
-                        _worldEvents.OnPlayerAttacked(monster.Id, player.Id, monster.AttackPower);
+                        _worldEvents.OnPlayerAttacked(new PlayerAttackData
+                        {
+                            AttackerId = monster.Id,
+                            AttackerName = monster.Name,
+                            TargetId = player.Id,
+                            TargetName = player.Name,
+                            Damage = monster.AttackPower
+                        });
 
                         if (player.State == PlayerState.Dead)
                         {

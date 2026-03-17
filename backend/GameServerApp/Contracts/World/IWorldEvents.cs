@@ -20,7 +20,7 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player attacks another player/target.
         /// </summary>
-        void OnPlayerAttacked(long attackerId, long targetId, int damage);
+        void OnPlayerAttacked(PlayerAttackData attackData);
 
         /// <summary>
         /// Triggered when a player dies.

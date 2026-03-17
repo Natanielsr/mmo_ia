@@ -5,6 +5,7 @@ using GameServerApp.Contracts.Services;
 using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using GameServerApp.Dtos;
 using GameServerApp.Services;
 
 namespace GameServer.Tests.Managers
@@ -149,7 +150,10 @@ namespace GameServer.Tests.Managers
             _worldManager.Tick();
 
             Assert.Equal(initialHp - 10, player.Hp);
-            _mockEvents.Verify(e => e.OnPlayerAttacked(monster.Id, player.Id, 10), Times.Once);
+            _mockEvents.Verify(e => e.OnPlayerAttacked(It.Is<PlayerAttackData>(a => 
+                a.AttackerId == monster.Id && 
+                a.TargetId == player.Id && 
+                a.Damage == 10)), Times.Once);
         }
     }
 }
