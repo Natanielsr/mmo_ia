@@ -35,7 +35,7 @@ export class Player extends Phaser.GameObjects.Container {
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
-        this.sprite.setDisplaySize(gridSize, gridSize);
+        this.sprite.setDisplaySize(gridSize * 1.25, gridSize * 1.25);
         this.sprite.setDepth(499); // Abaixo do texto
 
         // 2. Texto do nome fica FORA do container para controlar depth global da cena
@@ -103,8 +103,8 @@ export class Player extends Phaser.GameObjects.Container {
 
     private setInitialPose(): void {
         const startAnim = this.scene.anims.get('walk-south');
-        if (startAnim && startAnim.frames[1]) {
-            this.sprite.setFrame(startAnim.frames[1].textureFrame);
+        if (startAnim && startAnim.frames[0]) {
+            this.sprite.setFrame(startAnim.frames[0].textureFrame);
         }
     }
 
@@ -157,7 +157,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.stop();
         if (this.sprite.anims.currentAnim) {
             // Usa o frame de índice 1 (do meio) como frame de parada (idle)
-            const frameParado = this.sprite.anims.currentAnim.frames[1]?.textureFrame;
+            const frameParado = this.sprite.anims.currentAnim.frames[0]?.textureFrame;
             if (frameParado !== undefined) {
                 this.sprite.setFrame(frameParado);
             }

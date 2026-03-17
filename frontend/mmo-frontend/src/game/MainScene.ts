@@ -6,7 +6,7 @@ import type { PlayerPosData, Position, MonsterData } from '../types';
 
 const GRID_SIZE = 64;
 const PLAYER_POSITION_OFFSET_X = 0;
-const PLAYER_POSITION_OFFSET_Y = 0;
+const PLAYER_POSITION_OFFSET_Y = 7;
 
 export class MainScene extends Phaser.Scene {
     // Armazenamento de jogadores

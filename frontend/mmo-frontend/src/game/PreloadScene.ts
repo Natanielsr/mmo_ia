@@ -7,9 +7,9 @@ export class PreloadScene extends Phaser.Scene {
 
     preload() {
         // Carrega spritesheet do personagem
-        this.load.spritesheet('hero', 'assets/human_base_16x18.png', {
-            frameWidth: 16,
-            frameHeight: 18
+        this.load.spritesheet('hero', 'assets/BODY_male.png', {
+            frameWidth: 64,
+            frameHeight: 64
         });
 
         // Futuro: outros assets podem ser carregados aqui
@@ -41,32 +41,32 @@ export class PreloadScene extends Phaser.Scene {
         // Animação andando para norte
         this.anims.create({
             key: 'walk-north',
-            frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 2 }),
-            frameRate: 16,
-            repeat: -1
-        });
-
-        // Animação andando para leste
-        this.anims.create({
-            key: 'walk-east',
-            frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 11 }),
-            frameRate: 16,
-            repeat: -1
-        });
-
-        // Animação andando para sul
-        this.anims.create({
-            key: 'walk-south',
-            frames: this.anims.generateFrameNumbers('hero', { start: 18, end: 20 }),
-            frameRate: 16,
+            frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 8 }),
+            frameRate: 36,
             repeat: -1
         });
 
         // Animação andando para oeste
         this.anims.create({
             key: 'walk-west',
-            frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 29 }),
-            frameRate: 16,
+            frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 17 }),
+            frameRate: 36,
+            repeat: -1
+        });
+
+        // Animação andando para sul
+        this.anims.create({
+            key: 'walk-south',
+            frames: this.anims.generateFrameNumbers('hero', { start: 18, end: 26 }),
+            frameRate: 36,
+            repeat: -1
+        });
+
+        // Animação andando para leste
+        this.anims.create({
+            key: 'walk-east',
+            frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 35 }),
+            frameRate: 36,
             repeat: -1
         });
     }
