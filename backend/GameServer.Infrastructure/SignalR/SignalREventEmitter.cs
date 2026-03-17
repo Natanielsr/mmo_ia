@@ -19,6 +19,11 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerMoved", playerPositionData);
         }
 
+        public void OnPlayerStatusUpdated(PlayerStatusData playerStatusData)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerStatusUpdated", playerStatusData);
+        }
+
         public void OnPlayerJoined(PlayerPositionData playerPositionData)
         {
             _hubContext.Clients.All.SendAsync("PlayerJoined", playerPositionData);

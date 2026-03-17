@@ -65,7 +65,7 @@ namespace GameServerApp.Managers
                 player.Move(targetPos);
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
-                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos, Hp = player.Hp, MaxHp = player.MaxHp, IsDead = player.IsDead });
+                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos });
                 return true;
             }
 

@@ -50,20 +50,29 @@ namespace GameServer.Infrastructure.SignalR
             // Register player collision
             _collisionManager.RegisterDynamicObject(player);
 
-            PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position, Hp = player.Hp, MaxHp = player.MaxHp, IsDead = player.IsDead };
+            PlayerPositionData playerPositionData = new() { Id = player.Id, Name = player.Name, Position = player.Position };
+            PlayerStatusData playerStatusData = new() { Id = player.Id, Hp = player.Hp, MaxHp = player.MaxHp, IsDead = player.IsDead };
 
             // 1. Notify caller they joined
             await Clients.Caller.SendAsync("Joined", playerPositionData);
+            await Clients.Caller.SendAsync("PlayerStatusUpdated", playerStatusData);
 
             // 2. Notify world events (which will notify other players)
             _worldEvents.OnPlayerJoined(playerPositionData);
+            _worldEvents.OnPlayerStatusUpdated(playerStatusData);
 
             // 3. Send all existing players to the new player
             var otherPlayers = _playerManager.GetAllPlayers()
                 .Where(p => p.Id != player.Id)
-                .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position, Hp = p.Hp, MaxHp = p.MaxHp, IsDead = p.IsDead });
+                .Select(p => new PlayerPositionData { Id = p.Id, Name = p.Name, Position = p.Position });
 
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
+
+            var otherPlayerStatuses = _playerManager.GetAllPlayers()
+                .Where(p => p.Id != player.Id)
+                .Select(p => new PlayerStatusData { Id = p.Id, Hp = p.Hp, MaxHp = p.MaxHp, IsDead = p.IsDead });
+
+            await Clients.Caller.SendAsync("SyncPlayerStatuses", otherPlayerStatuses);
 
             // 4. Send all monsters to the new player
             var allMonsters = _monsterManager.GetAllMonsters();
