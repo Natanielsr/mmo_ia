@@ -111,11 +111,18 @@ export class MainScene extends Phaser.Scene {
         } else {
             const player = this.players[id];
             player.gridPosition = gridPosition;
-            player.hp = playerData.hp ?? playerData.Hp ?? player.hp;
-            player.maxHp = playerData.maxHp ?? playerData.MaxHp ?? player.maxHp;
-            player.isDead = playerData.isDead ?? playerData.IsDead ?? player.isDead;
-            player.updateHealthBar();
             player.move(worldPos, this.minTimeBetweenMovesMs);
+        }
+    }
+
+    public updatePlayerStatus(statusData: any): void {
+        const id = statusData.id ?? statusData.Id;
+        if (this.players[id]) {
+            const player = this.players[id];
+            player.hp = statusData.hp ?? statusData.Hp ?? player.hp;
+            player.maxHp = statusData.maxHp ?? statusData.MaxHp ?? player.maxHp;
+            player.isDead = statusData.isDead ?? statusData.IsDead ?? player.isDead;
+            player.updateHealthBar();
         }
     }
 

@@ -27,9 +27,11 @@ export class Player extends Phaser.GameObjects.Container {
         this.worldPosition = worldPosition
         this.gridPosition = playerData.position;
         this.name = name;
-        this.hp = playerData.hp;
-        this.maxHp = playerData.maxHp;
-        this.isDead = playerData.isDead;
+        // Inicializa com valores seguros, buscando do playerData se ainda estiverem lá (casing flexível)
+        const data = playerData as any;
+        this.hp = Number(data.hp ?? data.Hp ?? 100);
+        this.maxHp = Number(data.maxHp ?? data.MaxHp ?? 100);
+        this.isDead = Boolean(data.isDead ?? data.IsDead ?? false);
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);

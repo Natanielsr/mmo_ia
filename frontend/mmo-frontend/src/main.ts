@@ -78,16 +78,30 @@ connection.on("Joined", (playerData: any) => {
   if (container) game.scale.resize(container.clientWidth, container.clientHeight);
 
   mainScene.updatePlayerPosition(playerData, true);
-  updateUIHealthBar(playerData.hp ?? playerData.Hp, playerData.maxHp ?? playerData.MaxHp);
+});
+
+connection.on("PlayerStatusUpdated", (statusData: any) => {
+  mainScene.updatePlayerStatus(statusData);
+  const myPlayer = mainScene.getMyPlayer();
+  if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
+    updateUIHealthBar(statusData.hp ?? statusData.Hp, statusData.maxHp ?? statusData.MaxHp);
+  }
 });
 
 connection.on("SyncPlayers", (playerList: any[]) => {
   playerList.forEach(p => {
     if (p.position && (p.position.x !== undefined || p.position.X !== undefined)) {
       mainScene.updatePlayerPosition(p);
-      if (mainScene.myId === p.id.toString()) {
-        updateUIHealthBar(p.hp ?? p.Hp, p.maxHp ?? p.MaxHp);
-      }
+    }
+  });
+});
+
+connection.on("SyncPlayerStatuses", (statusList: any[]) => {
+  statusList.forEach(s => {
+    mainScene.updatePlayerStatus(s);
+    const myPlayer = mainScene.getMyPlayer();
+    if (myPlayer && String(s.id ?? s.Id) === String(myPlayer.id)) {
+      updateUIHealthBar(s.hp ?? s.Hp, s.maxHp ?? s.MaxHp);
     }
   });
 });
@@ -101,9 +115,6 @@ connection.on("PlayerJoined", (playerData: PlayerData) => {
 
 connection.on("PlayerMoved", (playerData: any) => {
   mainScene.updatePlayerPosition(playerData);
-  if (mainScene.myId === playerData.id.toString()) {
-    updateUIHealthBar(playerData.hp ?? playerData.Hp, playerData.maxHp ?? playerData.MaxHp);
-  }
 });
 
 connection.on("PlayerLeft", (playerId: number) => {

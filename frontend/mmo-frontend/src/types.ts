@@ -7,6 +7,10 @@ export interface PlayerData {
     id: string;
     name: string;
     position: Position;
+}
+
+export interface PlayerStatusData {
+    id: string;
     hp: number;
     maxHp: number;
     isDead: boolean;
