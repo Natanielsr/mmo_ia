@@ -157,6 +157,10 @@ export class MainScene extends Phaser.Scene {
         return this.players[this.myId] || null;
     }
 
+    public getPlayer(id: string | number): Player | null {
+        return this.players[String(id)] || null;
+    }
+
     public removePlayer(id: number) {
         if (this.players[id]) {
             // Chama o método destroy() nativo do Phaser que nós sobrescrevemos na classe

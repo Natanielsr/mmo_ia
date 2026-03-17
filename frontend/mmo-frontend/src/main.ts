@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import * as signalR from '@microsoft/signalr';
 import { PreloadScene } from './game/PreloadScene';
 import { MainScene } from './game/MainScene';
-import type { PlayerPosData, MonsterData } from './types';
+import type { PlayerPosData, AttackData, MonsterData } from './types';
 
 // Elementos da UI
 const overlay = document.getElementById('login-overlay') as HTMLDivElement;
@@ -123,27 +123,31 @@ connection.on("PlayerLeft", (playerId: number) => {
 });
 
 connection.on("PlayerAttacked", (data: any) => {
-  const attacker = data.attackerId ?? data.AttackerId;
-  const target = data.targetId ?? data.TargetId;
-  const dmg = data.damage ?? data.Damage;
+  const attackData: AttackData = {
+    attackerId: String(data.attackerId ?? data.AttackerId),
+    attackerName: String(data.attackerName ?? data.AttackerName),
+    targetId: String(data.targetId ?? data.TargetId),
+    targetName: String(data.targetName ?? data.TargetName),
+    damage: Number(data.damage ?? data.Damage)
+  };
 
-  mainScene.playerAttacked({ attackerId: attacker, targetId: target, damage: dmg });
-  addLog(`${attacker} atacou ${target} causando ${dmg} de dano!`);
+  mainScene.playerAttacked(attackData);
+  addLog(`${attackData.attackerName} atacou ${attackData.targetName} causando ${attackData.damage} de dano!`);
 
   const myPlayer = mainScene.getMyPlayer();
   if (myPlayer) {
-    const targetIdStr = String(target);
-    const myIdStr = String(myPlayer.id);
-
-    if (targetIdStr === myIdStr) {
+    if (attackData.targetId === String(myPlayer.id)) {
       updateUIHealthBar(myPlayer.hp, myPlayer.maxHp);
     }
   }
 });
 
 connection.on("PlayerDied", (playerId: number) => {
+  const player = mainScene.getPlayer(playerId);
+  const playerName = player ? player.name : `Jogador ${playerId}`;
+
   mainScene.playerDied(playerId);
-  addLog(`O jogador ${playerId} morreu!`, "error");
+  addLog(`${playerName} morreu!`, "error");
 
   if (mainScene.myId === playerId.toString()) {
     updateUIHealthBar(0, 100); // Or get maxHp from somewhere
