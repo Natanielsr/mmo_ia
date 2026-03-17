@@ -15,10 +15,10 @@ namespace GameServerApp.Services
         private readonly Random _random;
         
         // Configurações de comportamento
-        private const int MOVEMENT_COOLDOWN_TICKS = 10; // A cada 10 ticks do sistema
-        private const int MAX_MOVEMENT_RANGE = 7; // Máxima distância que um monstro pode se afastar da posição inicial
-        private const int AGGRO_RANGE = 5; // Distância para começar a seguir um jogador
-        private const int PATHFINDING_MAX_DEPTH = 30; // Limite de nós explorados pelo A*
+        private const int MOVEMENT_COOLDOWN_TICKS = 8; // Reduzido para 0.8s
+        private const int MAX_MOVEMENT_RANGE = 12; 
+        private const int AGGRO_RANGE = 5; 
+        private const int PATHFINDING_MAX_DEPTH = 150; 
 
         public MonsterMovementService(
             ICollisionManager collisionManager, 
@@ -35,7 +35,6 @@ namespace GameServerApp.Services
 
         public void UpdateAllMonsters()
         {
-            // Será chamado pelo WorldManager no Tick()
         }
 
         public void UpdateMonster(IMonster monster)
@@ -46,18 +45,18 @@ namespace GameServerApp.Services
             if ((DateTime.UtcNow - monster.LastMovementTime).TotalSeconds < MOVEMENT_COOLDOWN_TICKS / 10.0)
                 return;
 
+            // Define o tempo do último movimento ANTES de calcular/tentar, para evitar loops infinitos se falhar
+            monster.LastMovementTime = DateTime.UtcNow;
+
             var newPosition = CalculateNewPosition(monster);
             
-            // Se a posição for a mesma, não faz nada
             if (newPosition == monster.Position) return;
 
-            // Verifica se a nova posição está bloqueada
             if (!_collisionManager.IsPositionBlocked(newPosition))
             {
                 var oldPosition = monster.Position;
                 monster.Move(newPosition);
                 _collisionManager.UpdateObjectPosition(monster, oldPosition);
-                monster.LastMovementTime = DateTime.UtcNow;
             }
         }
 
@@ -66,34 +65,24 @@ namespace GameServerApp.Services
             var currentPosition = monster.Position;
             var spawnPosition = monster.SpawnPosition;
 
-            // Tenta encontrar um alvo (jogador próximo)
             var target = FindClosestPlayer(monster, AGGRO_RANGE);
             
             if (target != null)
             {
-                // Se já estiver adjacente ao alvo, não precisa se mover
                 var dx = Math.Abs(target.Position.X - currentPosition.X);
                 var dy = Math.Abs(target.Position.Y - currentPosition.Y);
                 if (dx <= 1 && dy <= 1) return currentPosition;
 
-                // Usa A* para encontrar caminho livre até o jogador
                 var path = _pathfindingService.FindPath(currentPosition, target.Position, PATHFINDING_MAX_DEPTH);
+                if (path != null && path.Count > 0) return path[0];
                 
-                if (path != null && path.Count > 0)
-                {
-                    // Retorna apenas o próximo passo do caminho
-                    return path[0];
-                }
-                
-                // Fallback: se A* não encontrou caminho, tenta mover diretamente
                 return CalculateDirectMove(currentPosition, target.Position);
             }
             
-            // Comportamento baseado no tipo de monstro caso não tenha alvo
             switch (monster.Behavior)
             {
                 case MonsterBehavior.Patrolling:
-                case MonsterBehavior.Aggressive: // Agressivo sem alvo se comporta como patrulha
+                case MonsterBehavior.Aggressive:
                     return CalculatePatrollingPosition(monster, currentPosition, spawnPosition);
                     
                 case MonsterBehavior.Passive:
@@ -113,8 +102,6 @@ namespace GameServerApp.Services
 
                 var dx = player.Position.X - monster.Position.X;
                 var dy = player.Position.Y - monster.Position.Y;
-                
-                // Distância de Chebyshev (máximo entre X e Y) - comum em jogos de grid
                 var distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
 
                 if (distance <= range && distance < minDistance)
@@ -132,12 +119,9 @@ namespace GameServerApp.Services
             var dx = target.X - current.X;
             var dy = target.Y - current.Y;
 
-            // Se já está na mesma posição, não move
             if (dx == 0 && dy == 0) return current;
 
             string direction;
-
-            // Prioriza mover no eixo com maior distância
             if (Math.Abs(dx) >= Math.Abs(dy))
             {
                 direction = dx > 0 ? "east" : "west";
@@ -152,28 +136,28 @@ namespace GameServerApp.Services
 
         private Position CalculatePatrollingPosition(IMonster monster, Position current, Position spawn)
         {
-            // Patrulha aleatória dentro de um raio
-            if (_random.NextDouble() < 0.4) // 40% chance de se mover em cada tentativa
+            // Se estiver fora do alcance, volta usando Pathfinding (para não ficar preso em paredes)
+            if (Math.Abs(current.X - spawn.X) > MAX_MOVEMENT_RANGE || 
+                Math.Abs(current.Y - spawn.Y) > MAX_MOVEMENT_RANGE)
             {
-                // Escolhe direção aleatória
+                var path = _pathfindingService.FindPath(current, spawn, PATHFINDING_MAX_DEPTH);
+                if (path != null && path.Count > 0) return path[0];
+                return CalculateDirectMove(current, spawn);
+            }
+
+            // Patrulha aleatória dentro de um raio
+            if (_random.NextDouble() < 0.6) // Aumentado para 60%
+            {
                 var directions = new[] { "north", "south", "east", "west" };
                 var direction = directions[_random.Next(directions.Length)];
                 
                 var newPos = _movementService.Move(current, direction);
                 
-                // Verifica se está dentro do alcance máximo do spawn
                 if (Math.Abs(newPos.X - spawn.X) <= MAX_MOVEMENT_RANGE && 
                     Math.Abs(newPos.Y - spawn.Y) <= MAX_MOVEMENT_RANGE)
                 {
                     return newPos;
                 }
-            }
-            
-            // Se estiver muito longe do spawn, tende a voltar
-            if (Math.Abs(current.X - spawn.X) > MAX_MOVEMENT_RANGE || 
-                Math.Abs(current.Y - spawn.Y) > MAX_MOVEMENT_RANGE)
-            {
-                return CalculateDirectMove(current, spawn);
             }
             
             return current;

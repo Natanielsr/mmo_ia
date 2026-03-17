@@ -90,7 +90,7 @@ public class Monster : IMonster
 
     public bool CanMove()
     {
-        return !IsDead && (DateTime.UtcNow - LastMovementTime).TotalSeconds >= 1.0;
+        return !IsDead && (DateTime.UtcNow - LastMovementTime).TotalSeconds >= 0.8;
     }
 
     public bool CanAttack()
