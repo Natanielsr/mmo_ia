@@ -44,7 +44,7 @@ export class SignalRService {
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
             this.mainScene?.loadMap();
-            addLog(`Entraste como ${playerData.name}!`);
+            addLog(`Entrou como ${playerData.name}!`);
             overlay?.classList.add('hidden');
             gameContainer?.classList.remove('hidden');
 
