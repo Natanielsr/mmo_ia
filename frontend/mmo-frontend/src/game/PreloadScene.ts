@@ -47,32 +47,32 @@ export class PreloadScene extends Phaser.Scene {
         // Animação andando para norte
         this.anims.create({
             key: 'walk-north',
-            frames: this.anims.generateFrameNumbers('hero', { start: 0, end: 8 }),
-            frameRate: 36,
+            frames: this.anims.generateFrameNumbers('hero', { start: 1, end: 8 }),
+            frameRate: 16,
             repeat: -1
         });
 
         // Animação andando para oeste
         this.anims.create({
             key: 'walk-west',
-            frames: this.anims.generateFrameNumbers('hero', { start: 9, end: 17 }),
-            frameRate: 36,
+            frames: this.anims.generateFrameNumbers('hero', { start: 10, end: 17 }),
+            frameRate: 16,
             repeat: -1
         });
 
         // Animação andando para sul
         this.anims.create({
             key: 'walk-south',
-            frames: this.anims.generateFrameNumbers('hero', { start: 18, end: 26 }),
-            frameRate: 36,
+            frames: this.anims.generateFrameNumbers('hero', { start: 19, end: 26 }),
+            frameRate: 16,
             repeat: -1
         });
 
         // Animação andando para leste
         this.anims.create({
             key: 'walk-east',
-            frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 35 }),
-            frameRate: 36,
+            frames: this.anims.generateFrameNumbers('hero', { start: 28, end: 35 }),
+            frameRate: 16,
             repeat: -1
         });
 

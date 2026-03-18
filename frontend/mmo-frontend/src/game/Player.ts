@@ -14,6 +14,7 @@ export class Player extends Phaser.GameObjects.Container {
     public isDead: boolean = false;
     private healthBar: Phaser.GameObjects.Graphics;
     private healthBarBackground: Phaser.GameObjects.Graphics;
+    private stopWalkingTimer?: Phaser.Time.TimerEvent;
 
     constructor(
         id: string,
@@ -102,20 +103,25 @@ export class Player extends Phaser.GameObjects.Container {
     }
 
     private setInitialPose(): void {
-        const startAnim = this.scene.anims.get('walk-south');
-        if (startAnim && startAnim.frames[0]) {
-            this.sprite.setFrame(startAnim.frames[0].textureFrame);
-        }
+        this.sprite.setFrame(18); // IDLE Sul padrão
     }
 
     public move(worldPos: Position, duration: number): void {
         const dx = worldPos.x - this.x;
         const dy = worldPos.y - this.y;
 
+        // Cancela o timer de parar de andar se houver um novo movimento em seguida
+        if (this.stopWalkingTimer) {
+            this.stopWalkingTimer.destroy();
+            this.stopWalkingTimer = undefined;
+        }
+
         // Cuida da própria animação
         const animKey = this.getDirectionAnimation(dx, dy);
         if (animKey) {
-            this.sprite.setTexture('hero');
+            if (this.sprite.texture.key !== 'hero') {
+                this.sprite.setTexture('hero');
+            }
             this.sprite.play(animKey, true);
         }
 
@@ -135,7 +141,11 @@ export class Player extends Phaser.GameObjects.Container {
             onUpdate: () => {
                 this.setDepth(this.y);
             },
-            onComplete: () => this.stopWalking()
+            onComplete: () => {
+                this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
+                    this.stopWalking();
+                });
+            }
         });
 
         // Move o texto do nome junto, mantendo offset vertical
@@ -176,19 +186,25 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key === animKey) {
                 this.sprite.setTexture('hero');
-                this.stopWalking();
+                this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
+                    this.stopWalking();
+                });
             }
         });
+    }
+
+    private getIdleFrame(animKey: string): number {
+        if (animKey.includes('north')) return 0;
+        if (animKey.includes('west')) return 9;
+        if (animKey.includes('east')) return 27;
+        return 18; // Default sul
     }
 
     private stopWalking(): void {
         this.sprite.stop();
         if (this.sprite.anims.currentAnim) {
-            // Usa o frame de índice 1 (do meio) como frame de parada (idle)
-            const frameParado = this.sprite.anims.currentAnim.frames[0]?.textureFrame;
-            if (frameParado !== undefined) {
-                this.sprite.setFrame(frameParado);
-            }
+            const idleFrame = this.getIdleFrame(this.sprite.anims.currentAnim.key);
+            this.sprite.setFrame(idleFrame);
         }
     }
 

@@ -17,7 +17,7 @@ export class MainScene extends Phaser.Scene {
     // Armazenamento de monstros
     private monsters: Record<string, Monster> = {};
 
-    private playerSpeed: number = 4.0;
+    private playerSpeed: number = 2.0;
     private minTimeBetweenMovesMs: number = 1000 / this.playerSpeed;
 
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;

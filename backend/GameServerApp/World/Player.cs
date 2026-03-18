@@ -42,7 +42,7 @@ namespace GameServerApp.World
             Hp = maxHp;
             Level = 1;
             Experience = 0;
-            Speed = 4.0;
+            Speed = 2.0;
             LastMoveTime = DateTime.MinValue;
             State = PlayerState.Alive;
         }
