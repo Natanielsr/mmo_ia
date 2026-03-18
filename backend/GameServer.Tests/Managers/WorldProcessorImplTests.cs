@@ -155,5 +155,26 @@ namespace GameServer.Tests.Managers
                 a.TargetId == player.Id && 
                 a.Damage == 10)), Times.Once);
         }
+
+        [Fact]
+        public void Player_Should_Attack_Adjacent_Monster()
+        {
+            var playerPos = new Position(0, 0);
+            var monsterPos = new Position(1, 0);
+            var player = new Player(1, "Hero", playerPos);
+            var monster = new Monster(2, "Rat", "rat", monsterPos, 30, 10);
+            
+            _mockMonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
+            
+            int initialHp = monster.Hp;
+            
+            _worldManager.ProcessPlayerAttackMonster(player, "2");
+            
+            Assert.Equal(initialHp - 10, monster.Hp);
+            _mockEvents.Verify(e => e.OnPlayerAttacked(It.Is<PlayerAttackData>(a => 
+                a.AttackerId == player.Id && 
+                a.TargetId == monster.Id && 
+                a.Damage == 10)), Times.Once);
+        }
     }
 }
