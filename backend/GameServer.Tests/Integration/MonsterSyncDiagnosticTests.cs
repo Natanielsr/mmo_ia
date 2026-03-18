@@ -216,7 +216,7 @@ public class MonsterSyncDiagnosticTests
     }
 
     [Fact]
-    public void Race_Condition_Test_Monster_Addition_During_Sync()
+    public async Task Race_Condition_Test_Monster_Addition_During_Sync()
     {
         // This test simulates a potential race condition where monsters
         // are being added while GetMonsterById or GetAllMonsters is being called
@@ -246,7 +246,7 @@ public class MonsterSyncDiagnosticTests
         var syncTasks = new List<Task>();
 
         // Task 1: Continuously spawn monsters (simulating monster respawns)
-        var spawnTask = Task.Run(() =>
+        var spawnTask = Task.Run(async () =>
         {
             for (int i = 0; i < 10; i++)
             {
@@ -254,12 +254,12 @@ public class MonsterSyncDiagnosticTests
                 {
                     _ = _monsterManager.SpawnRandomMonsters(1, width, height, safeSpawnRadius, seed + i);
                 }
-                Thread.Sleep(10); // Small delay
+                await Task.Delay(10); // Small delay
             }
         });
 
         // Task 2: Continuously sync monsters (simulating players joining)
-        var syncTask = Task.Run(() =>
+        var syncTask = Task.Run(async () =>
         {
             for (int i = 0; i < 20; i++)
             {
@@ -274,12 +274,12 @@ public class MonsterSyncDiagnosticTests
                 {
                     syncMonsterIds.AddRange(monsterIds);
                 }
-                Thread.Sleep(5);
+                await Task.Delay(5);
             }
         });
 
         // Wait for both tasks
-        Task.WaitAll(spawnTask, syncTask);
+        await Task.WhenAll(spawnTask, syncTask);
 
         // Get final state
         var finalMonsters = _monsterManager.GetAllMonsters();
