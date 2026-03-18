@@ -9,7 +9,7 @@ public class Monster : IMonster
     public string Name { get; }
     public string ObjectCode { get; }
     public ObjectType Type => ObjectType.NPC;
-    public bool IsPassable => false;
+    public bool IsPassable => IsDead;
     public Position Position { get; private set; }
     public Position SpawnPosition { get; }
     public Size Size { get; } = new() { Width = 1, Height = 1 };

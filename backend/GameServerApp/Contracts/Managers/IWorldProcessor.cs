@@ -13,6 +13,8 @@ namespace GameServerApp.Contracts.Managers
         /// Processes an attack action between a player and a target.
         /// </summary>
         void ProcessPlayerAttack(IPlayer player, IPlayer target);
+        
+        void ProcessPlayerAttackMonster(IPlayer player, string monsterId);
 
         /// <summary>
         /// Executes a global world tick (processing monsters, respawns, etc.)

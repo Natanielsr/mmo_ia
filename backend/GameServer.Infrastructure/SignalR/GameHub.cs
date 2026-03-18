@@ -104,6 +104,15 @@ namespace GameServer.Infrastructure.SignalR
             }
         }
 
+        public void RequestAttack(string targetId)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+            {
+                _worldProcessor.ProcessPlayerAttackMonster(player, targetId);
+            }
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)

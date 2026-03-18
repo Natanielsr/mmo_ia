@@ -61,5 +61,26 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("PlayerLeft", playerId);
         }
+
+        // --- Eventos de Monstros ---
+        public void OnMonsterSpawned(MonsterData monsterData)
+        {
+            _hubContext.Clients.All.SendAsync("MonsterSpawned", monsterData);
+        }
+
+        public void OnMonsterMoved(MonsterData monsterData)
+        {
+            _hubContext.Clients.All.SendAsync("MonsterMoved", monsterData);
+        }
+
+        public void OnMonsterDied(string monsterId)
+        {
+            _hubContext.Clients.All.SendAsync("MonsterDied", monsterId);
+        }
+
+        public void OnMonsterDamaged(string monsterId, int damage, int currentHp)
+        {
+            _hubContext.Clients.All.SendAsync("MonsterDamaged", new { Id = monsterId, Damage = damage, CurrentHp = currentHp });
+        }
     }
 }

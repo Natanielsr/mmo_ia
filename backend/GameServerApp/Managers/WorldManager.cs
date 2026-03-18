@@ -100,6 +100,53 @@ namespace GameServerApp.Managers
             });
         }
 
+        public void ProcessPlayerAttackMonster(IPlayer player, string monsterId)
+        {
+            if (player.State == PlayerState.Dead) return;
+
+            if (!long.TryParse(monsterId, out long id)) return;
+            
+            var monster = _monsterManager.GetMonsterById(id);
+            if (monster == null || monster.State == MonsterState.Dead) return;
+
+            // Validate distance (adjacent)
+            var dx = Math.Abs(player.Position.X - monster.Position.X);
+            var dy = Math.Abs(player.Position.Y - monster.Position.Y);
+
+            if (dx > 1 || dy > 1) return;
+
+            player.Attack(null!); // player.Attack(IPlayer) expects player, but works for state change
+            
+            int damage = 10; // Default damage for now
+            monster.TakeDamage(damage);
+
+            // Notify attack event (for animation)
+            _worldEvents.OnPlayerAttacked(new PlayerAttackData
+            {
+                AttackerId = player.Id,
+                AttackerName = player.Name,
+                TargetId = monster.Id,
+                TargetName = monster.Name,
+                Damage = damage
+            });
+
+            if (monster.State == MonsterState.Dead)
+            {
+                _gameStateManager.AddPlayerExperience(player, 50); // XP for monster
+                _gameStateManager.CheckForLevelUp(player);
+                
+                _worldEvents.OnMonsterDied(monster.Id.ToString());
+                _worldEvents.OnPlayerExperienceGained(player.Id, 50, player.Experience);
+
+                // Remove o monstro do mundo e libera colisão
+                _monsterManager.RemoveMonster(monster.Id);
+            }
+            else
+            {
+                _worldEvents.OnMonsterDamaged(monster.Id.ToString(), damage, monster.Hp);
+            }
+        }
+
         public void Tick()
         {
             // Processa movimento dos monstros
