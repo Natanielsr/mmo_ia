@@ -15,6 +15,8 @@ export class Player extends Phaser.GameObjects.Container {
     private healthBar: Phaser.GameObjects.Graphics;
     private healthBarBackground: Phaser.GameObjects.Graphics;
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
+    private isAttacking: boolean = false;
+    private facingDirection: string = 'south';
 
     constructor(
         id: string,
@@ -119,10 +121,13 @@ export class Player extends Phaser.GameObjects.Container {
         // Cuida da própria animação
         const animKey = this.getDirectionAnimation(dx, dy);
         if (animKey) {
-            if (this.sprite.texture.key !== 'hero') {
-                this.sprite.setTexture('hero');
+            this.facingDirection = animKey.replace('walk-', '');
+            if (!this.isAttacking) {
+                if (this.sprite.texture.key !== 'hero') {
+                    this.sprite.setTexture('hero');
+                }
+                this.sprite.play(animKey, true);
             }
-            this.sprite.play(animKey, true);
         }
 
 
@@ -169,14 +174,20 @@ export class Player extends Phaser.GameObjects.Container {
         const dy = targetY - this.y;
 
         // Determina direção do ataque
-        let animSuffix = 'south';
-        if (Math.abs(dx) > Math.abs(dy)) {
-            animSuffix = dx > 0 ? 'east' : 'west';
-        } else {
-            animSuffix = dy > 0 ? 'south' : 'north';
+        let animSuffix = this.facingDirection;
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+            if (Math.abs(dx) > Math.abs(dy)) {
+                animSuffix = dx > 0 ? 'east' : 'west';
+            } else {
+                animSuffix = dy > 0 ? 'south' : 'north';
+            }
+            this.facingDirection = animSuffix;
         }
 
         const animKey = `attack-${animSuffix}`;
+        this.isAttacking = true;
+
+        console.log(`[playAttackAnimation] Jogador ${this.id} tocando animação: ${animKey}`);
 
         // Troca para o spritesheet de ataque
         this.sprite.setTexture('hero_slash');
@@ -184,7 +195,9 @@ export class Player extends Phaser.GameObjects.Container {
 
         // Volta ao normal no fim
         this.sprite.once('animationcomplete', (animation: any) => {
+            console.log(`[playAttackAnimation] Animação concluída: ${animation.key}`);
             if (animation.key === animKey) {
+                this.isAttacking = false;
                 this.sprite.setTexture('hero');
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
@@ -193,19 +206,19 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
 
-    private getIdleFrame(animKey: string): number {
-        if (animKey.includes('north')) return 0;
-        if (animKey.includes('west')) return 9;
-        if (animKey.includes('east')) return 27;
+    private getIdleFrame(direction: string): number {
+        if (direction.includes('north')) return 0;
+        if (direction.includes('west')) return 9;
+        if (direction.includes('east')) return 27;
         return 18; // Default sul
     }
 
     private stopWalking(): void {
+        if (this.isAttacking) return;
+
         this.sprite.stop();
-        if (this.sprite.anims.currentAnim) {
-            const idleFrame = this.getIdleFrame(this.sprite.anims.currentAnim.key);
-            this.sprite.setFrame(idleFrame);
-        }
+        const idleFrame = this.getIdleFrame(this.facingDirection);
+        this.sprite.setFrame(idleFrame);
     }
 
     // Sobrescreve o destroy para garantir a limpeza da memória

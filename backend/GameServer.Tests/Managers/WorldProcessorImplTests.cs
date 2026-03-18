@@ -154,8 +154,8 @@ namespace GameServer.Tests.Managers
 
             Assert.Equal(initialHp - 10, player.Hp);
             _mockEvents.Verify(e => e.OnPlayerAttacked(It.Is<PlayerAttackData>(a => 
-                a.AttackerId == monster.Id && 
-                a.TargetId == player.Id && 
+                a.AttackerId == monster.Id.ToString() && 
+                a.TargetId == player.Id.ToString() && 
                 a.Damage == 10)), Times.Once);
         }
 
@@ -175,8 +175,8 @@ namespace GameServer.Tests.Managers
             
             Assert.Equal(initialHp - 10, monster.Hp);
             _mockEvents.Verify(e => e.OnPlayerAttacked(It.Is<PlayerAttackData>(a => 
-                a.AttackerId == player.Id && 
-                a.TargetId == monster.Id && 
+                a.AttackerId == player.Id.ToString() && 
+                a.TargetId == monster.Id.ToString() && 
                 a.Damage == 10)), Times.Once);
         }
     }

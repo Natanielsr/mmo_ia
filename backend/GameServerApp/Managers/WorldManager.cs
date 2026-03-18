@@ -71,7 +71,7 @@ namespace GameServerApp.Managers
                 player.Move(targetPos);
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
-                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id, Name = player.Name, Position = targetPos });
+                _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id.ToString(), Name = player.Name, Position = targetPos });
                 return true;
             }
 
@@ -98,9 +98,9 @@ namespace GameServerApp.Managers
 
             _worldEvents.OnPlayerAttacked(new PlayerAttackData
             {
-                AttackerId = player.Id,
+                AttackerId = player.Id.ToString(),
                 AttackerName = player.Name,
-                TargetId = target.Id,
+                TargetId = target.Id.ToString(),
                 TargetName = target.Name,
                 Damage = damage
             });
@@ -126,12 +126,11 @@ namespace GameServerApp.Managers
             int damage = 10; // Default damage for now
             monster.TakeDamage(damage);
 
-            // Notify attack event (for animation)
             _worldEvents.OnPlayerAttacked(new PlayerAttackData
             {
-                AttackerId = player.Id,
+                AttackerId = player.Id.ToString(),
                 AttackerName = player.Name,
-                TargetId = monster.Id,
+                TargetId = monster.Id.ToString(),
                 TargetName = monster.Name,
                 Damage = damage
             });
@@ -216,9 +215,9 @@ namespace GameServerApp.Managers
                         monster.Attack(player);
                         _worldEvents.OnPlayerAttacked(new PlayerAttackData
                         {
-                            AttackerId = monster.Id,
+                            AttackerId = monster.Id.ToString(),
                             AttackerName = monster.Name,
-                            TargetId = player.Id,
+                            TargetId = player.Id.ToString(),
                             TargetName = player.Name,
                             Damage = monster.AttackPower
                         });
