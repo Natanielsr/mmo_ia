@@ -245,3 +245,58 @@ input {
     color: var(--primary);
     font-weight: 700;
 }
+
+/* Debug Panel */
+.debug-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    max-height: 80vh;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid #6366f1;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #10b981;
+    /* Greenish/Matrix look */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    pointer-events: auto;
+    z-index: 10000;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.debug-panel h2 {
+    color: #6366f1;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #6366f1;
+    padding-bottom: 0.25rem;
+}
+
+.debug-monster-item {
+    margin-bottom: 0.5rem;
+    border-bottom: 1px dashed rgba(99, 102, 241, 0.3);
+    padding-bottom: 0.25rem;
+}
+
+.debug-monster-item span {
+    display: block;
+}
+
+.debug-monster-item .hp-text {
+    color: #f87171;
+}
+
+.debug-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #6366f1;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 800;
+}

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Player } from './Player';
 import { Monster } from './Monster';
 import { MapLoader } from './MapLoader';
+import { DebugPanel } from './DebugPanel';
 import type { PlayerPosData, Position, MonsterData } from '../types';
 
 const GRID_SIZE = 64;
@@ -21,6 +22,8 @@ export class MainScene extends Phaser.Scene {
 
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
+    private debugKey!: Phaser.Input.Keyboard.Key;
+    private debugPanel?: DebugPanel;
 
     public onRequestMove?: (direction: string) => void;
     public onAttackMonster?: (targetId: string) => void;
@@ -52,6 +55,12 @@ export class MainScene extends Phaser.Scene {
                 left: Phaser.Input.Keyboard.KeyCodes.A,
                 right: Phaser.Input.Keyboard.KeyCodes.D
             }) as Record<string, Phaser.Input.Keyboard.Key>;
+
+            this.debugKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F3);
+
+            if (import.meta.env.DEV) {
+                this.debugPanel = new DebugPanel();
+            }
         }
     }
 
@@ -98,6 +107,16 @@ export class MainScene extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
             console.log("Barra de espaço pressionada!");
             this.attackNearestMonster();
+        }
+
+        // Toggle Debug Panel (F3)
+        if (Phaser.Input.Keyboard.JustDown(this.debugKey)) {
+            this.debugPanel?.toggle();
+        }
+
+        // Atualiza Debug Panel
+        if (this.debugPanel) {
+            this.debugPanel.update(this.monsters);
         }
     }
 
