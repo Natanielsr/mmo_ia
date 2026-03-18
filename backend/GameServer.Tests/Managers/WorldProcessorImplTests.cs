@@ -7,6 +7,8 @@ using GameServerApp.Managers;
 using GameServerApp.World;
 using GameServerApp.Dtos;
 using GameServerApp.Services;
+using Microsoft.Extensions.Options;
+using GameServerApp.Contracts.Config;
 
 namespace GameServer.Tests.Managers
 {
@@ -38,7 +40,8 @@ namespace GameServer.Tests.Managers
                 staticWorldManager,
                 _mockMonsterMovementService.Object,
                 _mockMonsterManager.Object,
-                _mockPlayerManager.Object
+                _mockPlayerManager.Object,
+                Options.Create(new WorldConfig())
             );
         }
 

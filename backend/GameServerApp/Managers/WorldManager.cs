@@ -1,10 +1,12 @@
 // backend/GameServerApp/Managers/WorldProcessor.cs
+using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
-using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.Dtos;
 using GameServerApp.World;
+using Microsoft.Extensions.Options;
 
 namespace GameServerApp.Managers
 {
@@ -19,12 +21,8 @@ namespace GameServerApp.Managers
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IMonsterManager _monsterManager;
         private readonly IPlayerManager _playerManager;
+        private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
-        private readonly int _maxMonsters = 15;
-        private readonly int _worldWidth = 32;
-        private readonly int _worldHeight = 32;
-        private readonly int _safeSpawnRadius = 4;
-        private readonly double _respawnTimeSec = 10.0;
 
         public WorldManager(
             IMovementService movementService,
@@ -35,7 +33,8 @@ namespace GameServerApp.Managers
             IStaticWorldManager staticWorldManager,
             IMonsterMovementService monsterMovementService,
             IMonsterManager monsterManager,
-            IPlayerManager playerManager)
+            IPlayerManager playerManager,
+            IOptions<WorldConfig> config)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -46,6 +45,7 @@ namespace GameServerApp.Managers
             _monsterMovementService = monsterMovementService;
             _monsterManager = monsterManager;
             _playerManager = playerManager;
+            _config = config.Value;
         }
 
         // ... resto do código permanece igual
@@ -136,19 +136,18 @@ namespace GameServerApp.Managers
                 Damage = damage
             });
 
-            if (monster.State == MonsterState.Dead)
+            if (monster.IsDead)
             {
                 _gameStateManager.AddPlayerExperience(player, 50); // XP for monster
                 _gameStateManager.CheckForLevelUp(player);
                 
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
-                _worldEvents.OnPlayerExperienceGained(player.Id, 50, player.Experience);
 
-                // Remove o monstro do mundo e libera colisão
+                // Remove o monstro do manager para liberar a colisão e memória
                 _monsterManager.RemoveMonster(monster.Id);
 
                 // Agenda o respawn
-                _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_respawnTimeSec));
+                _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
             }
             else
             {
@@ -237,22 +236,22 @@ namespace GameServerApp.Managers
             }
         }
 
-        private void ProcessMonsterRespawn()
+        public void ProcessMonsterRespawn()
         {
             var now = DateTime.UtcNow;
-            
-            // Filtra os respawns que já estão prontos
-            var readyRespawns = _pendingRespawns.Where(t => now >= t).ToList();
-            
-            foreach (var respawnTime in readyRespawns)
+            var readyCount = _pendingRespawns.Count(t => t <= now);
+
+            if (readyCount > 0)
             {
-                // Verifica se ainda estamos abaixo do limite (segurança extra)
-                if (_monsterManager.GetAllMonsters().Count < _maxMonsters)
+                _pendingRespawns.RemoveAll(t => t <= now);
+
+                for (int i = 0; i < readyCount; i++)
                 {
-                    _monsterManager.SpawnRandomMonsters(1, _worldWidth, _worldHeight, _safeSpawnRadius);
+                    if (_monsterManager.GetAllMonsters().Count < _config.MaxMonsters)
+                    {
+                        _monsterManager.SpawnRandomMonsters(1, _config.WorldWidth, _config.WorldHeight, _config.SafeSpawnRadius);
+                    }
                 }
-                
-                _pendingRespawns.Remove(respawnTime);
             }
         }
 

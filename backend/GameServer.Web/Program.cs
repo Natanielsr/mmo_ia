@@ -1,13 +1,19 @@
 using GameServer.Infrastructure.Services;
 using GameServer.Infrastructure.SignalR;
+using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
 using GameServerApp.Services;
 using GameServerApp.World;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Options
+builder.Services.Configure<WorldConfig>(
+    builder.Configuration.GetSection("MonsterSpawn"));
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -75,12 +81,13 @@ static void InitializeProceduralMap(IServiceProvider services)
 {
     var worldManager = services.GetRequiredService<IWorldManager>();
     var proceduralWorldService = services.GetRequiredService<IProceduralWorldService>();
+    var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
 
     var obstacles = proceduralWorldService.GenerateRandomObstacles(
-        width: 32,
-        height: 32,
+        width: config.WorldWidth,
+        height: config.WorldHeight,
         fillPercentage: 0.10,
-        safeSpawnRadius: 3,
+        safeSpawnRadius: config.SafeSpawnRadius,
         seed: 20260309);
 
     foreach (var obstacle in obstacles)
@@ -92,11 +99,12 @@ static void InitializeProceduralMap(IServiceProvider services)
 static void InitializeRandomMonsters(IServiceProvider services)
 {
     var monsterManager = services.GetRequiredService<IMonsterManager>();
+    var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
 
     monsterManager.SpawnRandomMonsters(
-        count: 15,
-        width: 32,
-        height: 32,
-        safeSpawnRadius: 4,
+        count: config.MaxMonsters,
+        width: config.WorldWidth,
+        height: config.WorldHeight,
+        safeSpawnRadius: config.SafeSpawnRadius,
         seed: 20260310);
 }

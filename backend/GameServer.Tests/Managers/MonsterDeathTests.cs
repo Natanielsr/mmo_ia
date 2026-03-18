@@ -6,6 +6,8 @@ using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
 using GameServerApp.Dtos;
+using Microsoft.Extensions.Options;
+using GameServerApp.Contracts.Config;
 
 namespace GameServer.Tests.Managers
 {
@@ -34,7 +36,8 @@ namespace GameServer.Tests.Managers
                 _mockStaticWorld.Object,
                 _mockMonsterMovementService.Object,
                 _mockMonsterManager.Object,
-                _mockPlayerManager.Object
+                _mockPlayerManager.Object,
+                Options.Create(new WorldConfig())
             );
         }
 
@@ -82,7 +85,8 @@ namespace GameServer.Tests.Managers
                 _mockStaticWorld.Object,
                 _mockMonsterMovementService.Object,
                 realMonsterManager,
-                _mockPlayerManager.Object
+                _mockPlayerManager.Object,
+                Options.Create(new WorldConfig())
             );
 
             var monsterPos = new Position(1, 0);
@@ -174,7 +178,8 @@ namespace GameServer.Tests.Managers
                 _mockStaticWorld.Object,
                 _mockMonsterMovementService.Object,
                 realMonsterManager,
-                _mockPlayerManager.Object
+                _mockPlayerManager.Object,
+                Options.Create(new WorldConfig())
             );
 
             mockIdGen.Setup(s => s.GenerateId()).Returns(10);
@@ -216,7 +221,8 @@ namespace GameServer.Tests.Managers
                 _mockStaticWorld.Object,
                 _mockMonsterMovementService.Object,
                 mockMonsterManager.Object,
-                _mockPlayerManager.Object
+                _mockPlayerManager.Object,
+                Options.Create(new WorldConfig())
             );
 
             mockMonsterManager.Setup(m => m.GetMonsterById(It.IsAny<long>())).Returns(monster);
