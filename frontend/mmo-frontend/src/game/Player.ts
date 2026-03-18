@@ -115,6 +115,7 @@ export class Player extends Phaser.GameObjects.Container {
         // Cuida da própria animação
         const animKey = this.getDirectionAnimation(dx, dy);
         if (animKey) {
+            this.sprite.setTexture('hero');
             this.sprite.play(animKey, true);
         }
 
@@ -151,6 +152,33 @@ export class Player extends Phaser.GameObjects.Container {
         if (dx === 0 && dy === 0) return '';
         if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'walk-east' : 'walk-west';
         return dy > 0 ? 'walk-south' : 'walk-north';
+    }
+
+    public playAttackAnimation(targetX: number, targetY: number): void {
+        const dx = targetX - this.x;
+        const dy = targetY - this.y;
+
+        // Determina direção do ataque
+        let animSuffix = 'south';
+        if (Math.abs(dx) > Math.abs(dy)) {
+            animSuffix = dx > 0 ? 'east' : 'west';
+        } else {
+            animSuffix = dy > 0 ? 'south' : 'north';
+        }
+
+        const animKey = `attack-${animSuffix}`;
+
+        // Troca para o spritesheet de ataque
+        this.sprite.setTexture('hero_slash');
+        this.sprite.play(animKey, true);
+
+        // Volta ao normal no fim
+        this.sprite.once('animationcomplete', (animation: any) => {
+            if (animation.key === animKey) {
+                this.sprite.setTexture('hero');
+                this.stopWalking();
+            }
+        });
     }
 
     private stopWalking(): void {

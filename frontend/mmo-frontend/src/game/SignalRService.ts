@@ -37,6 +37,9 @@ export class SignalRService {
         this.mainScene.onRequestMove = (direction: string) => {
             this.invoke("RequestMove", direction).catch(console.error);
         };
+        this.mainScene.onAttackMonster = (targetId: string) => {
+            this.attackMonster(targetId).catch(console.error);
+        };
 
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
@@ -143,15 +146,25 @@ export class SignalRService {
             this.mainScene?.monsterMoved(monsterData);
         });
 
-        this.connection.on("MonsterDied", (monsterId: number) => {
-            this.mainScene?.monsterDied(monsterId);
-            addLog(`Monstro ID ${monsterId} foi derrotado!`, "success");
+        this.connection.on("MonsterDied", (monsterId: string | number) => {
+            const idStr = String(monsterId);
+            this.mainScene?.monsterDied(idStr);
+            addLog(`Monstro ID ${idStr} foi derrotado!`, "success");
         });
 
-        this.connection.on("MonsterDamaged", (data: { monsterId: number; damage: number; currentHp: number }) => {
-            this.mainScene?.monsterDamaged(data);
-            addLog(`Monstro ID ${data.monsterId} sofreu ${data.damage} de dano!`, "info");
+        this.connection.on("MonsterDamaged", (data: any) => {
+            const normalizedData = {
+                id: String(data.id ?? data.Id ?? data.monsterId),
+                damage: Number(data.damage ?? data.Damage),
+                currentHp: Number(data.currentHp ?? data.CurrentHp)
+            };
+            this.mainScene?.monsterDamaged(normalizedData);
+            addLog(`Monstro ID ${normalizedData.id} sofreu ${normalizedData.damage} de dano!`, "info");
         });
+    }
+
+    public async attackMonster(targetId: string): Promise<void> {
+        await this.invoke("RequestAttack", targetId);
     }
 
     public invoke(methodName: string, ...args: any[]): Promise<any> {

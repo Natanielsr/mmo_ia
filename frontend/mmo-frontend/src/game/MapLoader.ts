@@ -26,7 +26,6 @@ export class MapLoader {
             const mapObjects: MapObjectData[] = await response.json();
             this.mapObjects = mapObjects;
 
-            console.log("Carregados objetos do mapa:", mapObjects);
             return mapObjects;
         } catch (error) {
             console.error('Erro ao carregar objetos do mapa:', error);

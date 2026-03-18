@@ -7,10 +7,16 @@ export class PreloadScene extends Phaser.Scene {
 
     preload() {
         // Carrega spritesheet do personagem
-        this.load.spritesheet('hero', 'assets/BODY_male.png', {
+        this.load.spritesheet('hero', 'assets/walkcycle/BODY_male.png', {
             frameWidth: 64,
             frameHeight: 64
         });
+
+        this.load.spritesheet('hero_slash', 'assets/slash/BODY_human.png', {
+            frameWidth: 64,
+            frameHeight: 64
+        });
+
 
         // Futuro: outros assets podem ser carregados aqui
         this.load.image('rat', 'assets/rat.png');
@@ -68,6 +74,39 @@ export class PreloadScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 35 }),
             frameRate: 36,
             repeat: -1
+        });
+
+        // --- ANIMAÇÕES DE ATAQUE (SLASH) ---
+        // Norte
+        this.anims.create({
+            key: 'attack-north',
+            frames: this.anims.generateFrameNumbers('hero_slash', { start: 0, end: 5 }),
+            frameRate: 24,
+            repeat: 0
+        });
+
+        // Oeste
+        this.anims.create({
+            key: 'attack-west',
+            frames: this.anims.generateFrameNumbers('hero_slash', { start: 6, end: 11 }),
+            frameRate: 24,
+            repeat: 0
+        });
+
+        // Sul
+        this.anims.create({
+            key: 'attack-south',
+            frames: this.anims.generateFrameNumbers('hero_slash', { start: 12, end: 17 }),
+            frameRate: 24,
+            repeat: 0
+        });
+
+        // Leste
+        this.anims.create({
+            key: 'attack-east',
+            frames: this.anims.generateFrameNumbers('hero_slash', { start: 18, end: 23 }),
+            frameRate: 24,
+            repeat: 0
         });
     }
 }

@@ -23,6 +23,7 @@ export class MainScene extends Phaser.Scene {
     private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
 
     public onRequestMove?: (direction: string) => void;
+    public onAttackMonster?: (targetId: string) => void;
 
     constructor() {
         super({ key: 'MainScene' });
@@ -91,6 +92,44 @@ export class MainScene extends Phaser.Scene {
 
         if (direction) {
             this.onRequestMove(direction);
+        }
+
+        // Ataque com Barra de Espaço
+        if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+            console.log("Barra de espaço pressionada!");
+            this.attackNearestMonster();
+        }
+    }
+
+    private attackNearestMonster(): void {
+        const myPlayer = this.getMyPlayer();
+        console.log(this.onAttackMonster);
+        if (!myPlayer || !this.onAttackMonster) return;
+
+        let nearestMonster: Monster | null = null;
+
+        console.log("--- Iniciando busca por monstro adjacente ---");
+
+        for (const id in this.monsters) {
+            const monster = this.monsters[id];
+            if (monster.isDead) continue;
+
+            const dx = Math.round(Math.abs(myPlayer.gridPosition.x - monster.gridPosition.x));
+            const dy = Math.round(Math.abs(myPlayer.gridPosition.y - monster.gridPosition.y));
+
+            console.log(`Checando monstro ${monster.name}: id=${monster.id}, dist_x=${dx}, dist_y=${dy}`);
+
+            if (dx <= 1 && dy <= 1 && (dx + dy) > 0) { // Adjacente mas não no mesmo tile (se for o caso)
+                nearestMonster = monster;
+                break; // Ataca o primeiro adjacente encontrado
+            }
+        }
+
+        if (nearestMonster) {
+            console.log(`Atacando monstro: ${nearestMonster.name} (${nearestMonster.id})`);
+            this.onAttackMonster(nearestMonster.id);
+        } else {
+            console.log("Nenhum monstro adjacente encontrado.");
         }
     }
 
@@ -192,7 +231,15 @@ export class MainScene extends Phaser.Scene {
     private spawnMonster(monsterData: MonsterData): void {
         const newMonster = new Monster(monsterData, this);
         this.monsters[monsterData.id] = newMonster;
-        console.log(`Monstro spawnado: ${monsterData.name} (ID: ${monsterData.id})`);
+
+        // Habilita interação com o mouse
+        newMonster.setSize(GRID_SIZE, GRID_SIZE);
+        newMonster.setInteractive();
+        newMonster.on('pointerdown', () => {
+            if (this.onAttackMonster) {
+                this.onAttackMonster(newMonster.id);
+            }
+        });
     }
 
     public monsterSpawned(monsterData: MonsterData): void {
@@ -203,7 +250,7 @@ export class MainScene extends Phaser.Scene {
         this.syncMonster(monsterData);
     }
 
-    public monsterDied(monsterId: number): void {
+    public monsterDied(monsterId: string): void {
         if (this.monsters[monsterId]) {
             const monster = this.monsters[monsterId];
             monster.isDead = true;
@@ -220,9 +267,9 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    public monsterDamaged(data: { monsterId: number; damage: number; currentHp: number }): void {
-        if (this.monsters[data.monsterId]) {
-            const monster = this.monsters[data.monsterId];
+    public monsterDamaged(data: { id: string; damage: number; currentHp: number }): void {
+        if (this.monsters[data.id]) {
+            const monster = this.monsters[data.id];
             monster.takeDamage(data.damage);
 
             // Mostra dano flutuante
@@ -232,6 +279,23 @@ export class MainScene extends Phaser.Scene {
 
     public playerAttacked(data: { attackerId: string; targetId: string; damage: number }): void {
         const targetId = data.targetId.toString();
+        const attackerId = data.attackerId.toString();
+
+        // Faz o atacante rodar animação se for um player
+        if (this.players[attackerId]) {
+            const attacker = this.players[attackerId];
+            // Se o alvo for player
+            if (this.players[targetId]) {
+                const target = this.players[targetId];
+                attacker.playAttackAnimation(target.x, target.y);
+            }
+            // Se o alvo for monstro
+            else if (this.monsters[targetId]) {
+                const monster = this.monsters[targetId];
+                attacker.playAttackAnimation(monster.x, monster.y);
+            }
+        }
+
         if (this.players[targetId]) {
             const player = this.players[targetId];
             player.takeDamage(data.damage);
