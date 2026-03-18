@@ -19,6 +19,12 @@ namespace GameServerApp.Managers
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IMonsterManager _monsterManager;
         private readonly IPlayerManager _playerManager;
+        private readonly List<DateTime> _pendingRespawns = new();
+        private readonly int _maxMonsters = 15;
+        private readonly int _worldWidth = 32;
+        private readonly int _worldHeight = 32;
+        private readonly int _safeSpawnRadius = 4;
+        private readonly double _respawnTimeSec = 10.0;
 
         public WorldManager(
             IMovementService movementService,
@@ -140,6 +146,9 @@ namespace GameServerApp.Managers
 
                 // Remove o monstro do mundo e libera colisão
                 _monsterManager.RemoveMonster(monster.Id);
+
+                // Agenda o respawn
+                _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_respawnTimeSec));
             }
             else
             {
@@ -230,7 +239,21 @@ namespace GameServerApp.Managers
 
         private void ProcessMonsterRespawn()
         {
-            // TODO: Implementar respawn de monstros mortos após um tempo
+            var now = DateTime.UtcNow;
+            
+            // Filtra os respawns que já estão prontos
+            var readyRespawns = _pendingRespawns.Where(t => now >= t).ToList();
+            
+            foreach (var respawnTime in readyRespawns)
+            {
+                // Verifica se ainda estamos abaixo do limite (segurança extra)
+                if (_monsterManager.GetAllMonsters().Count < _maxMonsters)
+                {
+                    _monsterManager.SpawnRandomMonsters(1, _worldWidth, _worldHeight, _safeSpawnRadius);
+                }
+                
+                _pendingRespawns.Remove(respawnTime);
+            }
         }
 
         public void InstantiateObject(IWorldObject worldObject)
