@@ -198,7 +198,7 @@ export class Player extends Phaser.GameObjects.Container {
             console.log(`[playAttackAnimation] Animação concluída: ${animation.key}`);
             if (animation.key === animKey) {
                 this.isAttacking = false;
-                this.sprite.setTexture('hero');
+                this.sprite.setTexture('hero', this.getIdleFrame(this.facingDirection));
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
                 });
