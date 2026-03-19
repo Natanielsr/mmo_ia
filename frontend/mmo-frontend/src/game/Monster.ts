@@ -42,7 +42,7 @@ export class Monster extends Phaser.GameObjects.Container {
 
         // 3. Nome do monstro
         const textOffsetY = (GRID_SIZE / 2) + 20;
-        this.nameText = scene.add.text(0, -textOffsetY, `${this.name} (${this.hp}/${this.maxHp}) 💀`, {
+        this.nameText = scene.add.text(0, -textOffsetY, `${this.name} (${this.hp}/${this.maxHp})`, {
             fontSize: '12px',
             color: '#fff',
             fontFamily: 'Inter',
@@ -121,9 +121,11 @@ export class Monster extends Phaser.GameObjects.Container {
 
         // Atualiza o texto do nome com HP atual
         if (!this.isDead) {
-            this.nameText.setText(`${this.name} (${this.hp}/${this.maxHp}) 💀`);
+            this.nameText.setText(`${this.name} (${this.hp}/${this.maxHp})`);
         } else {
-            this.nameText.setText(`${this.name} 💀`);
+            //hide nameText and HpBar
+            this.nameText.visible = false;
+            this.hpBar.visible = false;
             this.sprite.setAlpha(0.5);
         }
 
@@ -153,6 +155,14 @@ export class Monster extends Phaser.GameObjects.Container {
             attackPower: 0, // não usado aqui
             isDead: this.hp <= 0
         });
+    }
+
+    public die(): void {
+        this.isDead = true;
+        this.sprite.setAlpha(0.5);
+        this.nameText.setText(`${this.name} 💀`);
+        this.nameText.visible = false;
+        this.hpBar.visible = false;
     }
 
     private static getWorldCoordinates(serverPosition: Position): Position {

@@ -276,9 +276,7 @@ export class MainScene extends Phaser.Scene {
     public monsterDied(monsterId: string): void {
         if (this.monsters[monsterId]) {
             const monster = this.monsters[monsterId];
-            monster.isDead = true;
-            monster.sprite.setAlpha(0.5);
-            monster.nameText.setText(`${monster.name} 💀`);
+            monster.die();
 
             // Remove o monstro após 5 segundos
             this.time.delayedCall(5000, () => {
