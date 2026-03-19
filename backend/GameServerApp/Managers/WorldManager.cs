@@ -53,6 +53,12 @@ namespace GameServerApp.Managers
         {
             if (player.State == PlayerState.Dead) return false;
 
+            // Block movement during attack animation (approx 400ms)
+            if ((DateTime.UtcNow - player.LastAttackTime).TotalMilliseconds < 400)
+            {
+                return false;
+            }
+
             // Enforce speed limit:
             if (player.Speed > 0)
             {

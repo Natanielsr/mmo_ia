@@ -15,7 +15,7 @@ export class Player extends Phaser.GameObjects.Container {
     private healthBar: Phaser.GameObjects.Graphics;
     private healthBarBackground: Phaser.GameObjects.Graphics;
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
-    private isAttacking: boolean = false;
+    public isAttacking: boolean = false;
     private facingDirection: string = 'south';
 
     constructor(

@@ -19,6 +19,7 @@ namespace GameServerApp.Contracts.World
         long Experience { get; }
         double Speed { get; }
         DateTime LastMoveTime { get; }
+        DateTime LastAttackTime { get; }
         PlayerState State { get; }
 
         void Move(Position newPosition);

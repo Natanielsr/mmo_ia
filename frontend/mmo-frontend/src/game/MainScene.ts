@@ -94,19 +94,23 @@ export class MainScene extends Phaser.Scene {
 
         let direction: string | null = null;
 
-        if (this.cursors.up.isDown || this.wasd.up.isDown) direction = "north";
-        else if (this.cursors.down.isDown || this.wasd.down.isDown) direction = "south";
-        else if (this.cursors.left.isDown || this.wasd.left.isDown) direction = "west";
-        else if (this.cursors.right.isDown || this.wasd.right.isDown) direction = "east";
+        const myPlayer = this.getMyPlayer();
 
-        if (direction) {
-            this.onRequestMove(direction);
-        }
+        if (!myPlayer || !myPlayer.isAttacking) {
+            if (this.cursors.up.isDown || this.wasd.up.isDown) direction = "north";
+            else if (this.cursors.down.isDown || this.wasd.down.isDown) direction = "south";
+            else if (this.cursors.left.isDown || this.wasd.left.isDown) direction = "west";
+            else if (this.cursors.right.isDown || this.wasd.right.isDown) direction = "east";
 
-        // Ataque com Barra de Espaço
-        if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
-            console.log("Barra de espaço pressionada!");
-            this.attackNearestMonster();
+            if (direction) {
+                this.onRequestMove(direction);
+            }
+
+            // Ataque com Barra de Espaço
+            if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+                console.log("Barra de espaço pressionada!");
+                this.attackNearestMonster();
+            }
         }
 
         // Toggle Debug Panel (F3)

@@ -23,6 +23,7 @@ namespace GameServerApp.World
         public long Experience { get; private set; }
         public double Speed { get; private set; }
         public DateTime LastMoveTime { get; private set; }
+        public DateTime LastAttackTime { get; private set; }
         public PlayerState State { get; private set; }
         public bool IsDead => State == PlayerState.Dead;
 
@@ -44,6 +45,7 @@ namespace GameServerApp.World
             Experience = 0;
             Speed = 2.0;
             LastMoveTime = DateTime.MinValue;
+            LastAttackTime = DateTime.MinValue;
             State = PlayerState.Alive;
         }
 
@@ -62,6 +64,7 @@ namespace GameServerApp.World
                 return;
 
             State = PlayerState.InCombat;
+            LastAttackTime = DateTime.UtcNow;
         }
 
         public void TakeDamage(int damage)
