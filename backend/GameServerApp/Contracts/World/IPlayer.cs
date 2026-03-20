@@ -18,12 +18,13 @@ namespace GameServerApp.Contracts.World
         int Level { get; }
         long Experience { get; }
         double Speed { get; }
+        int AttackPoints { get; }
         DateTime LastMoveTime { get; }
         DateTime LastAttackTime { get; }
         PlayerState State { get; }
 
         void Move(Position newPosition);
-        void Attack(IPlayer target);
+        void Attack(IWorldObject target);
         void TakeDamage(int damage);
         void Die();
         void Revive();

@@ -88,6 +88,12 @@ namespace GameServerApp.Managers
         {
             if (player.State == PlayerState.Dead || target.State == PlayerState.Dead) return;
 
+            // Verifica cooldown de ataque
+            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.AttackSpeedSeconds)
+            {
+                return;
+            }
+
             player.Attack(target);
             int damage = 10;
             target.TakeDamage(damage);
@@ -116,8 +122,20 @@ namespace GameServerApp.Managers
         {
             if (player.State == PlayerState.Dead) return;
 
+            // Verifica cooldown de ataque
+            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.AttackSpeedSeconds)
+            {
+                return;
+            }
+
+            // Não pode atacar enquanto está se movendo
+            if (IsPlayerMoving(player))
+            {
+                return;
+            }
+
             if (!long.TryParse(monsterId, out long id)) return;
-            
+
             var monster = _monsterManager.GetMonsterById(id);
             if (monster == null || monster.State == MonsterState.Dead) return;
 
@@ -127,9 +145,9 @@ namespace GameServerApp.Managers
 
             if (dx > 1 || dy > 1) return;
 
-            player.Attack(null!); // player.Attack(IPlayer) expects player, but works for state change
-            
-            int damage = 10; // Default damage for now
+            player.Attack(monster); // player.Attack(IPlayer) expects player, but works for state change
+
+            int damage = player.AttackPoints;
             monster.TakeDamage(damage);
 
             _worldEvents.OnPlayerAttacked(new PlayerAttackData
@@ -145,7 +163,7 @@ namespace GameServerApp.Managers
             {
                 _gameStateManager.AddPlayerExperience(player, 50); // XP for monster
                 _gameStateManager.CheckForLevelUp(player);
-                
+
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
 
                 // Remove o monstro do manager para liberar a colisão e memória
@@ -214,7 +232,7 @@ namespace GameServerApp.Managers
 
                     var dx = Math.Abs(monster.Position.X - player.Position.X);
                     var dy = Math.Abs(monster.Position.Y - player.Position.Y);
-                    
+
                     // Adjacente (incluindo diagonais se for grid de 1 casa)
                     if (dx <= 1 && dy <= 1)
                     {
@@ -233,9 +251,9 @@ namespace GameServerApp.Managers
                             _gameStateManager.PlayerDied(player);
                             _worldEvents.OnPlayerDied(player.Id);
                         }
-                        
+
                         // O monstro ataca apenas um player por tick
-                        break; 
+                        break;
                     }
                 }
             }
@@ -275,5 +293,14 @@ namespace GameServerApp.Managers
                 throw new Exception("Invalid object type must be Dynamic or Static world object");
             }
         }
+
+        private bool IsPlayerMoving(IPlayer player)
+        {
+            // Um jogador é considerado em movimento se moveu nos últimos 100ms
+            // Isso permite um pequeno atraso após parar de mover antes de poder atacar
+            const int movementCooldownMs = 100;
+            return (DateTime.UtcNow - player.LastMoveTime).TotalMilliseconds < movementCooldownMs;
+        }
     }
 }
+

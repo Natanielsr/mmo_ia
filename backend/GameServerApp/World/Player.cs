@@ -22,6 +22,8 @@ namespace GameServerApp.World
         public int Level { get; private set; }
         public long Experience { get; private set; }
         public double Speed { get; private set; }
+
+        public int AttackPoints { get; private set; }
         public DateTime LastMoveTime { get; private set; }
         public DateTime LastAttackTime { get; private set; }
         public PlayerState State { get; private set; }
@@ -29,7 +31,7 @@ namespace GameServerApp.World
 
         private const long ExperiencePerLevel = 1000;
 
-        public Player(long id, string name, Position startPosition, int maxHp = 100)
+        public Player(long id, string name, Position startPosition, int attackPoints = 10, int maxHp = 100)
         {
             if (startPosition == null)
             {
@@ -41,6 +43,7 @@ namespace GameServerApp.World
             Position = startPosition;
             MaxHp = maxHp;
             Hp = maxHp;
+            AttackPoints = attackPoints;
             Level = 1;
             Experience = 0;
             Speed = 2.0;
@@ -58,7 +61,7 @@ namespace GameServerApp.World
             LastMoveTime = DateTime.UtcNow;
         }
 
-        public void Attack(IPlayer target)
+        public void Attack(IWorldObject target)
         {
             if (State == PlayerState.Dead)
                 return;
