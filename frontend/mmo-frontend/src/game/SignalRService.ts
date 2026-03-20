@@ -134,7 +134,6 @@ export class SignalRService {
         // --- Eventos de Monstros ---
         this.connection.on("SyncMonsters", (monsterList: MonsterData[]) => {
             this.mainScene?.syncMonsters(monsterList);
-            addLog(`Sincronizados ${monsterList.length} monstros no mundo.`, "info");
         });
 
         this.connection.on("MonsterSpawned", (monsterData: MonsterData) => {
@@ -159,7 +158,6 @@ export class SignalRService {
                 currentHp: Number(data.currentHp ?? data.CurrentHp)
             };
             this.mainScene?.monsterDamaged(normalizedData);
-            addLog(`Monstro ID ${normalizedData.id} sofreu ${normalizedData.damage} de dano!`, "info");
         });
     }
 

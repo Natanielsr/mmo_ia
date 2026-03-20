@@ -302,21 +302,17 @@ export class MainScene extends Phaser.Scene {
         const targetId = data.targetId.toString();
         const attackerId = data.attackerId.toString();
 
-        console.log(`[playerAttacked] Recebido: Atacante ${attackerId} -> Alvo ${targetId} (Dano: ${data.damage})`);
-
         // Faz o atacante rodar animação se for um player
         if (this.players[attackerId]) {
             const attacker = this.players[attackerId];
             // Se o alvo for player
             if (this.players[targetId]) {
                 const target = this.players[targetId];
-                console.log(`[playerAttacked] Atacante Player atacou Player Alvo! Iniciando animação.`);
                 attacker.playAttackAnimation(target.x, target.y);
             }
             // Se o alvo for monstro
             else if (this.monsters[targetId]) {
                 const monster = this.monsters[targetId];
-                console.log(`[playerAttacked] Atacante Player atacou Monstro ${targetId}! Iniciando animação.`);
                 attacker.playAttackAnimation(monster.x, monster.y);
             }
         }

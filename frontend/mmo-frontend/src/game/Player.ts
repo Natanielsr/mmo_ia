@@ -187,15 +187,12 @@ export class Player extends Phaser.GameObjects.Container {
         const animKey = `attack-${animSuffix}`;
         this.isAttacking = true;
 
-        console.log(`[playAttackAnimation] Jogador ${this.id} tocando animação: ${animKey}`);
-
         // Troca para o spritesheet de ataque
         this.sprite.setTexture('hero_slash');
         this.sprite.play(animKey, true);
 
         // Volta ao normal no fim
         this.sprite.once('animationcomplete', (animation: any) => {
-            console.log(`[playAttackAnimation] Animação concluída: ${animation.key}`);
             if (animation.key === animKey) {
                 this.isAttacking = false;
                 this.sprite.setTexture('hero', this.getIdleFrame(this.facingDirection));
