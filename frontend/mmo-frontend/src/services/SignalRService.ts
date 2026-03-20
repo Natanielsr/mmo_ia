@@ -1,5 +1,5 @@
 import * as signalR from '@microsoft/signalr';
-import { MainScene } from './MainScene';
+import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
 import { addLog, updateUIHealthBar, overlay, gameContainer, errorBanner, btnJoin } from '../ui';
 
@@ -94,7 +94,7 @@ export class SignalRService {
             this.mainScene?.updatePlayerPosition(playerData);
         });
 
-        this.connection.on("PlayerLeft", (playerId: number) => {
+        this.connection.on("PlayerLeft", (playerId: string) => {
             addLog(`${playerId} saiu do mundo.`);
             this.mainScene?.removePlayer(playerId);
         });
@@ -119,14 +119,14 @@ export class SignalRService {
             }
         });
 
-        this.connection.on("PlayerDied", (playerId: number) => {
+        this.connection.on("PlayerDied", (playerId: string) => {
             const player = this.mainScene?.getPlayer(playerId);
             const playerName = player ? player.name : `Jogador ${playerId}`;
 
             this.mainScene?.playerDied(playerId);
             addLog(`${playerName} morreu!`, "error");
 
-            if (this.mainScene?.myId === playerId.toString()) {
+            if (this.mainScene?.getMyPlayer()?.id === playerId.toString()) {
                 updateUIHealthBar(0, 100);
             }
         });
@@ -145,10 +145,11 @@ export class SignalRService {
             this.mainScene?.monsterMoved(monsterData);
         });
 
-        this.connection.on("MonsterDied", (monsterId: string | number) => {
+        this.connection.on("MonsterDied", (monsterId: string) => {
             const idStr = String(monsterId);
             this.mainScene?.monsterDied(idStr);
-            addLog(`Monstro ID ${idStr} foi derrotado!`, "success");
+            const monster = this.mainScene?.getMonster(monsterId);
+            addLog(`${monster?.name} foi derrotado!`, "success");
         });
 
         this.connection.on("MonsterDamaged", (data: any) => {

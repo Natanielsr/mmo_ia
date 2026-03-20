@@ -1,8 +1,8 @@
 import './css/style.css';
 import Phaser from 'phaser';
-import { PreloadScene } from './game/PreloadScene';
-import { MainScene } from './game/MainScene';
-import { SignalRService } from './game/SignalRService';
+import { PreloadScene } from './scenes/PreloadScene';
+import { MainScene } from './scenes/MainScene';
+import { SignalRService } from './services/SignalRService';
 import { inputName, btnJoin, gameContainer } from './ui';
 
 // Impede que o Phaser capture as teclas enquanto o utilizador digita no input

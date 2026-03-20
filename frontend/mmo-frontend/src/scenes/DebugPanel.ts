@@ -1,4 +1,4 @@
-import type { Monster } from './Monster';
+import type { Monster } from '../entities/Monster';
 
 export class DebugPanel {
     private container: HTMLDivElement;
