@@ -138,10 +138,15 @@ export class Monster extends Phaser.GameObjects.Container {
 
         this.hp = Math.max(0, this.hp - damage);
 
-        // Animação de dano (flash vermelho)
-        this.sprite.setTint(0xFF5555);
-        this.scene.time.delayedCall(100, () => {
-            this.sprite.setTint(0xFF0000);
+        // Flash vermelho no sprite
+        this.scene.tweens.add({
+            targets: this.sprite,
+            tint: 0xff0000,
+            duration: 100,
+            yoyo: true,
+            onComplete: () => {
+                if (!this.isDead) this.sprite.clearTint();
+            }
         });
 
         // Atualiza visual

@@ -149,6 +149,7 @@ namespace GameServerApp.Managers
 
             int damage = player.AttackPoints;
             monster.TakeDamage(damage);
+            _worldEvents.OnMonsterDamaged(monster.Id.ToString(), damage, monster.Hp);
 
             _worldEvents.OnPlayerAttacked(new PlayerAttackData
             {
@@ -171,10 +172,6 @@ namespace GameServerApp.Managers
 
                 // Agenda o respawn
                 _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
-            }
-            else
-            {
-                _worldEvents.OnMonsterDamaged(monster.Id.ToString(), damage, monster.Hp);
             }
         }
 

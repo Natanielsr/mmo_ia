@@ -65,6 +65,7 @@ export class CombatSystem {
     }
 
     private showDamageText(damage: number, x: number, y: number): void {
+        console.log("Monster damaged " + damage);
         const damageText = this.scene.add.text(x, y - 50, `-${damage}`, {
             fontSize: '16px', color: '#FF5555', fontFamily: 'Inter',
             stroke: '#000000', strokeThickness: 3
