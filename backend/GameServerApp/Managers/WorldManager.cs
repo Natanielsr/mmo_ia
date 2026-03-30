@@ -25,6 +25,7 @@ namespace GameServerApp.Managers
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
+        private DateTime _lastRegenTime = DateTime.UtcNow;
 
         public WorldManager(
             IMovementService movementService,
@@ -207,6 +208,9 @@ namespace GameServerApp.Managers
 
             // Respawn de monstros mortos
             ProcessMonsterRespawn();
+            
+            // Regeneração de player
+            ProcessPlayerRegeneration();
         }
 
         private void ProcessMonsterMovement()
@@ -274,6 +278,32 @@ namespace GameServerApp.Managers
                         // O monstro ataca apenas um player por tick
                         break;
                     }
+                }
+            }
+        }
+
+        private void ProcessPlayerRegeneration()
+        {
+            var now = DateTime.UtcNow;
+            if ((now - _lastRegenTime).TotalSeconds < 2.0) return;
+
+            _lastRegenTime = now;
+
+            var players = _playerManager.GetAllPlayers();
+            foreach (var player in players)
+            {
+                if (player.State != PlayerState.Dead && player.Hp < player.MaxHp)
+                {
+                    player.Heal(2); // Regenera 2 HP a cada 2 segundos
+                    
+                    _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+                    {
+                        Id = player.Id.ToString(),
+                        Hp = player.Hp,
+                        MaxHp = player.MaxHp,
+                        Level = player.Level,
+                        Experience = player.Experience
+                    });
                 }
             }
         }
