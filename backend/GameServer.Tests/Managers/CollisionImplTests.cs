@@ -2,12 +2,14 @@ using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using Microsoft.Extensions.Options;
+using GameServerApp.Contracts.Config;
 
 namespace GameServer.Tests.Managers
 {
     public class CollisionImplTests
     {
-        private readonly StaticWorldManager _staticWorldManager = new();
+        private readonly StaticWorldManager _staticWorldManager = new(Options.Create(new WorldConfig()));
         private readonly CollisionManager _collisionManager;
 
         public CollisionImplTests()

@@ -107,6 +107,16 @@ public class ProceduralWorldServiceTests
             throw new NotImplementedException();
         }
 
+        public bool IsChunkLoaded(ChunkCoord coord)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IStaticWorldObject> GetChunkObjects(ChunkCoord coord)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool RemoveObjectAt(Position position)
         {
             throw new NotImplementedException();

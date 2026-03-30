@@ -25,6 +25,7 @@ namespace GameServer.Tests.Managers
         private readonly Mock<IMonsterMovementService> _mockMonsterMovementService = new();
         private readonly Mock<IItemManager> _mockItemManager = new();
         private readonly Mock<IIdGeneratorService> _mockIdGenerator = new();
+        private readonly Mock<IWorldGenerator> _mockWorldGenerator = new();
 
         public MonsterDeathTests()
         {
@@ -41,6 +42,7 @@ namespace GameServer.Tests.Managers
                 _mockPlayerManager.Object,
                 _mockItemManager.Object,
                 _mockIdGenerator.Object,
+                _mockWorldGenerator.Object,
                 Options.Create(new WorldConfig())
             );
         }
@@ -92,6 +94,7 @@ namespace GameServer.Tests.Managers
                 _mockPlayerManager.Object,
                 _mockItemManager.Object,
                 _mockIdGenerator.Object,
+                _mockWorldGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 
@@ -183,6 +186,7 @@ namespace GameServer.Tests.Managers
                 _mockPlayerManager.Object,
                 _mockItemManager.Object,
                 _mockIdGenerator.Object,
+                _mockWorldGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 
@@ -225,6 +229,7 @@ namespace GameServer.Tests.Managers
                 _mockPlayerManager.Object,
                 _mockItemManager.Object,
                 _mockIdGenerator.Object,
+                _mockWorldGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 

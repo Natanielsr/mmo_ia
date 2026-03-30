@@ -17,10 +17,11 @@ namespace GameServerApp.World
         public Size Size { get; }
         public float Rotation { get; }
 
-        public WorldObject(long id, string name, ObjectType type, Position position, bool isPassable = false, float rotation = 0)
+        public WorldObject(long id, string name, string objectCode, ObjectType type, Position position, bool isPassable = false, float rotation = 0)
         {
             Id = id;
             Name = name;
+            ObjectCode = objectCode;
             Type = type;
             Position = position;
             IsPassable = isPassable;

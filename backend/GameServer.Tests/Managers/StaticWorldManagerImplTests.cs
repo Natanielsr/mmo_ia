@@ -3,6 +3,8 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using Microsoft.Extensions.Options;
+using GameServerApp.Contracts.Config;
 
 namespace GameServer.Tests.Managers
 {
@@ -15,7 +17,7 @@ namespace GameServer.Tests.Managers
 
         public StaticWorldManagerImplTests()
         {
-            _manager = new StaticWorldManager();
+            _manager = new StaticWorldManager(Options.Create(new WorldConfig()));
         }
 
         [Fact]

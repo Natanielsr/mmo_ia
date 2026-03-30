@@ -16,7 +16,7 @@ namespace GameServer.Tests.Managers
     {
         private readonly WorldManager _worldManager;
         private readonly MovementService _movementService = new();
-        private readonly StaticWorldManager staticWorldManager = new();
+        private readonly StaticWorldManager staticWorldManager = new(Options.Create(new WorldConfig()));
         private readonly CollisionManager _collisionManager;
         private readonly CombatService _combatService = new();
         private readonly GameStateManager _gameStateManager;
@@ -45,6 +45,7 @@ namespace GameServer.Tests.Managers
                 _mockPlayerManager.Object,
                 _mockItemManager.Object,
                 _mockIdGenerator.Object,
+                new Mock<IWorldGenerator>().Object,
                 Options.Create(new WorldConfig())
             );
         }
