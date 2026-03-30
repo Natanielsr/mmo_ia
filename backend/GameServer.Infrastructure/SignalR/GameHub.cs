@@ -64,6 +64,9 @@ namespace GameServer.Infrastructure.SignalR
             _worldEvents.OnPlayerJoined(playerPositionData);
             _worldEvents.OnPlayerStatusUpdated(playerStatusData);
 
+            // 2.5 Load initial chunks
+            _worldProcessor.ProcessChunkLoading(player, Context.ConnectionId);
+
             // 3. Send all existing players to the new player
             var otherPlayers = _playerManager.GetAllPlayers()
                 .Where(p => p.Id != player.Id)

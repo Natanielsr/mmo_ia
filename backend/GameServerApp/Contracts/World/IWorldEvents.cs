@@ -71,5 +71,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when an item is picked up by a player.
         /// </summary>
         void OnItemPickedUp(string itemId, long playerId);
+
+        /// <summary>
+        /// Triggered when a chunk is loaded for a player.
+        /// </summary>
+        void OnChunkLoaded(string connectionId, ChunkData chunkData);
     }
 }

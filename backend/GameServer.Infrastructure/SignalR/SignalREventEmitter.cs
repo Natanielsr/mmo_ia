@@ -102,5 +102,11 @@ namespace GameServer.Infrastructure.SignalR
                 PlayerId = playerId.ToString()
             });
         }
+
+        public void OnChunkLoaded(string connectionId, ChunkData chunkData)
+        {
+            // Envia apenas para o jogador que está carregando o chunk
+            _hubContext.Clients.Client(connectionId).SendAsync("ChunkLoaded", chunkData);
+        }
     }
 }

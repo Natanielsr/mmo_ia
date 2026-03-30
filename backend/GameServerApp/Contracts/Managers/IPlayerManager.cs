@@ -8,5 +8,6 @@ public interface IPlayerManager
     bool RemovePlayer(string connectionId, out IPlayer? player);
     IPlayer? GetPlayerByConnectionId(string connectionId);
     IPlayer? GetPlayerById(long id);
+    string? GetConnectionIdByPlayerId(long playerId);
     IEnumerable<IPlayer> GetAllPlayers();
 }

@@ -39,4 +39,9 @@ public class PlayerManager : IPlayerManager
     {
         return _playersByConnection.Values;
     }
+
+    public string? GetConnectionIdByPlayerId(long playerId)
+    {
+        return _playersByConnection.FirstOrDefault(kvp => kvp.Value.Id == playerId).Key;
+    }
 }
