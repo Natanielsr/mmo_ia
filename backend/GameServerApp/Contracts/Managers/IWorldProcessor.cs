@@ -22,5 +22,6 @@ namespace GameServerApp.Contracts.Managers
         void Tick();
 
         void InstantiateObject(IWorldObject worldObject);
+        void ProcessChunkLoading(IPlayer player, string connectionId);
     }
 }

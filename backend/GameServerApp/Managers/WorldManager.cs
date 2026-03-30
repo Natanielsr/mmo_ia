@@ -23,6 +23,7 @@ namespace GameServerApp.Managers
         private readonly IPlayerManager _playerManager;
         private readonly IItemManager _itemManager;
         private readonly IIdGeneratorService _idGeneratorService;
+        private readonly IWorldGenerator _worldGenerator;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
         private DateTime _lastRegenTime = DateTime.UtcNow;
@@ -39,6 +40,7 @@ namespace GameServerApp.Managers
             IPlayerManager playerManager,
             IItemManager itemManager,
             IIdGeneratorService idGeneratorService,
+            IWorldGenerator worldGenerator,
             IOptions<WorldConfig> config)
         {
             _movementService = movementService;
@@ -52,6 +54,7 @@ namespace GameServerApp.Managers
             _playerManager = playerManager;
             _itemManager = itemManager;
             _idGeneratorService = idGeneratorService;
+            _worldGenerator = worldGenerator;
             _config = config.Value;
         }
 
@@ -85,7 +88,9 @@ namespace GameServerApp.Managers
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
                 _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id.ToString(), Name = player.Name, Position = targetPos });
-
+                
+                var connId = _playerManager.GetConnectionIdByPlayerId(player.Id);
+                if (connId != null) ProcessChunkLoading(player, connId);
                 ProcessItemPickup(player);
                 return true;
             }
@@ -371,6 +376,46 @@ namespace GameServerApp.Managers
 
                 _itemManager.RemoveItem(item.Id);
                 _worldEvents.OnItemPickedUp(item.Id, player.Id);
+            }
+        }
+
+        public void ProcessChunkLoading(IPlayer player, string connectionId)
+        {
+            int cx = (int)Math.Floor((double)player.Position.X / _config.ChunkSize);
+            int cy = (int)Math.Floor((double)player.Position.Y / _config.ChunkSize);
+
+            // Verifica chunk atual e adjacentes baseados no LoadRadius
+            for (int dx = -_config.LoadRadius; dx <= _config.LoadRadius; dx++)
+            {
+                for (int dy = -_config.LoadRadius; dy <= _config.LoadRadius; dy++)
+                {
+                    var coord = new ChunkCoord(cx + dx, cy + dy);
+                    
+                    // Gera o chunk se ainda não existir
+                    if (!_staticWorldManager.IsChunkLoaded(coord))
+                    {
+                        _worldGenerator.GenerateChunk(coord);
+                    }
+
+                    // Sempre envia os dados do chunk para o jogador que está se conectando
+                    var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
+                    var chunkData = new ChunkData
+                    {
+                        CX = coord.CX,
+                        CY = coord.CY,
+                        Objects = chunkObjects.Select(obj => new MapObjectData
+                        {
+                            Id = obj.Id,
+                            Name = obj.Name,
+                            ObjectCode = obj.ObjectCode,
+                            Position = obj.Position,
+                            Type = obj.Type,
+                            IsPassable = obj.IsPassable
+                        }).ToList()
+                    };
+
+                    _worldEvents.OnChunkLoaded(connectionId, chunkData);
+                }
             }
         }
     }

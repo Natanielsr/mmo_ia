@@ -16,8 +16,10 @@ namespace GameServerApp.Contracts.Managers
         IReadOnlyDictionary<Position, IStaticWorldObject> GetAllObjects();
         IStaticWorldObject? GetObjectAt(Position position);
         IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight);
-        void AddStaticObject(IStaticWorldObject staticObject);
-        bool RemoveObjectAt(Position position);
-        void Clear();
+    bool IsChunkLoaded(ChunkCoord coord);
+    IEnumerable<IStaticWorldObject> GetChunkObjects(ChunkCoord coord);
+    void AddStaticObject(IStaticWorldObject staticObject);
+    bool RemoveObjectAt(Position position);
+    void Clear();
     }
 }

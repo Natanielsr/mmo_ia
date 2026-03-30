@@ -1,21 +1,28 @@
-// backend/GameServerApp/Managers/StaticWorldManager.cs
-using System.Collections.Generic;
-using System.Linq;
+using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
-using GameServerApp.World;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GameServerApp.Managers
 {
     /// <summary>
-    /// Implementação simples de StaticWorldManager usando Dictionary esparso
-    /// Para mapa procedural sem tamanho fixo
+    /// Implementação de StaticWorldManager usando chunks para otimização de busca em área
     /// </summary>
     public class StaticWorldManager : IStaticWorldManager
     {
         private readonly HashSet<Position> _blockedPositions = new();
         private readonly Dictionary<Position, IStaticWorldObject> _staticObjects = new();
+        private readonly Dictionary<ChunkCoord, List<IStaticWorldObject>> _chunks = new();
+        private readonly WorldConfig _config;
+
+        public StaticWorldManager(IOptions<WorldConfig> config)
+        {
+            _config = config.Value;
+        }
 
         public bool IsBlocked(Position position) => _blockedPositions.Contains(position);
 
@@ -26,16 +33,51 @@ namespace GameServerApp.Managers
             return _staticObjects.TryGetValue(position, out var obj) ? obj : null;
         }
 
+        public bool IsChunkLoaded(ChunkCoord coord) => _chunks.ContainsKey(coord);
+
+        public IEnumerable<IStaticWorldObject> GetChunkObjects(ChunkCoord coord)
+        {
+            return _chunks.TryGetValue(coord, out var list) ? list : Enumerable.Empty<IStaticWorldObject>();
+        }
+
         public IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight)
         {
-            // Implementação simples - percorre todos os objetos
-            // Otimização futura: se muitos objetos, usar spatial index ou chunks
-            foreach (var obj in _staticObjects.Values)
+            // Otimizado para usar chunks
+            int minCx = (int)Math.Floor((double)topLeft.X / _config.ChunkSize);
+            int maxCx = (int)Math.Floor((double)bottomRight.X / _config.ChunkSize);
+            int minCy = (int)Math.Floor((double)bottomRight.Y / _config.ChunkSize);
+            int maxCy = (int)Math.Floor((double)topLeft.Y / _config.ChunkSize);
+
+            // Nota: coordY no sistema do jogo costuma subir (Y+ pra cima) ou descer (Y- pra baixo).
+            // No MapLoader.ts: worldY = -object.position.y * GRID_SIZE
+            // Vamos assumir que topLeft.Y > bottomRight.Y se estivermos usando coordenadas de tela invertidas ou similar.
+            // Para garantir:
+            var realMinX = Math.Min(topLeft.X, bottomRight.X);
+            var realMaxX = Math.Max(topLeft.X, bottomRight.X);
+            var realMinY = Math.Min(topLeft.Y, bottomRight.Y);
+            var realMaxY = Math.Max(topLeft.Y, bottomRight.Y);
+
+            minCx = (int)Math.Floor((double)realMinX / _config.ChunkSize);
+            maxCx = (int)Math.Floor((double)realMaxX / _config.ChunkSize);
+            minCy = (int)Math.Floor((double)realMinY / _config.ChunkSize);
+            maxCy = (int)Math.Floor((double)realMaxY / _config.ChunkSize);
+
+            for (int cx = minCx; cx <= maxCx; cx++)
             {
-                if (obj.Position.X >= topLeft.X && obj.Position.X <= bottomRight.X &&
-                    obj.Position.Y >= topLeft.Y && obj.Position.Y <= bottomRight.Y)
+                for (int cy = minCy; cy <= maxCy; cy++)
                 {
-                    yield return obj;
+                    var coord = new ChunkCoord(cx, cy);
+                    if (_chunks.TryGetValue(coord, out var objects))
+                    {
+                        foreach (var obj in objects)
+                        {
+                            if (obj.Position.X >= realMinX && obj.Position.X <= realMaxX &&
+                                obj.Position.Y >= realMinY && obj.Position.Y <= realMaxY)
+                            {
+                                yield return obj;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -44,12 +86,25 @@ namespace GameServerApp.Managers
         {
             if (staticObject == null) return;
 
-            _staticObjects[staticObject.Position] = staticObject;
+            var pos = staticObject.Position;
+            _staticObjects[pos] = staticObject;
 
             if (!staticObject.IsPassable)
             {
-                _blockedPositions.Add(staticObject.Position);
+                _blockedPositions.Add(pos);
             }
+
+            // Adiciona ao chunk
+            var cx = (int)Math.Floor((double)pos.X / _config.ChunkSize);
+            var cy = (int)Math.Floor((double)pos.Y / _config.ChunkSize);
+            var coord = new ChunkCoord(cx, cy);
+
+            if (!_chunks.TryGetValue(coord, out var list))
+            {
+                list = new List<IStaticWorldObject>();
+                _chunks[coord] = list;
+            }
+            list.Add(staticObject);
         }
 
         public bool RemoveObjectAt(Position position)
@@ -63,6 +118,17 @@ namespace GameServerApp.Managers
                     _blockedPositions.Remove(position);
                 }
 
+                // Remove do chunk
+                var cx = (int)Math.Floor((double)position.X / _config.ChunkSize);
+                var cy = (int)Math.Floor((double)position.Y / _config.ChunkSize);
+                var coord = new ChunkCoord(cx, cy);
+
+                if (_chunks.TryGetValue(coord, out var list))
+                {
+                    list.Remove(obj);
+                    if (list.Count == 0) _chunks.Remove(coord);
+                }
+
                 return true;
             }
             return false;
@@ -72,10 +138,9 @@ namespace GameServerApp.Managers
         {
             _blockedPositions.Clear();
             _staticObjects.Clear();
+            _chunks.Clear();
         }
 
-        // Método auxiliar para obter todos os objetos (usado para o controller)
         public IReadOnlyDictionary<Position, IStaticWorldObject> GetAllObjects() => _staticObjects;
-
     }
 }
