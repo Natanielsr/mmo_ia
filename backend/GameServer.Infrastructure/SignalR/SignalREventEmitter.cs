@@ -36,7 +36,7 @@ namespace GameServer.Infrastructure.SignalR
 
         public void OnPlayerDied(long playerId)
         {
-            _hubContext.Clients.All.SendAsync("PlayerDied", playerId);
+            _hubContext.Clients.All.SendAsync("PlayerDied", playerId.ToString());
         }
 
         public void OnPlayerExperienceGained(long playerId, long amount, long totalExperience)
@@ -52,14 +52,14 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("PlayerLevelUp", new
             {
-                PlayerId = playerId,
+                PlayerId = playerId.ToString(),
                 Level = newLevel
             });
         }
 
         public void OnPlayerLeft(long playerId)
         {
-            _hubContext.Clients.All.SendAsync("PlayerLeft", playerId);
+            _hubContext.Clients.All.SendAsync("PlayerLeft", playerId.ToString());
         }
 
         // --- Eventos de Monstros ---
@@ -99,7 +99,7 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("ItemPickedUp", new
             {
                 ItemId = itemId,
-                PlayerId = playerId
+                PlayerId = playerId.ToString()
             });
         }
     }
