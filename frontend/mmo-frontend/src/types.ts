@@ -50,3 +50,9 @@ export interface ItemData {
     position: Position;
     type: string;
 }
+
+export interface ChunkData {
+    cx: number;
+    cy: number;
+    objects: MapObjectData[];
+}

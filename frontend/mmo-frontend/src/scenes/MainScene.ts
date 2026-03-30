@@ -1,13 +1,12 @@
 // src/scenes/MainScene.ts
 import Phaser from 'phaser';
-import { MapLoader } from './MapLoader';
 import { DebugPanel } from './DebugPanel';
 import { InputManager } from '../managers/InputManager';
 import { PlayerManager } from '../managers/PlayerManager';
 import { MonsterManager } from '../managers/MonsterManager';
 import { ItemManager } from '../managers/ItemManager';
+import { ChunkManager } from '../managers/ChunkManager';
 import { CombatSystem } from '../systems/CombatSystem';
-import { GRID_SIZE } from '../config/constants';
 import type { MonsterData } from '../types';
 import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
@@ -16,6 +15,7 @@ export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
     public monsterManager!: MonsterManager;
     public itemManager!: ItemManager;
+    public chunkManager!: ChunkManager;
     private inputManager!: InputManager;
     private combatSystem!: CombatSystem;
     private debugPanel?: DebugPanel;
@@ -28,9 +28,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     public async loadMap() {
-        const mapLoader = MapLoader.getInstance();
-        await mapLoader.loadMapObjects();
-        mapLoader.renderMapObjects(this);
+        // Obsoleto: O mapa agora é carregado via Chunks pelo SignalR
     }
 
     async create() {
@@ -39,13 +37,13 @@ export class MainScene extends Phaser.Scene {
         this.playerManager = new PlayerManager(this);
         this.monsterManager = new MonsterManager(this);
         this.itemManager = new ItemManager(this);
+        this.chunkManager = new ChunkManager(this);
         this.combatSystem = new CombatSystem(this, this.playerManager, this.monsterManager);
 
         this.inputManager.setup();
 
-        // Renderização de Fundo
-        this.add.grid(0, 0, 2048, 2048, GRID_SIZE, GRID_SIZE, 0x165227, 1, 0xffffff, 0.05).setDepth(-100000);
-        this.generateRandomGrass();
+        // Renderização de Fundo: O fundo agora é gerencia pelos Chunks.
+        // Removemos o grid gigante que também consumia recursos desnecessários.
 
         if (import.meta.env.DEV) {
             this.debugPanel = new DebugPanel();
@@ -62,14 +60,20 @@ export class MainScene extends Phaser.Scene {
 
         const myPlayer = this.playerManager.getMyPlayer();
 
-        if (!myPlayer || !myPlayer.isAttacking) {
-            const direction = this.inputManager.getMovementDirection();
-            if (direction) {
-                this.onRequestMove(direction);
-            }
+        if (myPlayer) {
+            // Otimização: Atualiza o gerenciador de chunks para limpar o que está longe
+            // O loadRadius aqui no frontend deve ser compatível com o do backend (WorldConfig)
+            this.chunkManager.update(myPlayer.gridPosition, 1);
 
-            if (this.inputManager.isAttackJustPressed()) {
-                this.combatSystem.attackNearestMonster(this.onAttackMonster);
+            if (!myPlayer.isAttacking) {
+                const direction = this.inputManager.getMovementDirection();
+                if (direction) {
+                    this.onRequestMove(direction);
+                }
+
+                if (this.inputManager.isAttackJustPressed()) {
+                    this.combatSystem.attackNearestMonster(this.onAttackMonster);
+                }
             }
         }
 
@@ -82,18 +86,9 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    private generateRandomGrass() {
-        const grassTypes = Array.from({ length: 12 }, (_, i) => `grass${i + 1}`);
-        const halfMap = 2048 / 2;
-
-        for (let x = -halfMap; x < halfMap; x += GRID_SIZE) {
-            for (let y = -halfMap; y < halfMap; y += GRID_SIZE) {
-                const randomGrass = Phaser.Math.RND.pick(grassTypes);
-                this.add.image(x + (GRID_SIZE / 2), y + (GRID_SIZE / 2), randomGrass)
-                    .setDisplaySize(GRID_SIZE, GRID_SIZE)
-                    .setDepth(-100000);
-            }
-        }
+    // --- Chunk Logic ---
+    public chunkLoaded(data: any) {
+        this.chunkManager.handleChunkLoaded(data);
     }
 
     // --- Wrapper Methods para manter a interface com quem chama a cena de fora (ex: Socket.io) ---

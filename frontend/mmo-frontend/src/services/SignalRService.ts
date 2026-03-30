@@ -43,7 +43,6 @@ export class SignalRService {
 
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
-            this.mainScene?.loadMap();
             addLog(`Entrou como ${playerData.name}!`);
             overlay?.classList.add('hidden');
             gameContainer?.classList.remove('hidden');
@@ -195,6 +194,25 @@ export class SignalRService {
             if (player) {
                 addLog(`${player.name} pegou um item!`, "success");
             }
+        });
+
+        this.connection.on("ChunkLoaded", (data: any) => {
+            const normalizedData = {
+                cx: data.cx ?? data.Cx ?? data.CX,
+                cy: data.cy ?? data.Cy ?? data.CY,
+                objects: (data.objects ?? data.Objects ?? []).map((obj: any) => ({
+                    id: String(obj.id ?? obj.Id),
+                    name: String(obj.name ?? obj.Name),
+                    objectCode: String(obj.objectCode ?? obj.ObjectCode),
+                    position: {
+                        x: obj.position.x ?? obj.position.X,
+                        y: obj.position.y ?? obj.position.Y
+                    },
+                    type: String(obj.type ?? obj.Type),
+                    isPassable: Boolean(obj.isPassable ?? obj.IsPassable)
+                }))
+            };
+            this.mainScene?.chunkLoaded(normalizedData);
         });
     }
 

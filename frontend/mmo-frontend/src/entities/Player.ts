@@ -28,7 +28,8 @@ export class Player extends Phaser.GameObjects.Container {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
         this.worldPosition = worldPosition
-        this.gridPosition = playerPosData.position;
+        const pos = (playerPosData.position ?? (playerPosData as any).Position) as any;
+        this.gridPosition = { x: pos.x ?? pos.X, y: pos.y ?? pos.Y };
         this.name = name;
         // Inicializa com valores seguros, buscando do playerData se ainda estiverem lá (casing flexível)
         const data = playerPosData as any;
