@@ -5,14 +5,23 @@ import { GRID_SIZE } from '../config/constants';
 export class ChunkManager {
     private scene: Phaser.Scene;
     private loadedChunks: Map<string, { group: Phaser.GameObjects.Group, rt?: Phaser.GameObjects.RenderTexture }> = new Map();
+    private visitedChunks: Set<string> = new Set();
     private chunkSize: number = 16;
+    private allObjects: Map<string, MapObjectData[]> = new Map();
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
     }
 
+    public getVisitedChunks() { return this.visitedChunks; }
+    public getAllObjects() { return this.allObjects; }
+    public getChunkSize() { return this.chunkSize; }
+
     public handleChunkLoaded(data: ChunkData) {
         const chunkKey = `${data.cx},${data.cy}`;
+        this.visitedChunks.add(chunkKey);
+        this.allObjects.set(chunkKey, data.objects);
+
         if (this.loadedChunks.has(chunkKey)) {
             return;
         }

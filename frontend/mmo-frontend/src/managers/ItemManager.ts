@@ -33,4 +33,8 @@ export class ItemManager {
         this.items.forEach(item => item.destroy());
         this.items.clear();
     }
+
+    public getItemsDict(): Map<string, HealingPotion> {
+        return this.items;
+    }
 }

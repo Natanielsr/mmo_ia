@@ -2,6 +2,7 @@ import './css/style.css';
 import Phaser from 'phaser';
 import { PreloadScene } from './scenes/PreloadScene';
 import { MainScene } from './scenes/MainScene';
+import { WorldMapScene } from './scenes/WorldMapScene';
 import { SignalRService } from './services/SignalRService';
 import { inputName, btnJoin, gameContainer } from './ui';
 
@@ -11,8 +12,6 @@ inputName.addEventListener('keyup', (e) => e.stopPropagation());
 inputName.addEventListener('keypress', (e) => e.stopPropagation());
 
 // Inicializa o Phaser
-const preloadScene = new PreloadScene();
-const mainScene = new MainScene();
 const phaserConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'phaser-game',
@@ -20,13 +19,21 @@ const phaserConfig: Phaser.Types.Core.GameConfig = {
   height: '100%',
   pixelArt: true,
   backgroundColor: '#1e293b',
-  scene: [preloadScene, mainScene]
+  scene: [PreloadScene, MainScene, WorldMapScene]
 };
 const game = new Phaser.Game(phaserConfig);
 
 // Inicializa o Serviço SignalR
 const signalRService = new SignalRService();
-signalRService.registerEvents(mainScene, game);
+
+// Register SignalR events. We need to handle the fact that scenes might not be initialized yet.
+// However, signalRService.registerEvents currently expects the instances.
+// Let's modify MainScene to register itself or similar, but for now we'll stick to a slightly safer approach.
+// Since PreloadScene starts MainScene immediately, we can wait a bit or use events.
+game.events.once('ready', () => {
+    const mainScene = game.scene.getScene('MainScene') as MainScene;
+    signalRService.registerEvents(mainScene, game);
+});
 
 btnJoin.onclick = () => {
   const name = inputName.value.trim();

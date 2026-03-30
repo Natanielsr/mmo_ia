@@ -41,6 +41,8 @@ export class MainScene extends Phaser.Scene {
         this.chunkManager = new ChunkManager(this);
         this.combatSystem = new CombatSystem(this, this.playerManager, this.monsterManager);
 
+        this.scene.launch('WorldMapScene');
+
         this.inputManager.setup();
 
         // Renderização de Fundo: O fundo agora é gerencia pelos Chunks.
@@ -83,6 +85,11 @@ export class MainScene extends Phaser.Scene {
 
         if (this.inputManager.isDebugJustPressed()) {
             this.debugPanel?.toggle();
+        }
+
+        if (this.inputManager.isMapJustPressed()) {
+            const mapScene = this.scene.get('WorldMapScene') as any;
+            if (mapScene) mapScene.toggle();
         }
 
         if (this.debugPanel) {

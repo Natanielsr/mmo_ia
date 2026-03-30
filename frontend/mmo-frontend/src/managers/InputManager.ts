@@ -6,6 +6,7 @@ export class InputManager {
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
     private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
     public debugKey!: Phaser.Input.Keyboard.Key;
+    public mapKey!: Phaser.Input.Keyboard.Key;
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -26,6 +27,11 @@ export class InputManager {
         }) as Record<string, Phaser.Input.Keyboard.Key>;
 
         this.debugKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F3);
+        this.mapKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+    }
+
+    public isMapJustPressed(): boolean {
+        return Phaser.Input.Keyboard.JustDown(this.mapKey);
     }
 
     public getMovementDirection(): string | null {
