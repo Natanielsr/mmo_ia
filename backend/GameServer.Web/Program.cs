@@ -41,6 +41,7 @@ builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>();
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
+builder.Services.AddSingleton<IWorldGenerator, WorldGenerator>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
@@ -63,7 +64,6 @@ builder.Services.AddSingleton<IIdGeneratorService, IdGeneratorService>();
 
 var app = builder.Build();
 
-InitializeProceduralMap(app.Services);
 InitializeRandomMonsters(app.Services);
 
 app.UseCors("AllowAll");
@@ -78,24 +78,6 @@ app.MapControllers();
 
 app.Run();
 
-static void InitializeProceduralMap(IServiceProvider services)
-{
-    var worldManager = services.GetRequiredService<IWorldManager>();
-    var proceduralWorldService = services.GetRequiredService<IProceduralWorldService>();
-    var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
-
-    var obstacles = proceduralWorldService.GenerateRandomObstacles(
-        width: config.WorldWidth,
-        height: config.WorldHeight,
-        fillPercentage: 0.10,
-        safeSpawnRadius: config.SafeSpawnRadius,
-        seed: 20260309);
-
-    foreach (var obstacle in obstacles)
-    {
-        worldManager.InstantiateObject(obstacle);
-    }
-}
 
 static void InitializeRandomMonsters(IServiceProvider services)
 {
