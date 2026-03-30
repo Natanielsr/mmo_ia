@@ -21,6 +21,8 @@ namespace GameServerApp.Managers
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IMonsterManager _monsterManager;
         private readonly IPlayerManager _playerManager;
+        private readonly IItemManager _itemManager;
+        private readonly IIdGeneratorService _idGeneratorService;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
 
@@ -34,6 +36,8 @@ namespace GameServerApp.Managers
             IMonsterMovementService monsterMovementService,
             IMonsterManager monsterManager,
             IPlayerManager playerManager,
+            IItemManager itemManager,
+            IIdGeneratorService idGeneratorService,
             IOptions<WorldConfig> config)
         {
             _movementService = movementService;
@@ -45,6 +49,8 @@ namespace GameServerApp.Managers
             _monsterMovementService = monsterMovementService;
             _monsterManager = monsterManager;
             _playerManager = playerManager;
+            _itemManager = itemManager;
+            _idGeneratorService = idGeneratorService;
             _config = config.Value;
         }
 
@@ -78,6 +84,8 @@ namespace GameServerApp.Managers
                 _collisionManager.UpdateObjectPosition(player, oldPos);
 
                 _worldEvents.OnPlayerMoved(new PlayerPositionData() { Id = player.Id.ToString(), Name = player.Name, Position = targetPos });
+
+                ProcessItemPickup(player);
                 return true;
             }
 
@@ -166,6 +174,20 @@ namespace GameServerApp.Managers
                 _gameStateManager.CheckForLevelUp(player);
 
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
+
+                // Roll for drop (30% chance for healing potion)
+                if (Random.Shared.NextDouble() < 0.3)
+                {
+                    var potion = new Item(
+                        id: _idGeneratorService.GenerateId().ToString(),
+                        name: "Healing Potion",
+                        weight: 0.1f,
+                        position: monster.Position,
+                        type: ItemType.Potion
+                    );
+                    _itemManager.DropItem(potion);
+                    _worldEvents.OnItemDropped(potion);
+                }
 
                 // Remove o monstro do manager para liberar a colisão e memória
                 _monsterManager.RemoveMonster(monster.Id);
@@ -297,6 +319,29 @@ namespace GameServerApp.Managers
             // Isso permite um pequeno atraso após parar de mover antes de poder atacar
             const int movementCooldownMs = 100;
             return (DateTime.UtcNow - player.LastMoveTime).TotalMilliseconds < movementCooldownMs;
+        }
+
+        private void ProcessItemPickup(IPlayer player)
+        {
+            var item = _itemManager.GetItemAt(player.Position);
+            if (item != null)
+            {
+                if (item.Type == ItemType.Potion)
+                {
+                    player.Heal(20);
+                    _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+                    {
+                        Id = player.Id.ToString(),
+                        Hp = player.Hp,
+                        MaxHp = player.MaxHp,
+                        Level = player.Level,
+                        Experience = player.Experience
+                    });
+                }
+
+                _itemManager.RemoveItem(item.Id);
+                _worldEvents.OnItemPickedUp(item.Id, player.Id);
+            }
         }
     }
 }
