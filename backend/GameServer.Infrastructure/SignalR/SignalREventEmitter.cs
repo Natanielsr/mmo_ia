@@ -82,5 +82,25 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("MonsterDamaged", new { Id = monsterId, Damage = damage, CurrentHp = currentHp });
         }
+
+        public void OnItemDropped(IItem item)
+        {
+            _hubContext.Clients.All.SendAsync("ItemDropped", new
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Position = item.Position,
+                Type = item.Type.ToString()
+            });
+        }
+
+        public void OnItemPickedUp(string itemId, long playerId)
+        {
+            _hubContext.Clients.All.SendAsync("ItemPickedUp", new
+            {
+                ItemId = itemId,
+                PlayerId = playerId
+            });
+        }
     }
 }

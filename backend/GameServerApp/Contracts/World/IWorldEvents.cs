@@ -61,5 +61,15 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a monster takes damage.
         /// </summary>
         void OnMonsterDamaged(string monsterId, int damage, int currentHp);
+
+        /// <summary>
+        /// Triggered when an item is dropped in the world.
+        /// </summary>
+        void OnItemDropped(IItem item);
+
+        /// <summary>
+        /// Triggered when an item is picked up by a player.
+        /// </summary>
+        void OnItemPickedUp(string itemId, long playerId);
     }
 }
