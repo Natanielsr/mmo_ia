@@ -160,6 +160,30 @@ export class SignalRService {
             };
             this.mainScene?.monsterDamaged(normalizedData);
         });
+
+        this.connection.on("ItemDropped", (itemData: any) => {
+            const normalizedItem = {
+                id: String(itemData.id ?? itemData.Id),
+                name: String(itemData.name ?? itemData.Name),
+                position: itemData.position ?? itemData.Position,
+                type: String(itemData.type ?? itemData.Type)
+            };
+            this.mainScene?.itemDropped(normalizedItem);
+            addLog(`Um item apareceu no mapa: ${normalizedItem.name}!`, "info");
+        });
+
+        this.connection.on("ItemPickedUp", (data: any) => {
+            const normalizedData = {
+                itemId: String(data.itemId ?? data.ItemId),
+                playerId: String(data.playerId ?? data.PlayerId)
+            };
+            this.mainScene?.itemPickedUp(normalizedData);
+
+            const player = this.mainScene?.getPlayer(normalizedData.playerId);
+            if (player) {
+                addLog(`${player.name} pegou um item!`, "success");
+            }
+        });
     }
 
     public async attackMonster(targetId: string): Promise<void> {

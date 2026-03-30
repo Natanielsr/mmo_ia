@@ -5,6 +5,7 @@ import { DebugPanel } from './DebugPanel';
 import { InputManager } from '../managers/InputManager';
 import { PlayerManager } from '../managers/PlayerManager';
 import { MonsterManager } from '../managers/MonsterManager';
+import { ItemManager } from '../managers/ItemManager';
 import { CombatSystem } from '../systems/CombatSystem';
 import { GRID_SIZE } from '../config/constants';
 import type { MonsterData } from '../types';
@@ -14,6 +15,7 @@ import type { Monster } from '../entities/Monster';
 export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
     public monsterManager!: MonsterManager;
+    public itemManager!: ItemManager;
     private inputManager!: InputManager;
     private combatSystem!: CombatSystem;
     private debugPanel?: DebugPanel;
@@ -36,6 +38,7 @@ export class MainScene extends Phaser.Scene {
         this.inputManager = new InputManager(this);
         this.playerManager = new PlayerManager(this);
         this.monsterManager = new MonsterManager(this);
+        this.itemManager = new ItemManager(this);
         this.combatSystem = new CombatSystem(this, this.playerManager, this.monsterManager);
 
         this.inputManager.setup();
@@ -109,4 +112,7 @@ export class MainScene extends Phaser.Scene {
 
     public monsterDamaged(data: any) { this.combatSystem.handleMonsterDamaged(data); }
     public playerAttacked(data: any) { this.combatSystem.handlePlayerAttacked(data); }
+
+    public itemDropped(data: any) { this.itemManager.syncItem(data); }
+    public itemPickedUp(data: any) { this.itemManager.removeItem(data.itemId); }
 }
