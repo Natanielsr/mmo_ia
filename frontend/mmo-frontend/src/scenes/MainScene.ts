@@ -10,6 +10,7 @@ import { CombatSystem } from '../systems/CombatSystem';
 import type { MonsterData } from '../types';
 import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
+import { updateUIPosition } from '../ui';
 
 export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
@@ -64,6 +65,9 @@ export class MainScene extends Phaser.Scene {
             // Otimização: Atualiza o gerenciador de chunks para limpar o que está longe
             // O loadRadius aqui no frontend deve ser compatível com o do backend (WorldConfig)
             this.chunkManager.update(myPlayer.gridPosition, 1);
+
+            // Atualiza UI com a posição
+            updateUIPosition(myPlayer.gridPosition.x, myPlayer.gridPosition.y);
 
             if (!myPlayer.isAttacking) {
                 const direction = this.inputManager.getMovementDirection();

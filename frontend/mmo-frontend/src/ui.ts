@@ -29,6 +29,13 @@ export function updateUIHealthBar(hp: any, maxHp: any) {
     }
 }
 
+export function updateUIPosition(x: number, y: number) {
+    const posX = document.getElementById('pos-x');
+    const posY = document.getElementById('pos-y');
+    if (posX) posX.innerText = String(x);
+    if (posY) posY.innerText = String(y);
+}
+
 export function addLog(msg: string, type: string = '') {
     const entry = document.createElement('div');
     entry.className = `log-entry ${type}`;
