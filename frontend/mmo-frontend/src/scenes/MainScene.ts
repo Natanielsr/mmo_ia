@@ -107,6 +107,7 @@ export class MainScene extends Phaser.Scene {
     public monsterSpawned(data: MonsterData) { this.monsterManager.syncMonster(data); }
     public monsterMoved(data: MonsterData) { this.monsterManager.syncMonster(data); }
     public monsterDied(id: string) { this.monsterManager.monsterDied(id); }
+    public monsterRemoved(id: string) { this.monsterManager.removeMonster(id); }
     public getMonster(id: string): Monster | null { return this.monsterManager.getMonster(id) };
 
     public monsterDamaged(data: any) { this.combatSystem.handleMonsterDamaged(data); }

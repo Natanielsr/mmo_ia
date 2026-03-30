@@ -211,6 +211,9 @@ namespace GameServerApp.Managers
             // Processa ataques dos monstros
             ProcessMonsterCombat();
 
+            // Despawn de monstros longe do player
+            ProcessMonsterDespawn();
+
             // Respawn de monstros mortos
             ProcessMonsterRespawn();
             
@@ -316,18 +319,108 @@ namespace GameServerApp.Managers
         public void ProcessMonsterRespawn()
         {
             var now = DateTime.UtcNow;
-            var readyCount = _pendingRespawns.Count(t => t <= now);
+            var players = _playerManager.GetAllPlayers().ToList();
+            if (players.Count == 0) return;
 
-            if (readyCount > 0)
+            // Remove agendamentos prontos
+            _pendingRespawns.RemoveAll(t => t <= now);
+
+            var currentMonsters = _monsterManager.GetAllMonsters().ToList();
+            var radiusSq = _config.DespawnMonsterRadius * _config.DespawnMonsterRadius;
+            var minRadius = Math.Max(_config.SafeSpawnRadius + 1, _config.MinMonsterSpawnDistance);
+
+            // Cap global absoluto apenas para segurança computacional
+            const int absoluteMax = 500;
+
+            foreach (var player in players)
             {
-                _pendingRespawns.RemoveAll(t => t <= now);
+                if (currentMonsters.Count >= absoluteMax) break;
 
-                for (int i = 0; i < readyCount; i++)
+                // Conta quantos monstros estão na região de alcance deste player
+                var monstersNearCount = currentMonsters.Count(m =>
                 {
-                    if (_monsterManager.GetAllMonsters().Count < _config.MaxMonsters)
+                    var dx = m.Position.X - player.Position.X;
+                    var dy = m.Position.Y - player.Position.Y;
+                    return (dx * dx + dy * dy) <= radiusSq;
+                });
+
+                // Se houver menos que o alvo por player, gera o necessário para essa "região"
+                if (monstersNearCount < _config.MonstersPerPlayer)
+                {
+                    int needed = _config.MonstersPerPlayer - monstersNearCount;
+                    
+                    var spawned = _monsterManager.SpawnMonstersNearPosition(
+                        needed,
+                        player.Position,
+                        minRadius,
+                        _config.SpawnMonsterRadius);
+
+                    if (spawned != null && spawned.Any())
                     {
-                        _monsterManager.SpawnRandomMonsters(1, _config.WorldWidth, _config.WorldHeight, _config.SafeSpawnRadius);
+                        foreach (var monster in spawned)
+                        {
+                            // Adiciona à lista local para que o próximo player no loop
+                            // veja que já foram criados monstros que podem estar perto dele também
+                            currentMonsters.Add(monster);
+
+                            _worldEvents.OnMonsterSpawned(new MonsterData
+                            {
+                                Id = monster.Id.ToString(),
+                                Name = monster.Name,
+                                ObjectCode = monster.ObjectCode,
+                                Position = monster.Position,
+                                Hp = monster.Hp,
+                                MaxHp = monster.MaxHp,
+                                AttackPower = monster.AttackPower,
+                                IsDead = monster.IsDead
+                            });
+                        }
                     }
+                }
+            }
+        }
+
+        private void ProcessMonsterDespawn()
+        {
+            var monsters = _monsterManager.GetAllMonsters().ToList();
+            var players = _playerManager.GetAllPlayers().ToList();
+
+            if (players.Count == 0)
+            {
+                // Se não há players, remove todos os monstros (opcional, mas eficiente)
+                foreach (var monster in monsters)
+                {
+                    _monsterManager.RemoveMonster(monster.Id);
+                    _worldEvents.OnMonsterRemoved(monster.Id.ToString());
+                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
+                }
+                return;
+            }
+
+            foreach (var monster in monsters)
+            {
+                bool nearAnyPlayer = false;
+                foreach (var player in players)
+                {
+                    var dx = Math.Abs(monster.Position.X - player.Position.X);
+                    var dy = Math.Abs(monster.Position.Y - player.Position.Y);
+                    var dist = Math.Sqrt(dx * dx + dy * dy);
+
+                    if (dist <= _config.DespawnMonsterRadius)
+                    {
+                        nearAnyPlayer = true;
+                        break;
+                    }
+                }
+
+                if (!nearAnyPlayer)
+                {
+                    _monsterManager.RemoveMonster(monster.Id);
+                    // Reutiliza OnMonsterRemoved para notificar o frontend sobre a remoção
+                    _worldEvents.OnMonsterRemoved(monster.Id.ToString());
+                    
+                    // Adiciona ao pool de respawn para manter o desafio próximo a outros players
+                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
                 }
             }
         }

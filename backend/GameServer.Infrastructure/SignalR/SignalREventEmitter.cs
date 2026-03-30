@@ -78,6 +78,11 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("MonsterDied", monsterId);
         }
 
+        public void OnMonsterRemoved(string monsterId)
+        {
+            _hubContext.Clients.All.SendAsync("MonsterRemoved", monsterId);
+        }
+
         public void OnMonsterDamaged(string monsterId, int damage, int currentHp)
         {
             _hubContext.Clients.All.SendAsync("MonsterDamaged", new { Id = monsterId, Damage = damage, CurrentHp = currentHp });

@@ -49,6 +49,14 @@ export class MonsterManager {
         }
     }
 
+    public removeMonster(monsterId: string): void {
+        const monster = this.monsters[monsterId];
+        if (monster) {
+            monster.destroy();
+            delete this.monsters[monsterId];
+        }
+    }
+
     public getMonster(id: string): Monster | null {
         return this.monsters[id] || null;
     }

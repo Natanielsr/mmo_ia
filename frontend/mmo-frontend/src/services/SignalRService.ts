@@ -151,6 +151,11 @@ export class SignalRService {
             addLog(`${monster?.name} foi derrotado!`, "success");
         });
 
+        this.connection.on("MonsterRemoved", (monsterId: string) => {
+            const idStr = String(monsterId);
+            this.mainScene?.monsterRemoved(idStr);
+        });
+
         this.connection.on("MonsterDamaged", (data: any) => {
             const normalizedData = {
                 id: String(data.id ?? data.Id ?? data.monsterId),

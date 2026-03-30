@@ -58,6 +58,11 @@ namespace GameServerApp.Contracts.World
         void OnMonsterDied(string monsterId);
 
         /// <summary>
+        /// Triggered when a monster is removed without dying (e.g., distance-based removal).
+        /// </summary>
+        void OnMonsterRemoved(string monsterId);
+
+        /// <summary>
         /// Triggered when a monster takes damage.
         /// </summary>
         void OnMonsterDamaged(string monsterId, int damage, int currentHp);

@@ -95,6 +95,58 @@ public class MonsterManager : IMonsterManager
         return spawned;
     }
 
+    public IReadOnlyCollection<IMonster> SpawnMonstersNearPosition(
+        int count,
+        Position center,
+        int minRadius,
+        int maxRadius,
+        int? seed = null)
+    {
+        if (count <= 0) return Array.Empty<IMonster>();
+
+        var rng = seed.HasValue ? new Random(seed.Value) : new Random();
+        var spawned = new List<IMonster>();
+        var attempts = 0;
+        var maxAttempts = count * 50;
+
+        var usedPositions = new HashSet<Position>(_monsters.Values.Select(m => m.Position));
+
+        while (spawned.Count < count && attempts < maxAttempts)
+        {
+            attempts++;
+
+            // Random angle and distance
+            var angle = rng.NextDouble() * Math.PI * 2;
+            var dist = rng.Next(minRadius, maxRadius + 1);
+
+            var x = center.X + (int)(Math.Cos(angle) * dist);
+            var y = center.Y + (int)(Math.Sin(angle) * dist);
+            var position = new Position(x, y);
+
+            if (usedPositions.Contains(position)) continue;
+            if (_collisionManager.IsPositionBlocked(position)) continue;
+
+            var template = MonsterTemplates[rng.Next(MonsterTemplates.Length)];
+            var monsterId = _idGeneratorService.GenerateId();
+
+            var monster = new Monster(
+                id: monsterId,
+                name: template.Name,
+                objectCode: template.ObjectCode,
+                spawnPosition: position,
+                maxHp: template.Hp,
+                attackPower: template.Attack);
+
+            _monsters[monster.Id] = monster;
+            _collisionManager.RegisterDynamicObject(monster);
+
+            usedPositions.Add(position);
+            spawned.Add(monster);
+        }
+
+        return spawned;
+    }
+
     public IReadOnlyCollection<IMonster> GetAllMonsters() => _monsters.Values.ToList();
 
     public IReadOnlyCollection<MonsterData> GetAllMonstersAsData()
