@@ -18,6 +18,7 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly IMonsterManager _monsterManager;
         private readonly IPlayerManager _playerManager;
+        private readonly IItemManager _itemManager;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -25,7 +26,8 @@ namespace GameServer.Infrastructure.SignalR
             ICollisionManager collisionManager,
             IIdGeneratorService idGeneratorService,
             IMonsterManager monsterManager,
-            IPlayerManager playerManager
+            IPlayerManager playerManager,
+            IItemManager itemManager
             )
         {
             _worldProcessor = worldProcessor;
@@ -34,6 +36,7 @@ namespace GameServer.Infrastructure.SignalR
             _idGeneratorService = idGeneratorService;
             _monsterManager = monsterManager;
             _playerManager = playerManager;
+            _itemManager = itemManager;
         }
 
         public async Task JoinGame(string playerName)
@@ -89,6 +92,18 @@ namespace GameServer.Infrastructure.SignalR
             }).ToList();
 
             await Clients.Caller.SendAsync("SyncMonsters", monsterDataList);
+
+            // 5. Send all dropped items to the new player
+            var allItems = _itemManager.GetAllItems();
+            var itemDataList = allItems.Select(item => new
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Position = item.Position,
+                Type = item.Type.ToString()
+            }).ToList();
+
+            await Clients.Caller.SendAsync("SyncItems", itemDataList);
         }
 
         public async Task RequestMove(string direction)

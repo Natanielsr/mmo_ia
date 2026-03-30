@@ -161,6 +161,18 @@ export class SignalRService {
             this.mainScene?.monsterDamaged(normalizedData);
         });
 
+        this.connection.on("SyncItems", (itemList: any[]) => {
+            itemList.forEach(itemData => {
+                const normalizedItem = {
+                    id: String(itemData.id ?? itemData.Id),
+                    name: String(itemData.name ?? itemData.Name),
+                    position: itemData.position ?? itemData.Position,
+                    type: String(itemData.type ?? itemData.Type)
+                };
+                this.mainScene?.itemDropped(normalizedItem);
+            });
+        });
+
         this.connection.on("ItemDropped", (itemData: any) => {
             const normalizedItem = {
                 id: String(itemData.id ?? itemData.Id),
