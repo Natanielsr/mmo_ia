@@ -24,6 +24,8 @@ namespace GameServer.Tests.Managers
         private readonly Mock<IMonsterMovementService> _mockMonsterMovementService = new();
         private readonly Mock<IMonsterManager> _mockMonsterManager = new();
         private readonly Mock<IPlayerManager> _mockPlayerManager = new();
+        private readonly Mock<IItemManager> _mockItemManager = new();
+        private readonly Mock<IIdGeneratorService> _mockIdGenerator = new();
 
 
 
@@ -41,6 +43,8 @@ namespace GameServer.Tests.Managers
                 _mockMonsterMovementService.Object,
                 _mockMonsterManager.Object,
                 _mockPlayerManager.Object,
+                _mockItemManager.Object,
+                _mockIdGenerator.Object,
                 Options.Create(new WorldConfig())
             );
         }

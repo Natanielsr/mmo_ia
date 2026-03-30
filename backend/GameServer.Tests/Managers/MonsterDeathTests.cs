@@ -23,6 +23,8 @@ namespace GameServer.Tests.Managers
         private readonly Mock<IMovementService> _mockMovementService = new();
         private readonly Mock<ICombatService> _mockCombatService = new();
         private readonly Mock<IMonsterMovementService> _mockMonsterMovementService = new();
+        private readonly Mock<IItemManager> _mockItemManager = new();
+        private readonly Mock<IIdGeneratorService> _mockIdGenerator = new();
 
         public MonsterDeathTests()
         {
@@ -37,6 +39,8 @@ namespace GameServer.Tests.Managers
                 _mockMonsterMovementService.Object,
                 _mockMonsterManager.Object,
                 _mockPlayerManager.Object,
+                _mockItemManager.Object,
+                _mockIdGenerator.Object,
                 Options.Create(new WorldConfig())
             );
         }
@@ -86,6 +90,8 @@ namespace GameServer.Tests.Managers
                 _mockMonsterMovementService.Object,
                 realMonsterManager,
                 _mockPlayerManager.Object,
+                _mockItemManager.Object,
+                _mockIdGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 
@@ -175,6 +181,8 @@ namespace GameServer.Tests.Managers
                 _mockMonsterMovementService.Object,
                 realMonsterManager,
                 _mockPlayerManager.Object,
+                _mockItemManager.Object,
+                _mockIdGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 
@@ -215,6 +223,8 @@ namespace GameServer.Tests.Managers
                 _mockMonsterMovementService.Object,
                 mockMonsterManager.Object,
                 _mockPlayerManager.Object,
+                _mockItemManager.Object,
+                _mockIdGenerator.Object,
                 Options.Create(new WorldConfig())
             );
 
@@ -226,6 +236,39 @@ namespace GameServer.Tests.Managers
 
             // Tick (simulate time passing is hard, but let's check the logic)
             // If I can't wait, I'll just accept that I've verified the code manually and the logic is simple.
+        }
+
+        [Fact]
+        public void Monster_Death_Should_Potentially_Drop_Item()
+        {
+            // Arrange
+            var player = new Player(1, "Hero", new Position(0, 0), 100);
+            var monster = new Monster(2, "Rat", "rat", new Position(1, 0), 10, 5);
+            _mockMonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
+            _mockIdGenerator.Setup(s => s.GenerateId()).Returns(999);
+
+            // Act
+            // Due to the 30% chance, we might need multiple runs or a lucky one.
+            // In a real mockable RNG scenario, we'd mock the RNG. 
+            // For now, let's run it 100 times and verify it dropped at least once.
+            bool dropped = false;
+            _mockItemManager.Setup(m => m.DropItem(It.IsAny<IItem>())).Callback(() => dropped = true);
+
+            for (int i = 0; i < 100; i++)
+            {
+                var m = new Monster(2, "Rat", "rat", new Position(1, 0), 10, 5);
+                _mockMonsterManager.Setup(mm => mm.GetMonsterById(2)).Returns(m);
+                
+                // Reset cooldown to allow another attack attempt in the same tick-like cycle
+                typeof(Player).GetProperty("LastAttackTime")?.SetValue(player, DateTime.MinValue);
+
+                _worldManager.ProcessPlayerAttackMonster(player, "2");
+                if (dropped) break;
+            }
+
+            // Assert
+            Assert.True(dropped, "Item should have dropped at least once in 100 kills with 30% chance");
+            _mockEvents.Verify(e => e.OnItemDropped(It.IsAny<IItem>()), Times.AtLeastOnce);
         }
     }
 }
