@@ -43,3 +43,10 @@ export interface MonsterData {
     attackPower: number;
     isDead: boolean;
 }
+
+export interface ItemData {
+    id: string;
+    name: string;
+    position: Position;
+    type: string;
+}
