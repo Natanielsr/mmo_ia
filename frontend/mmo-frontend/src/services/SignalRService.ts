@@ -137,7 +137,6 @@ export class SignalRService {
 
         this.connection.on("MonsterSpawned", (monsterData: MonsterData) => {
             this.mainScene?.monsterSpawned(monsterData);
-            addLog(`Monstro ${monsterData.name} apareceu!`, "info");
         });
 
         this.connection.on("MonsterMoved", (monsterData: MonsterData) => {
@@ -185,7 +184,6 @@ export class SignalRService {
                 type: String(itemData.type ?? itemData.Type)
             };
             this.mainScene?.itemDropped(normalizedItem);
-            addLog(`Um item apareceu no mapa: ${normalizedItem.name}!`, "info");
         });
 
         this.connection.on("ItemPickedUp", (data: any) => {
