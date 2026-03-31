@@ -226,6 +226,32 @@ public class PlayerImplTests
     }
 
     [Fact]
+    public void Player_Should_Not_Level_Up_If_Experience_Is_Below_Threshold()
+    {
+        var player = CreatePlayer();
+
+        player.GainExperience(999);
+
+        Assert.Equal(1, player.Level);
+        Assert.Equal(999, player.Experience);
+        Assert.Equal(100, player.MaxHp);
+    }
+
+    [Fact]
+    public void Player_Should_Heal_To_Full_When_Leveling_Up()
+    {
+        var player = CreatePlayer();
+        player.TakeDamage(50);
+        
+        // This gives exactly enough XP to level up to 2
+        player.GainExperience(1000);
+        
+        Assert.Equal(2, player.Level);
+        Assert.Equal(110, player.MaxHp);
+        Assert.Equal(110, player.Hp); // Should be fully healed
+    }
+
+    [Fact]
     public void Overkill_Damage_Should_Not_Drop_Hp_Below_Zero()
     {
         var player = CreatePlayer();

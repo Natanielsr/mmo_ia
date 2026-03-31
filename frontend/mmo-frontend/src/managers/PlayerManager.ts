@@ -38,6 +38,11 @@ export class PlayerManager {
             player.hp = statusData.hp ?? statusData.Hp ?? player.hp;
             player.maxHp = statusData.maxHp ?? statusData.MaxHp ?? player.maxHp;
             player.isDead = statusData.isDead ?? statusData.IsDead ?? player.isDead;
+            
+            const newLevel = statusData.level ?? statusData.Level ?? player.level;
+            const newXP = statusData.experience ?? statusData.Experience ?? player.experience;
+            player.updateLevelAndXP(newLevel, newXP);
+            
             player.updateHealthBar();
         }
     }

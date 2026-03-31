@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { addLog, updateUIHealthBar, overlay, gameContainer, errorBanner, btnJoin } from '../ui';
+import { addLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin } from '../ui';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
@@ -57,10 +57,12 @@ export class SignalRService {
         });
 
         this.connection.on("PlayerStatusUpdated", (statusData: any) => {
+            console.log("[DEBUG] PlayerStatusUpdated received:", JSON.stringify(statusData));
             this.mainScene?.updatePlayerStatus(statusData);
             const myPlayer = this.mainScene?.getMyPlayer();
             if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
                 updateUIHealthBar(statusData.hp ?? statusData.Hp, statusData.maxHp ?? statusData.MaxHp);
+                updateUIXPBar(statusData.experience ?? statusData.Experience ?? 0, statusData.level ?? statusData.Level ?? 1);
             }
         });
 
@@ -78,6 +80,7 @@ export class SignalRService {
                 const myPlayer = this.mainScene?.getMyPlayer();
                 if (myPlayer && String(s.id ?? s.Id) === String(myPlayer.id)) {
                     updateUIHealthBar(s.hp ?? s.Hp, s.maxHp ?? s.MaxHp);
+                    updateUIXPBar(s.experience ?? s.Experience ?? 0, s.level ?? s.Level ?? 1);
                 }
             });
         });

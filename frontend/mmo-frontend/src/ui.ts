@@ -29,6 +29,40 @@ export function updateUIHealthBar(hp: any, maxHp: any) {
     }
 }
 
+export function updateUIXPBar(experience: number, level: number) {
+    const currentExp = Number(experience ?? 0);
+    const lvl = Number(level ?? 1);
+    
+    // Formula from backend: Level * 1000
+    // At level 1, you need 1000 total XP to reach level 2. 
+    // At level 2, you need 2000 total XP to reach level 3.
+    // The previous level amount was (lvl - 1) * 1000
+    const prevLevelMaxXP = (lvl - 1) * 1000;
+    const currentLevelMaxXP = lvl * 1000;
+    
+    // How much XP into this level we have
+    const xpIntoLevel = Math.max(0, currentExp - prevLevelMaxXP);
+    const xpRequiredForNextLevel = currentLevelMaxXP - prevLevelMaxXP; // This is always 1000
+    
+    const percent = Math.min(100, Math.max(0, (xpIntoLevel / xpRequiredForNextLevel) * 100));
+
+    const fill = document.getElementById('xp-fill');
+    const text = document.getElementById('xp-text');
+    const levelText = document.getElementById('level-text');
+
+    if (levelText) {
+        levelText.innerText = `Lv ${lvl}`;
+    }
+
+    if (fill) {
+        fill.style.width = isNaN(percent) ? "0%" : `${percent}%`;
+    }
+
+    if (text) {
+        text.innerText = `${Math.ceil(xpIntoLevel)} / ${xpRequiredForNextLevel} XP`;
+    }
+}
+
 export function updateUIPosition(x: number, y: number) {
     const posX = document.getElementById('pos-x');
     const posY = document.getElementById('pos-y');

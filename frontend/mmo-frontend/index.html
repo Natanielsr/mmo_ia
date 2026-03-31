@@ -33,12 +33,18 @@
       <!-- UI Sidebar -->
       <div class="sidebar glass">
         <div class="character-info">
-          <h3>Personagem</h3>
+          <h3>Personagem <span id="level-text" style="font-size: 0.8em; color: #ffd700;">Lv 1</span></h3>
           <div class="hp-container">
             <div class="hp-bar progress-bar">
               <div id="hp-fill" style="width: 100%"></div>
             </div>
             <div id="hp-text">100 / 100</div>
+          </div>
+          <div class="xp-container" style="margin-top: 5px;">
+            <div class="xp-bar progress-bar" style="background: rgba(0, 0, 0, 0.5); border-radius: 4px; overflow: hidden; height: 12px; position: relative;">
+              <div id="xp-fill" style="width: 0%; height: 100%; background: #0088ff; transition: width 0.3s ease;"></div>
+            </div>
+            <div id="xp-text" style="font-size: 0.8em; text-align: center; margin-top: 2px;">0 / 1000 XP</div>
           </div>
           <div class="coordinates">
             Posição: <span id="pos-x">0</span>, <span id="pos-y">0</span>

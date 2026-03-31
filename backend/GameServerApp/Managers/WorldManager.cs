@@ -118,6 +118,15 @@ namespace GameServerApp.Managers
                 _gameStateManager.AddPlayerExperience(player, 100);
                 _gameStateManager.CheckForLevelUp(player);
 
+                _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+                {
+                    Id = player.Id.ToString(),
+                    Hp = player.Hp,
+                    MaxHp = player.MaxHp,
+                    Level = player.Level,
+                    Experience = player.Experience
+                });
+
                 _worldEvents.OnPlayerDied(target.Id);
                 _worldEvents.OnPlayerExperienceGained(player.Id, 100, player.Experience);
             }
@@ -178,6 +187,15 @@ namespace GameServerApp.Managers
             {
                 _gameStateManager.AddPlayerExperience(player, 50); // XP for monster
                 _gameStateManager.CheckForLevelUp(player);
+
+                _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+                {
+                    Id = player.Id.ToString(),
+                    Hp = player.Hp,
+                    MaxHp = player.MaxHp,
+                    Level = player.Level,
+                    Experience = player.Experience
+                });
 
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
 

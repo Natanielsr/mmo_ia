@@ -14,6 +14,8 @@ export interface PlayerStatusData {
     hp: number;
     maxHp: number;
     isDead: boolean;
+    level: number;
+    experience: number;
 }
 
 export interface AttackData {

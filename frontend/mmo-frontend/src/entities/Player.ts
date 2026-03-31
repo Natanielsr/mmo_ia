@@ -11,6 +11,8 @@ export class Player extends Phaser.GameObjects.Container {
     public worldPosition: Position;
     public hp: number;
     public maxHp: number;
+    public level: number;
+    public experience: number;
     public isDead: boolean = false;
     private healthBar: Phaser.GameObjects.Graphics;
     private healthBarBackground: Phaser.GameObjects.Graphics;
@@ -35,6 +37,8 @@ export class Player extends Phaser.GameObjects.Container {
         const data = playerPosData as any;
         this.hp = Number(data.hp ?? data.Hp ?? 100);
         this.maxHp = Number(data.maxHp ?? data.MaxHp ?? 100);
+        this.level = Number(data.level ?? data.Level ?? 1);
+        this.experience = Number(data.experience ?? data.Experience ?? 0);
         this.isDead = Boolean(data.isDead ?? data.IsDead ?? false);
 
         // 1. O Sprite fica na coordenada (0,0) local do Container
@@ -44,7 +48,7 @@ export class Player extends Phaser.GameObjects.Container {
 
         // 2. Texto do nome fica FORA do container para controlar depth global da cena
         this.nameTextOffsetY = (gridSize / 2) + 15;
-        this.nameText = scene.add.text(worldPosition.x, worldPosition.y - this.nameTextOffsetY, name, {
+        this.nameText = scene.add.text(worldPosition.x, worldPosition.y - this.nameTextOffsetY, `[Lv ${this.level}] ${this.name}`, {
             fontSize: '14px', color: '#fff', fontFamily: 'Inter', stroke: '#000', strokeThickness: 2
         }).setOrigin(0.5);
         this.nameText.setDepth(10000); // acima de tudo
@@ -101,7 +105,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.isDead = true;
         this.sprite.setAngle(90); // Deita o personagem
         this.sprite.setTint(0x666666);
-        this.nameText.setText(`${this.name} 💀`);
+        this.nameText.setText(`[Lv ${this.level}] ${this.name} 💀`);
         this.updateHealthBar();
     }
 
@@ -224,5 +228,75 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.destroy();
         this.nameText.destroy();
         super.destroy(fromScene);
+    }
+
+    public updateLevelAndXP(newLevel: number, newExperience: number): void {
+        if (newLevel > this.level) {
+            this.playLevelUpEffect();
+        }
+        this.level = newLevel;
+        this.experience = newExperience;
+        
+        if (this.isDead) {
+            this.nameText.setText(`[Lv ${this.level}] ${this.name} 💀`);
+        } else {
+            this.nameText.setText(`[Lv ${this.level}] ${this.name}`);
+        }
+    }
+
+    private playLevelUpEffect(): void {
+        // Efeito visual (Tweens no sprite)
+        this.scene.tweens.add({
+            targets: this.sprite,
+            scaleY: this.sprite.scaleY * 1.3,
+            scaleX: this.sprite.scaleX * 1.1,
+            duration: 200,
+            yoyo: true,
+            ease: 'Quad.easeInOut'
+        });
+
+        // Efeito de flash glow (amarelo)
+        this.scene.tweens.add({
+            targets: this.sprite,
+            tint: 0xffff00,
+            duration: 300,
+            yoyo: true,
+            onComplete: () => {
+                if (!this.isDead) this.sprite.clearTint();
+            }
+        });
+
+        // Adiciona um texto "LEVEL UP!" temporário subindo
+        const levelUpText = this.scene.add.text(this.x, this.y - this.nameTextOffsetY - 25, "LEVEL UP!", {
+            fontSize: '20px', color: '#ffb700', fontFamily: 'Inter', stroke: '#000', strokeThickness: 4, fontStyle: 'bold'
+        }).setOrigin(0.5);
+        levelUpText.setDepth(10001);
+
+        this.scene.tweens.add({
+            targets: levelUpText,
+            y: levelUpText.y - 50,
+            alpha: 0,
+            duration: 2000,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                levelUpText.destroy();
+            }
+        });
+
+        // Opcional: Efeito de partículas
+        const particles = this.scene.add.particles(this.x, this.y - 10, 'hero', {
+            speed: { min: -100, max: 100 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 0.5, end: 0 },
+            blendMode: 'ADD',
+            lifespan: 1000,
+            gravityY: 100,
+            emitting: false
+        });
+        particles.setDepth(10000);
+        
+        // Emite algumas partículas subitamente e depois destrói o manipulador
+        particles.explode(20);
+        this.scene.time.delayedCall(1000, () => particles.destroy());
     }
 }
