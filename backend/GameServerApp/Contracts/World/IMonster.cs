@@ -11,6 +11,7 @@ public interface IMonster : IDynamicWorldObject
     Position SpawnPosition { get; }
     MonsterState State { get; }
     MonsterBehavior Behavior { get; }
+    int ExperienceReward { get; }
     DateTime LastMovementTime { get; set; }
     DateTime LastAttackTime { get; set; }
 

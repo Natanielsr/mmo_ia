@@ -18,6 +18,7 @@ public class Monster : IMonster
     public MonsterBehavior Behavior { get; private set; }
     public DateTime LastMovementTime { get; set; }
     public DateTime LastAttackTime { get; set; }
+    public int ExperienceReward { get; }
 
     public int Hp { get; private set; }
     public int MaxHp { get; }
@@ -31,6 +32,7 @@ public class Monster : IMonster
         Position spawnPosition,
         int maxHp = 50,
         int attackPower = 8,
+        int experienceReward = 50,
         MonsterBehavior behavior = MonsterBehavior.Patrolling)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -53,6 +55,7 @@ public class Monster : IMonster
         MaxHp = maxHp;
         Hp = maxHp;
         AttackPower = attackPower;
+        ExperienceReward = experienceReward;
         Behavior = behavior;
         Rotation = 0f;
         LastMovementTime = DateTime.UtcNow;

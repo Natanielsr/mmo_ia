@@ -185,7 +185,7 @@ namespace GameServerApp.Managers
 
             if (monster.IsDead)
             {
-                _gameStateManager.AddPlayerExperience(player, 50); // XP for monster
+                _gameStateManager.AddPlayerExperience(player, monster.ExperienceReward); // XP specific for each monster type
                 _gameStateManager.CheckForLevelUp(player);
 
                 _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData

@@ -9,12 +9,12 @@ namespace GameServerApp.Managers;
 
 public class MonsterManager : IMonsterManager
 {
-    private static readonly (string Name, string ObjectCode, int Hp, int Attack)[] MonsterTemplates =
+    private static readonly (string Name, string ObjectCode, int Hp, int Attack, int Xp)[] MonsterTemplates =
     [
-        ("Rat", "rat", 30, 4),
-        ("Wolf", "wolf", 60, 10),
-        ("Orc", "orc", 90, 14),
-        ("Spider", "spider", 45, 7)
+        ("Rat", "rat", 30, 4, 20),
+        ("Wolf", "wolf", 60, 10, 60),
+        ("Orc", "orc", 90, 14, 100),
+        ("Spider", "spider", 45, 7, 35)
     ];
 
     private readonly Dictionary<long, IMonster> _monsters = new();
@@ -83,7 +83,8 @@ public class MonsterManager : IMonsterManager
                 objectCode: template.ObjectCode,
                 spawnPosition: position,
                 maxHp: template.Hp,
-                attackPower: template.Attack);
+                attackPower: template.Attack,
+                experienceReward: template.Xp);
 
             _monsters[monster.Id] = monster;
             _collisionManager.RegisterDynamicObject(monster);
@@ -135,7 +136,8 @@ public class MonsterManager : IMonsterManager
                 objectCode: template.ObjectCode,
                 spawnPosition: position,
                 maxHp: template.Hp,
-                attackPower: template.Attack);
+                attackPower: template.Attack,
+                experienceReward: template.Xp);
 
             _monsters[monster.Id] = monster;
             _collisionManager.RegisterDynamicObject(monster);
