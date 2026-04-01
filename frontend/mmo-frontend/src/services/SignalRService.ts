@@ -8,7 +8,7 @@ export class SignalRService {
     private mainScene: MainScene | null = null;
     private game: Phaser.Game | null = null;
 
-    constructor(url: string = "http://localhost:5258/gamehub") {
+    constructor(url: string = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/gamehub` : "http://localhost:5258/gamehub") {
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(url)
             .withAutomaticReconnect()

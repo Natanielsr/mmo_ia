@@ -18,7 +18,8 @@ export class MapLoader {
 
     public async loadMapObjects(): Promise<MapObjectData[]> {
         try {
-            const response = await fetch('http://localhost:5258/api/map/objects');
+            const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5258";
+            const response = await fetch(`${baseUrl}/api/map/objects`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
