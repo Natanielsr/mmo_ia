@@ -5,7 +5,6 @@ export const btnJoin = document.getElementById('btn-join') as HTMLButtonElement;
 export const inputName = document.getElementById('username') as HTMLInputElement;
 export const logContent = document.getElementById('log-content') as HTMLDivElement;
 export const errorBanner = document.getElementById('connection-error') as HTMLDivElement;
-
 export function updateUIHealthBar(hp: any, maxHp: any) {
     // Garantir que temos números válidos
     const currentHp = Number(hp ?? 0);
