@@ -13,3 +13,8 @@ GameServerApp/bin
 GameServerApp/obj
 GameServer.Tests/bin
 GameServer.Tests/obj
+
+.env
+.env.production
+.env.local
+.env.development
