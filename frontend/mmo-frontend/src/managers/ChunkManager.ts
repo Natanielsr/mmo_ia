@@ -22,6 +22,7 @@ export class ChunkManager {
         this.visitedChunks.add(chunkKey);
         this.allObjects.set(chunkKey, data.objects);
 
+        // Se o chunk já está renderizado, não faz nada
         if (this.loadedChunks.has(chunkKey)) {
             return;
         }
@@ -115,6 +116,17 @@ export class ChunkManager {
                 console.log(`[ChunkManager] Chunk ${key} removido por distância.`);
             }
         });
+
+        // Otimização de Memória: Limita o cache global de objetos se ficar muito grande
+        // Mantemos os últimos 100 chunks visitados para não pesar a memória
+        if (this.allObjects.size > 100) {
+            const allKeys = Array.from(this.allObjects.keys());
+            // Remove os mais antigos (abordagem simples)
+            for (let i = 0; i < allKeys.length - 100; i++) {
+                this.allObjects.delete(allKeys[i]);
+                this.visitedChunks.delete(allKeys[i]);
+            }
+        }
     }
 
     public clear() {

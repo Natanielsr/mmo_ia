@@ -76,24 +76,40 @@ export class WorldMapScene extends Phaser.Scene {
         // Desenha Chunks Visitados (Fundo)
         const visited = this.mainScene.chunkManager.getVisitedChunks();
         const chunkSize = this.mainScene.chunkManager.getChunkSize();
+        const viewHalfW = (this.backgroundRect.width / this.tileSize) / 2;
+        const viewHalfH = (this.backgroundRect.height / this.tileSize) / 2;
 
-        visited.forEach(key => {
-            const [cx, cy] = key.split(',').map(Number);
-            const startX = cx * chunkSize;
-            const startY = cy * chunkSize;
+        // Otimização: Só processa chunks que estão dentro da visão do mapa
+        const minCX = Math.floor((playerPos.x - viewHalfW) / chunkSize);
+        const maxCX = Math.ceil((playerPos.x + viewHalfW) / chunkSize);
+        const minCY = Math.floor((playerPos.y - viewHalfH) / chunkSize);
+        const maxCY = Math.ceil((playerPos.y + viewHalfH) / chunkSize);
 
-            // Converter coordenadas do mundo para coordenadas da tela do mapa
-            this.drawRect(startX, startY, chunkSize, chunkSize, playerPos, 0x0f172a);
-        });
+        // Desenha Fundo dos Chunks Visitados
+        for (let cx = minCX; cx <= maxCX; cx++) {
+            for (let cy = minCY; cy <= maxCY; cy++) {
+                const key = `${cx},${cy}`;
+                if (visited.has(key)) {
+                    const startX = cx * chunkSize;
+                    const startY = cy * chunkSize;
+                    this.drawRect(startX, startY, chunkSize, chunkSize, playerPos, 0x0f172a);
+                }
+            }
+        }
 
         // Desenha Objetos Estáticos
         const allObjects = this.mainScene.chunkManager.getAllObjects();
-        allObjects.forEach((objects) => {
-             // Só desenha se o chunk for recentemente visitado ou visível na lógica
-             objects.forEach(obj => {
-                 this.drawCell(obj.position.x, obj.position.y, playerPos, 0x475569);
-             });
-        });
+        for (let cx = minCX; cx <= maxCX; cx++) {
+            for (let cy = minCY; cy <= maxCY; cy++) {
+                const key = `${cx},${cy}`;
+                const objects = allObjects.get(key);
+                if (objects) {
+                    objects.forEach(obj => {
+                        this.drawCell(obj.position.x, obj.position.y, playerPos, 0x475569);
+                    });
+                }
+            }
+        }
 
         // Desenha Itens
         const items = this.mainScene.itemManager.getItemsDict();
