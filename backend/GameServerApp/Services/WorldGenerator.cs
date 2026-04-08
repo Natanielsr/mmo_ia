@@ -2,9 +2,11 @@ using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Services.WorldFormations;
 using GameServerApp.World;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 
 namespace GameServerApp.Services
 {
@@ -13,6 +15,7 @@ namespace GameServerApp.Services
         private readonly IStaticWorldManager _staticWorldManager;
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly WorldConfig _config;
+        private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public WorldGenerator(
             IStaticWorldManager staticWorldManager,
@@ -22,52 +25,74 @@ namespace GameServerApp.Services
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;
             _config = config.Value;
+
+            // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
+            _formations = new List<(IWorldFormation, double)>
+            {
+                (new OrganicNoiseFormation(), 0.85), // 85% clareiras/florestas
+                (new StoneCircleFormation(), 0.04),  // 4% Stonehenge
+                (new RowFormation(), 0.04),         // 4% Pomares/Grades
+                (new ClusterFormation(), 0.04),     // 4% Aglomerados densos
+                (new MazeFormation(), 0.03)          // 3% Labirintos
+            };
         }
 
         public void GenerateChunk(ChunkCoord coord)
         {
-            // Nota: IsChunkLoaded deve ser verificado antes para evitar regeneração desnecessária
-            // mas o StaticWorldManager já lida com isso parcialmente no AddStaticObject (subscreve se na mesma posição)
-            // No entanto, para performance, conferimos no WorldManager antes de chamar.
-
-            // Seed determinística baseada na coordenação do chunk para consistência
-            int seed = HashCode.Combine(coord.CX, coord.CY);
-            var rng = new Random(seed);
+            // Seed determinística para o chunk
+            int chunkSeed = HashCode.Combine(coord.CX, coord.CY);
+            var rng = new Random(chunkSeed);
 
             // Coordenadas mundo do início do chunk
             int startX = coord.CX * _config.Map.ChunkSize;
             int startY = coord.CY * _config.Map.ChunkSize;
 
-            // Gera obstáculos por chunk baseado na configuração
-            int obstacleCount = rng.Next(_config.Objects.MinPerChunk, _config.Objects.MaxPerChunk + 1);
-            for (int i = 0; i < obstacleCount; i++)
+            // Escolhe uma formação baseada nos pesos
+            IWorldFormation selectedFormation = PickFormation(rng);
+
+            selectedFormation.Generate(
+                startX, 
+                startY, 
+                _config.Map.ChunkSize, 
+                rng, 
+                (x, y, type) => SpawnObject(x, y, rng, type));
+        }
+
+        private IWorldFormation PickFormation(Random rng)
+        {
+            double roll = rng.NextDouble();
+            double cumulative = 0;
+
+            foreach (var item in _formations)
             {
-                // Posição relativa dentro do chunk
-                int rx = rng.Next(0, _config.Map.ChunkSize);
-                int ry = rng.Next(0, _config.Map.ChunkSize);
-                
-                var pos = new Position(startX + rx, startY + ry);
-
-                // Evita spawnar no centro absoluto (0,0) que costuma ser o ponto de partida seguro
-                if (pos.X == 0 && pos.Y == 0) continue;
-
-                if (_staticWorldManager.GetObjectAt(pos) != null) continue;
-
-                // Escolhe um tipo de obstáculo baseado nos assets disponíveis no PreloadScene.ts
-                string[] types = { "tree", "rock", "bush", "pillar" };
-                string code = types[rng.Next(types.Length)];
-                string name = char.ToUpper(code[0]) + code.Substring(1);
-
-                var obj = new StaticObject(
-                    id: _idGeneratorService.GenerateId(),
-                    position: pos,
-                    name: name,
-                    objectCode: code,
-                    isPassable: false
-                );
-                
-                _staticWorldManager.AddStaticObject(obj);
+                cumulative += item.Weight;
+                if (roll < cumulative)
+                {
+                    return item.Formation;
+                }
             }
+
+            return _formations[0].Formation; // Default
+        }
+
+        private void SpawnObject(int x, int y, Random rng, string forcedType = null)
+        {
+            var pos = new Position(x, y);
+            if (_staticWorldManager.GetObjectAt(pos) != null) return;
+
+            string[] types = { "tree", "rock", "bush", "pillar" };
+            string code = forcedType ?? types[rng.Next(types.Length)];
+            string name = char.ToUpper(code[0]) + code.Substring(1);
+
+            var obj = new StaticObject(
+                id: _idGeneratorService.GenerateId(),
+                position: pos,
+                name: name,
+                objectCode: code,
+                isPassable: false
+            );
+
+            _staticWorldManager.AddStaticObject(obj);
         }
     }
 }
