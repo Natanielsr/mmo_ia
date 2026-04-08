@@ -35,16 +35,16 @@ namespace GameServerApp.Services
             var rng = new Random(seed);
 
             // Coordenadas mundo do início do chunk
-            int startX = coord.CX * _config.ChunkSize;
-            int startY = coord.CY * _config.ChunkSize;
+            int startX = coord.CX * _config.Map.ChunkSize;
+            int startY = coord.CY * _config.Map.ChunkSize;
 
-            // Gera entre 1 e 4 obstáculos por chunk para não encher demais
-            int obstacleCount = rng.Next(1, 5);
+            // Gera obstáculos por chunk baseado na configuração
+            int obstacleCount = rng.Next(_config.Objects.MinPerChunk, _config.Objects.MaxPerChunk + 1);
             for (int i = 0; i < obstacleCount; i++)
             {
                 // Posição relativa dentro do chunk
-                int rx = rng.Next(0, _config.ChunkSize);
-                int ry = rng.Next(0, _config.ChunkSize);
+                int rx = rng.Next(0, _config.Map.ChunkSize);
+                int ry = rng.Next(0, _config.Map.ChunkSize);
                 
                 var pos = new Position(startX + rx, startY + ry);
 

@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure Options
 builder.Services.Configure<WorldConfig>(
-    builder.Configuration.GetSection("MonsterSpawn"));
+    builder.Configuration.GetSection("WorldSettings"));
 
 // Add SignalR
 builder.Services.AddSignalR();
@@ -85,9 +85,9 @@ static void InitializeRandomMonsters(IServiceProvider services)
     var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
 
     monsterManager.SpawnRandomMonsters(
-        count: config.MaxMonsters,
-        width: config.WorldWidth,
-        height: config.WorldHeight,
-        safeSpawnRadius: config.SafeSpawnRadius,
+        count: config.Monsters.MaxGlobal,
+        width: config.Map.Width,
+        height: config.Map.Height,
+        safeSpawnRadius: config.Map.SafeSpawnRadius,
         seed: 20260310);
 }

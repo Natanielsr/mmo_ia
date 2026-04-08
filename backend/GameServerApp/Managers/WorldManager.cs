@@ -103,7 +103,7 @@ namespace GameServerApp.Managers
             if (player.State == PlayerState.Dead || target.State == PlayerState.Dead) return;
 
             // Verifica cooldown de ataque
-            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.AttackSpeedSeconds)
+            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.Combat.AttackSpeedSec)
             {
                 return;
             }
@@ -146,7 +146,7 @@ namespace GameServerApp.Managers
             if (player.State == PlayerState.Dead) return;
 
             // Verifica cooldown de ataque
-            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.AttackSpeedSeconds)
+            if ((DateTime.UtcNow - player.LastAttackTime).TotalSeconds < _config.Combat.AttackSpeedSec)
             {
                 return;
             }
@@ -217,7 +217,7 @@ namespace GameServerApp.Managers
                 _monsterManager.RemoveMonster(monster.Id);
 
                 // Agenda o respawn
-                _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
+                _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.Monsters.RespawnTimeSec));
             }
         }
 
@@ -344,8 +344,8 @@ namespace GameServerApp.Managers
             _pendingRespawns.RemoveAll(t => t <= now);
 
             var currentMonsters = _monsterManager.GetAllMonsters().ToList();
-            var radiusSq = _config.DespawnMonsterRadius * _config.DespawnMonsterRadius;
-            var minRadius = Math.Max(_config.SafeSpawnRadius + 1, _config.MinMonsterSpawnDistance);
+            var radiusSq = _config.Monsters.DespawnRadius * _config.Monsters.DespawnRadius;
+            var minRadius = Math.Max(_config.Map.SafeSpawnRadius + 1, _config.Monsters.MinSpawnDistance);
 
             // Cap global absoluto apenas para segurança computacional
             const int absoluteMax = 500;
@@ -363,15 +363,15 @@ namespace GameServerApp.Managers
                 });
 
                 // Se houver menos que o alvo por player, gera o necessário para essa "região"
-                if (monstersNearCount < _config.MonstersPerPlayer)
+                if (monstersNearCount < _config.Monsters.PerPlayer)
                 {
-                    int needed = _config.MonstersPerPlayer - monstersNearCount;
+                    int needed = _config.Monsters.PerPlayer - monstersNearCount;
                     
                     var spawned = _monsterManager.SpawnMonstersNearPosition(
                         needed,
                         player.Position,
                         minRadius,
-                        _config.SpawnMonsterRadius);
+                        _config.Monsters.SpawnRadius);
 
                     if (spawned != null && spawned.Any())
                     {
@@ -410,7 +410,7 @@ namespace GameServerApp.Managers
                 {
                     _monsterManager.RemoveMonster(monster.Id);
                     _worldEvents.OnMonsterRemoved(monster.Id.ToString());
-                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
+                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.Monsters.RespawnTimeSec));
                 }
                 return;
             }
@@ -423,8 +423,7 @@ namespace GameServerApp.Managers
                     var dx = Math.Abs(monster.Position.X - player.Position.X);
                     var dy = Math.Abs(monster.Position.Y - player.Position.Y);
                     var dist = Math.Sqrt(dx * dx + dy * dy);
-
-                    if (dist <= _config.DespawnMonsterRadius)
+                    if (dist <= _config.Monsters.DespawnRadius)
                     {
                         nearAnyPlayer = true;
                         break;
@@ -438,7 +437,7 @@ namespace GameServerApp.Managers
                     _worldEvents.OnMonsterRemoved(monster.Id.ToString());
                     
                     // Adiciona ao pool de respawn para manter o desafio próximo a outros players
-                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.RespawnTimeSec));
+                    _pendingRespawns.Add(DateTime.UtcNow.AddSeconds(_config.Monsters.RespawnTimeSec));
                 }
             }
         }
@@ -492,13 +491,13 @@ namespace GameServerApp.Managers
 
         public void ProcessChunkLoading(IPlayer player, string connectionId)
         {
-            int cx = (int)Math.Floor((double)player.Position.X / _config.ChunkSize);
-            int cy = (int)Math.Floor((double)player.Position.Y / _config.ChunkSize);
+            int cx = (int)Math.Floor((double)player.Position.X / _config.Map.ChunkSize);
+            int cy = (int)Math.Floor((double)player.Position.Y / _config.Map.ChunkSize);
 
             // Verifica chunk atual e adjacentes baseados no LoadRadius
-            for (int dx = -_config.LoadRadius; dx <= _config.LoadRadius; dx++)
+            for (int dx = -_config.Map.LoadRadius; dx <= _config.Map.LoadRadius; dx++)
             {
-                for (int dy = -_config.LoadRadius; dy <= _config.LoadRadius; dy++)
+                for (int dy = -_config.Map.LoadRadius; dy <= _config.Map.LoadRadius; dy++)
                 {
                     var coord = new ChunkCoord(cx + dx, cy + dy);
                     

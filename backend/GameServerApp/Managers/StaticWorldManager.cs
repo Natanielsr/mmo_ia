@@ -43,10 +43,10 @@ namespace GameServerApp.Managers
         public IEnumerable<IStaticWorldObject> GetObjectsInArea(Position topLeft, Position bottomRight)
         {
             // Otimizado para usar chunks
-            int minCx = (int)Math.Floor((double)topLeft.X / _config.ChunkSize);
-            int maxCx = (int)Math.Floor((double)bottomRight.X / _config.ChunkSize);
-            int minCy = (int)Math.Floor((double)bottomRight.Y / _config.ChunkSize);
-            int maxCy = (int)Math.Floor((double)topLeft.Y / _config.ChunkSize);
+            int minCx = (int)Math.Floor((double)topLeft.X / _config.Map.ChunkSize);
+            int maxCx = (int)Math.Floor((double)bottomRight.X / _config.Map.ChunkSize);
+            int minCy = (int)Math.Floor((double)bottomRight.Y / _config.Map.ChunkSize);
+            int maxCy = (int)Math.Floor((double)topLeft.Y / _config.Map.ChunkSize);
 
             // Nota: coordY no sistema do jogo costuma subir (Y+ pra cima) ou descer (Y- pra baixo).
             // No MapLoader.ts: worldY = -object.position.y * GRID_SIZE
@@ -57,10 +57,10 @@ namespace GameServerApp.Managers
             var realMinY = Math.Min(topLeft.Y, bottomRight.Y);
             var realMaxY = Math.Max(topLeft.Y, bottomRight.Y);
 
-            minCx = (int)Math.Floor((double)realMinX / _config.ChunkSize);
-            maxCx = (int)Math.Floor((double)realMaxX / _config.ChunkSize);
-            minCy = (int)Math.Floor((double)realMinY / _config.ChunkSize);
-            maxCy = (int)Math.Floor((double)realMaxY / _config.ChunkSize);
+            minCx = (int)Math.Floor((double)realMinX / _config.Map.ChunkSize);
+            maxCx = (int)Math.Floor((double)realMaxX / _config.Map.ChunkSize);
+            minCy = (int)Math.Floor((double)realMinY / _config.Map.ChunkSize);
+            maxCy = (int)Math.Floor((double)realMaxY / _config.Map.ChunkSize);
 
             for (int cx = minCx; cx <= maxCx; cx++)
             {
@@ -95,8 +95,8 @@ namespace GameServerApp.Managers
             }
 
             // Adiciona ao chunk
-            var cx = (int)Math.Floor((double)pos.X / _config.ChunkSize);
-            var cy = (int)Math.Floor((double)pos.Y / _config.ChunkSize);
+            var cx = (int)Math.Floor((double)pos.X / _config.Map.ChunkSize);
+            var cy = (int)Math.Floor((double)pos.Y / _config.Map.ChunkSize);
             var coord = new ChunkCoord(cx, cy);
 
             if (!_chunks.TryGetValue(coord, out var list))
@@ -119,8 +119,8 @@ namespace GameServerApp.Managers
                 }
 
                 // Remove do chunk
-                var cx = (int)Math.Floor((double)position.X / _config.ChunkSize);
-                var cy = (int)Math.Floor((double)position.Y / _config.ChunkSize);
+                var cx = (int)Math.Floor((double)position.X / _config.Map.ChunkSize);
+                var cy = (int)Math.Floor((double)position.Y / _config.Map.ChunkSize);
                 var coord = new ChunkCoord(cx, cy);
 
                 if (_chunks.TryGetValue(coord, out var list))
