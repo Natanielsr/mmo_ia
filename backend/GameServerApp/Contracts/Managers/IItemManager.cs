@@ -9,5 +9,6 @@ namespace GameServerApp.Contracts.Managers
         IItem? GetItemAt(Position position);
         void RemoveItem(string itemId);
         IReadOnlyCollection<IItem> GetAllItems();
+        IReadOnlyCollection<IItem> GetItemsInChunk(ChunkCoord coord);
     }
 }

@@ -5,7 +5,7 @@ namespace GameServerApp.Services.WorldFormations
 {
     public class OrganicNoiseFormation : IWorldFormation
     {
-        public void Generate(int startX, int startY, int size, Random rng, Action<int, int, string> spawnAction)
+        public void Generate(int startX, int startY, int size, Random rng, Action<int, int, string?> spawnAction)
         {
             for (int x = 0; x < size; x++)
             {

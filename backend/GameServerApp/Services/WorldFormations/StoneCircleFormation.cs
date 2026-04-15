@@ -5,7 +5,7 @@ namespace GameServerApp.Services.WorldFormations
 {
     public class StoneCircleFormation : IWorldFormation
     {
-        public void Generate(int startX, int startY, int size, Random rng, Action<int, int, string> spawnAction)
+        public void Generate(int startX, int startY, int size, Random rng, Action<int, int, string?> spawnAction)
         {
             int centerX = startX + size / 2;
             int centerY = startY + size / 2;
@@ -17,6 +17,11 @@ namespace GameServerApp.Services.WorldFormations
                 int px = centerX + (int)(Math.Cos(angle) * radius);
                 int py = centerY + (int)(Math.Sin(angle) * radius);
                 spawnAction(px, py, "pillar");
+            }
+
+            if (rng.NextDouble() < 0.3)
+            {
+                spawnAction(centerX, centerY, "item:healing_potion");
             }
         }
     }

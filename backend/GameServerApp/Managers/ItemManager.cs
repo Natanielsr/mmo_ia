@@ -8,6 +8,12 @@ namespace GameServerApp.Managers
     public class ItemManager : IItemManager
     {
         private readonly ConcurrentDictionary<string, IItem> _items = new();
+        private readonly Microsoft.Extensions.Options.IOptions<GameServerApp.Contracts.Config.WorldConfig> _config;
+
+        public ItemManager(Microsoft.Extensions.Options.IOptions<GameServerApp.Contracts.Config.WorldConfig> config)
+        {
+            _config = config;
+        }
 
         public void DropItem(IItem item)
         {
@@ -32,6 +38,20 @@ namespace GameServerApp.Managers
         public IReadOnlyCollection<IItem> GetAllItems()
         {
             return _items.Values.ToList();
+        }
+
+        public IReadOnlyCollection<IItem> GetItemsInChunk(ChunkCoord coord)
+        {
+            int size = _config.Value.Map.ChunkSize;
+            int startX = coord.CX * size;
+            int startY = coord.CY * size;
+            int endX = startX + size;
+            int endY = startY + size;
+
+            return _items.Values.Where(i => 
+                i.Position.X >= startX && i.Position.X < endX &&
+                i.Position.Y >= startY && i.Position.Y < endY)
+                .ToList();
         }
     }
 }

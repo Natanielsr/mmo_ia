@@ -184,5 +184,24 @@ namespace GameServer.Tests.Managers
                 a.TargetId == monster.Id.ToString() && 
                 a.Damage == 10)), Times.Once);
         }
+
+        [Fact]
+        public void ProcessChunkLoading_ShouldIncludeItems()
+        {
+            // Arrange
+            var player = new Player(1, "Hero", new Position(0, 0));
+            var connectionId = "test-conn";
+            var coord = new ChunkCoord(0, 0);
+            
+            var item = new Item("item1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
+            _mockItemManager.Setup(m => m.GetItemsInChunk(It.IsAny<ChunkCoord>())).Returns(new List<IItem> { item });
+
+            // Act
+            _worldManager.ProcessChunkLoading(player, connectionId);
+
+            // Assert
+            _mockEvents.Verify(e => e.OnChunkLoaded(connectionId, It.Is<ChunkData>(d => 
+                d.Items.Any(i => i.Id == "item1" && i.Name == "Potion"))), Times.Exactly(9));
+        }
     }
 }

@@ -4,6 +4,7 @@ using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Services.WorldFormations;
 using GameServerApp.World;
+using GameServerApp.Contracts.World;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -14,16 +15,22 @@ namespace GameServerApp.Services
     {
         private readonly IStaticWorldManager _staticWorldManager;
         private readonly IIdGeneratorService _idGeneratorService;
+        private readonly IItemManager _itemManager;
+        private readonly IWorldEvents _worldEvents;
         private readonly WorldConfig _config;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public WorldGenerator(
             IStaticWorldManager staticWorldManager,
             IIdGeneratorService idGeneratorService,
+            IItemManager itemManager,
+            IWorldEvents worldEvents,
             IOptions<WorldConfig> config)
         {
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;
+            _itemManager = itemManager;
+            _worldEvents = worldEvents;
             _config = config.Value;
 
             // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
@@ -75,9 +82,23 @@ namespace GameServerApp.Services
             return _formations[0].Formation; // Default
         }
 
-        private void SpawnObject(int x, int y, Random rng, string forcedType = null)
+        private void SpawnObject(int x, int y, Random rng, string? forcedType = null)
         {
             var pos = new Position(x, y);
+
+            // Se for um item
+            if (forcedType != null && forcedType.StartsWith("item:"))
+            {
+                string itemCode = forcedType.Substring(5);
+                if (itemCode == "healing_potion")
+                {
+                    var potion = new HealingPotion(_idGeneratorService.GenerateId().ToString(), pos);
+                    _itemManager.DropItem(potion);
+                    _worldEvents.OnItemDropped(potion);
+                }
+                return;
+            }
+
             if (_staticWorldManager.GetObjectAt(pos) != null) return;
 
             string[] types = { "tree", "rock", "bush", "pillar" };

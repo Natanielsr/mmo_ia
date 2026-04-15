@@ -1,18 +1,22 @@
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.Config;
 using GameServerApp.Managers;
 using GameServerApp.World;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace GameServer.Tests.Managers
 {
     public class ItemManagerTests
     {
+        private readonly IOptions<WorldConfig> _options = Options.Create(new WorldConfig());
+
         [Fact]
         public void DropItem_ShouldAddItemToManager()
         {
             // Arrange
-            var itemManager = new ItemManager();
+            var itemManager = new ItemManager(_options);
             var item = new Item("1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
 
             // Act
@@ -28,7 +32,7 @@ namespace GameServer.Tests.Managers
         public void GetItemAt_ShouldReturnNull_WhenNoItemAtPosition()
         {
             // Arrange
-            var itemManager = new ItemManager();
+            var itemManager = new ItemManager(_options);
 
             // Act
             var result = itemManager.GetItemAt(new Position(10, 10));
@@ -41,7 +45,7 @@ namespace GameServer.Tests.Managers
         public void RemoveItem_ShouldRemoveItemFromManager()
         {
             // Arrange
-            var itemManager = new ItemManager();
+            var itemManager = new ItemManager(_options);
             var item = new Item("1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
             itemManager.DropItem(item);
 
@@ -57,7 +61,7 @@ namespace GameServer.Tests.Managers
         public void GetAllItems_ShouldReturnAllDroppedItems()
         {
             // Arrange
-            var itemManager = new ItemManager();
+            var itemManager = new ItemManager(_options);
             itemManager.DropItem(new Item("1", "P1", 0.1f, new Position(1, 1)));
             itemManager.DropItem(new Item("2", "P2", 0.1f, new Position(2, 2)));
 

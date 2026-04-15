@@ -8,5 +8,6 @@ namespace GameServerApp.Dtos
         public int CX { get; set; }
         public int CY { get; set; }
         public List<MapObjectData> Objects { get; set; } = new();
+        public List<ItemData> Items { get; set; } = new();
     }
 }

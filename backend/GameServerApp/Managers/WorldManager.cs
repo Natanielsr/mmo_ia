@@ -202,12 +202,9 @@ namespace GameServerApp.Managers
                 // Roll for drop (30% chance for healing potion)
                 if (Random.Shared.NextDouble() < 0.3)
                 {
-                    var potion = new Item(
+                    var potion = new HealingPotion(
                         id: _idGeneratorService.GenerateId().ToString(),
-                        name: "Healing Potion",
-                        weight: 0.1f,
-                        position: monster.Position,
-                        type: ItemType.Potion
+                        position: monster.Position
                     );
                     _itemManager.DropItem(potion);
                     _worldEvents.OnItemDropped(potion);
@@ -509,6 +506,8 @@ namespace GameServerApp.Managers
 
                     // Sempre envia os dados do chunk para o jogador que está se conectando
                     var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
+                    var chunkItems = _itemManager.GetItemsInChunk(coord);
+                    
                     var chunkData = new ChunkData
                     {
                         CX = coord.CX,
@@ -521,6 +520,13 @@ namespace GameServerApp.Managers
                             Position = obj.Position,
                             Type = obj.Type,
                             IsPassable = obj.IsPassable
+                        }).ToList(),
+                        Items = chunkItems.Select(item => new ItemData
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                            Position = item.Position,
+                            Type = item.Type
                         }).ToList()
                     };
 

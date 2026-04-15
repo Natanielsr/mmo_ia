@@ -16,6 +16,11 @@ namespace GameServerApp.Services.WorldFormations
                 int py = clY + rng.Next(-3, 4);
                 spawnAction(px, py, null);
             }
+
+            if (rng.NextDouble() < 0.2)
+            {
+                spawnAction(clX, clY, "item:healing_potion");
+            }
         }
     }
 }
