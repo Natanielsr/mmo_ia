@@ -453,3 +453,14 @@ input {
         display: block;
     }
 }
+#game-version {
+    position: fixed;
+    bottom: 5px;
+    right: 10px;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    opacity: 0.5;
+    z-index: 1000;
+    pointer-events: none;
+    font-family: monospace;
+}
