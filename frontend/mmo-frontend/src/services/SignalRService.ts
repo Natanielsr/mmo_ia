@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { addLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin } from '../ui';
+import { addLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus } from '../ui';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
@@ -16,15 +16,28 @@ export class SignalRService {
     }
 
     public async start(): Promise<void> {
+        if (btnJoin) btnJoin.disabled = true;
+        updateServerStatus("A estabelecer ligação...", true);
+
+        // Se demorar mais de 3 segundos, avisar que o servidor está a "acordar"
+        const wakeUpTimer = setTimeout(() => {
+            updateServerStatus("O servidor está a acordar, por favor aguarde... (Render Free Tier)", true);
+        }, 3000);
+
         try {
-            if (btnJoin) btnJoin.disabled = true;
             await this.connection.start();
+            clearTimeout(wakeUpTimer);
             console.log("Conectado ao SignalR!");
+            
             if (errorBanner) errorBanner.classList.add('hidden');
             if (btnJoin) btnJoin.disabled = false;
+            updateServerStatus("Ligado!", false);
         } catch (err) {
+            clearTimeout(wakeUpTimer);
             addLog("Não foi possível conectar ao servidor. A tentar novamente...", "error");
             if (errorBanner) errorBanner.classList.remove('hidden');
+            updateServerStatus("Erro de ligação. A tentar novamente...", true);
+            
             setTimeout(() => this.start(), 5000);
         }
     }

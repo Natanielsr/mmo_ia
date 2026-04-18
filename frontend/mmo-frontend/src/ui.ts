@@ -5,6 +5,16 @@ export const btnJoin = document.getElementById('btn-join') as HTMLButtonElement;
 export const inputName = document.getElementById('username') as HTMLInputElement;
 export const logContent = document.getElementById('log-content') as HTMLDivElement;
 export const errorBanner = document.getElementById('connection-error') as HTMLDivElement;
+export const serverStatus = document.getElementById('server-status') as HTMLDivElement;
+export const statusText = document.getElementById('status-text') as HTMLSpanElement;
+
+export function updateServerStatus(msg: string, isVisible: boolean) {
+    if (serverStatus) {
+        if (isVisible) serverStatus.classList.remove('hidden');
+        else serverStatus.classList.add('hidden');
+    }
+    if (statusText) statusText.innerText = msg;
+}
 export function updateUIHealthBar(hp: any, maxHp: any) {
     // Garantir que temos números válidos
     const currentHp = Number(hp ?? 0);
