@@ -17,12 +17,12 @@
       <p>Entra no mundo e começa a tua aventura</p>
 
       <div id="connection-error" class="error-banner hidden">
-        Não foi possível conectar ao servidor. Verifica se o backend está a correr na porta 5258.
+        Não foi possível conectar ao servidor.
       </div>
 
       <input type="text" id="username" placeholder="Nome da personagem..." maxlength="12">
       <button id="btn-join" class="btn-primary">ENTRAR NO JOGO</button>
-      
+
       <div id="server-status" class="status-container hidden">
         <div class="spinner"></div>
         <span id="status-text">Conectando ao servidor...</span>
@@ -46,8 +46,10 @@
             <div id="hp-text">100 / 100</div>
           </div>
           <div class="xp-container" style="margin-top: 5px;">
-            <div class="xp-bar progress-bar" style="background: rgba(0, 0, 0, 0.5); border-radius: 4px; overflow: hidden; height: 12px; position: relative;">
-              <div id="xp-fill" style="width: 0%; height: 100%; background: #0088ff; transition: width 0.3s ease;"></div>
+            <div class="xp-bar progress-bar"
+              style="background: rgba(0, 0, 0, 0.5); border-radius: 4px; overflow: hidden; height: 12px; position: relative;">
+              <div id="xp-fill" style="width: 0%; height: 100%; background: #0088ff; transition: width 0.3s ease;">
+              </div>
             </div>
             <div id="xp-text" style="font-size: 0.8em; text-align: center; margin-top: 2px;">0 / 1000 XP</div>
           </div>
@@ -64,24 +66,24 @@
         <div class="controls-hint">
           Usa as <span>SETAS</span> ou <span>WASD</span> para mover
         </div>
-        </div>
-      </div>
-    </div>
-    
-    <div id="mobile-controls">
-      <div id="mobile-dpad">
-        <button id="btn-up" class="dpad-btn touch-btn">▲</button>
-        <button id="btn-left" class="dpad-btn touch-btn">◀</button>
-        <button id="btn-right" class="dpad-btn touch-btn">▶</button>
-        <button id="btn-down" class="dpad-btn touch-btn">▼</button>
-      </div>
-      <div id="mobile-actions">
-        <button id="btn-attack" class="action-btn touch-btn">⚔️</button>
       </div>
     </div>
   </div>
 
-  <div id="game-version">v0.1.1</div>
+  <div id="mobile-controls">
+    <div id="mobile-dpad">
+      <button id="btn-up" class="dpad-btn touch-btn">▲</button>
+      <button id="btn-left" class="dpad-btn touch-btn">◀</button>
+      <button id="btn-right" class="dpad-btn touch-btn">▶</button>
+      <button id="btn-down" class="dpad-btn touch-btn">▼</button>
+    </div>
+    <div id="mobile-actions">
+      <button id="btn-attack" class="action-btn touch-btn">⚔️</button>
+    </div>
+  </div>
+  </div>
+
+  <div id="game-version">v0.1.2</div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

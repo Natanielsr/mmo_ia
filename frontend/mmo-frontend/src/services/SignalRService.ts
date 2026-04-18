@@ -21,14 +21,14 @@ export class SignalRService {
 
         // Se demorar mais de 3 segundos, avisar que o servidor está a "acordar"
         const wakeUpTimer = setTimeout(() => {
-            updateServerStatus("O servidor está a acordar, por favor aguarde... (Render Free Tier)", true);
+            updateServerStatus("Conectando ao servidor, por favor aguarde...", true);
         }, 3000);
 
         try {
             await this.connection.start();
             clearTimeout(wakeUpTimer);
             console.log("Conectado ao SignalR!");
-            
+
             if (errorBanner) errorBanner.classList.add('hidden');
             if (btnJoin) btnJoin.disabled = false;
             updateServerStatus("Ligado!", false);
@@ -37,7 +37,7 @@ export class SignalRService {
             addLog("Não foi possível conectar ao servidor. A tentar novamente...", "error");
             if (errorBanner) errorBanner.classList.remove('hidden');
             updateServerStatus("Erro de ligação. A tentar novamente...", true);
-            
+
             setTimeout(() => this.start(), 5000);
         }
     }
