@@ -2,6 +2,7 @@
 import Phaser from 'phaser';
 import { Player } from '../entities/Player';
 import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '../config/constants';
+import { gridToWorld } from '../utils/coords';
 import type { PlayerPosData, Position } from '../types';
 
 export class PlayerManager {
@@ -58,9 +59,7 @@ export class PlayerManager {
     }
 
     private getWorldCoordinates(gridPosition: Position): Position {
-        const px = (gridPosition.x * GRID_SIZE + (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_X;
-        const py = (-gridPosition.y * GRID_SIZE - (GRID_SIZE / 2)) - PLAYER_POSITION_OFFSET_Y;
-        return { x: px, y: py };
+        return gridToWorld(gridPosition, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y);
     }
 
     public getMyPlayer(): Player | null {

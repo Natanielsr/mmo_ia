@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Position, ItemData } from '../types';
-
-const GRID_SIZE = 64;
+import { GRID_SIZE } from '../config/constants';
+import { gridToWorld } from '../utils/coords';
 
 export class HealingPotion extends Phaser.GameObjects.Sprite {
     public id: string;
@@ -45,9 +45,7 @@ export class HealingPotion extends Phaser.GameObjects.Sprite {
     }
 
     public static getWorldCoordinates(serverPosition: Position): Position {
-        const px = serverPosition.x * GRID_SIZE + (GRID_SIZE / 2);
-        const py = -serverPosition.y * GRID_SIZE - (GRID_SIZE / 2);
-        return { x: px, y: py };
+        return gridToWorld(serverPosition);
     }
 
     public collect(): void {

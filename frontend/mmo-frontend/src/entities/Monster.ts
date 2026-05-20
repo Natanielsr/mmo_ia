@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import type { Position, MonsterData } from '../types';
-
-const GRID_SIZE = 64;
-const Y_POS_OFFSET = 0;
+import { GRID_SIZE } from '../config/constants';
+import { gridToWorld } from '../utils/coords';
+import { getMonsterHealthColor } from '../utils/healthColors';
 
 export class Monster extends Phaser.GameObjects.Container {
     public id: string;
@@ -86,10 +86,7 @@ export class Monster extends Phaser.GameObjects.Container {
         const hpPercent = Math.max(0, this.hp) / this.maxHp;
         const currentWidth = barWidth * hpPercent;
 
-        let barColor: number;
-        if (hpPercent > 0.6) barColor = 0x00FF00; // Verde
-        else if (hpPercent > 0.3) barColor = 0xFFFF00; // Amarelo
-        else barColor = 0xFF0000; // Vermelho
+        const barColor = getMonsterHealthColor(hpPercent);
 
         this.hpBar.fillStyle(barColor, 1);
         this.hpBar.fillRect(barX, barY, currentWidth, barHeight);
@@ -171,9 +168,7 @@ export class Monster extends Phaser.GameObjects.Container {
     }
 
     private static getWorldCoordinates(serverPosition: Position): Position {
-        const px = serverPosition.x * GRID_SIZE + (GRID_SIZE / 2);
-        const py = -serverPosition.y * GRID_SIZE - (GRID_SIZE / 2) - Y_POS_OFFSET;
-        return { x: px, y: py };
+        return gridToWorld(serverPosition);
     }
 
     public destroy(fromScene?: boolean): void {

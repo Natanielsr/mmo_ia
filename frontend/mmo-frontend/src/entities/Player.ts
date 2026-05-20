@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import type { Position, PlayerPosData } from '../types';
+import { getDirectionAnimation, getIdleFrame } from '../utils/playerAnimations';
+import { getPlayerHealthColor } from '../utils/healthColors';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
@@ -78,7 +80,7 @@ export class Player extends Phaser.GameObjects.Container {
     public updateHealthBar() {
         this.healthBar.clear();
         const healthPercent = Math.max(0, this.hp / this.maxHp);
-        const color = healthPercent > 0.5 ? 0x00ff00 : (healthPercent > 0.25 ? 0xffff00 : 0xff0000);
+        const color = getPlayerHealthColor(healthPercent);
 
         this.healthBar.fillStyle(color, 1);
         this.healthBar.fillRect(-25, -37, 50 * healthPercent, 6);
@@ -124,7 +126,7 @@ export class Player extends Phaser.GameObjects.Container {
         }
 
         // Cuida da própria animação
-        const animKey = this.getDirectionAnimation(dx, dy);
+        const animKey = getDirectionAnimation(dx, dy);
         if (animKey) {
             this.facingDirection = animKey.replace('walk-', '');
             if (!this.isAttacking) {
@@ -168,12 +170,6 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
 
-    private getDirectionAnimation(dx: number, dy: number): string {
-        if (dx === 0 && dy === 0) return '';
-        if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'walk-east' : 'walk-west';
-        return dy > 0 ? 'walk-south' : 'walk-north';
-    }
-
     public playAttackAnimation(targetX: number, targetY: number): void {
         const dx = targetX - this.x;
         const dy = targetY - this.y;
@@ -200,7 +196,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key === animKey) {
                 this.isAttacking = false;
-                this.sprite.setTexture('hero', this.getIdleFrame(this.facingDirection));
+                this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
                 });
@@ -208,18 +204,11 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
 
-    private getIdleFrame(direction: string): number {
-        if (direction.includes('north')) return 0;
-        if (direction.includes('west')) return 9;
-        if (direction.includes('east')) return 27;
-        return 18; // Default sul
-    }
-
     private stopWalking(): void {
         if (this.isAttacking) return;
 
         this.sprite.stop();
-        const idleFrame = this.getIdleFrame(this.facingDirection);
+        const idleFrame = getIdleFrame(this.facingDirection);
         this.sprite.setFrame(idleFrame);
     }
 
