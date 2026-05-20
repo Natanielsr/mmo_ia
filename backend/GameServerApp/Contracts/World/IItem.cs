@@ -5,7 +5,9 @@ namespace GameServerApp.Contracts.World
     public enum ItemType
     {
         Generic,
-        Potion
+        Potion,
+        Weapon,
+        Armor
     }
 
     public interface IItem

@@ -51,6 +51,8 @@ export interface ItemData {
     name: string;
     position: Position;
     type: string;
+    attackBonus?: number;
+    defenseBonus?: number;
 }
 
 export interface ChunkData {

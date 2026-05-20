@@ -9,4 +9,6 @@ public record class ItemData
     public required string Name { get; init; }
     public required Position Position { get; init; }
     public required ItemType Type { get; init; }
+    public int? AttackBonus { get; init; }
+    public int? DefenseBonus { get; init; }
 }

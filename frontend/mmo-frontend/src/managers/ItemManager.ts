@@ -1,30 +1,39 @@
 import { HealingPotion } from '../entities/HealingPotion';
+import { WorldWeapon } from '../entities/WorldWeapon';
+import { WorldArmor } from '../entities/WorldArmor';
+import type { IWorldItem } from '../entities/IWorldItem';
 import type { ItemData } from '../types';
 
 export class ItemManager {
     private scene: Phaser.Scene;
-    private items: Map<string, HealingPotion> = new Map();
+    private items: Map<string, IWorldItem> = new Map();
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
     }
 
     public syncItem(itemData: ItemData): void {
-        if (this.items.has(itemData.id)) {
-            // Already exists, maybe update position if needed (items usually don't move)
-            return;
-        }
+        if (this.items.has(itemData.id)) return;
+
+        let item: IWorldItem | null = null;
 
         if (itemData.type === 'Potion') {
-            const potion = new HealingPotion(itemData, this.scene);
-            this.items.set(itemData.id, potion);
+            item = new HealingPotion(itemData, this.scene);
+        } else if (itemData.type === 'Weapon') {
+            item = new WorldWeapon(itemData, this.scene);
+        } else if (itemData.type === 'Armor') {
+            item = new WorldArmor(itemData, this.scene);
+        }
+
+        if (item) {
+            this.items.set(itemData.id, item);
         }
     }
 
     public removeItem(itemId: string): void {
         const item = this.items.get(itemId);
         if (item) {
-            item.collect(); // Trigger animation
+            item.collect();
             this.items.delete(itemId);
         }
     }
@@ -34,7 +43,7 @@ export class ItemManager {
         this.items.clear();
     }
 
-    public getItemsDict(): Map<string, HealingPotion> {
+    public getItemsDict(): Map<string, IWorldItem> {
         return this.items;
     }
 }

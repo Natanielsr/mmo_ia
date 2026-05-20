@@ -24,6 +24,7 @@ namespace GameServerApp.Managers
         private readonly IItemManager _itemManager;
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly IWorldGenerator _worldGenerator;
+        private readonly ILootTableService _lootTableService;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
         private DateTime _lastRegenTime = DateTime.UtcNow;
@@ -41,7 +42,8 @@ namespace GameServerApp.Managers
             IItemManager itemManager,
             IIdGeneratorService idGeneratorService,
             IWorldGenerator worldGenerator,
-            IOptions<WorldConfig> config)
+            IOptions<WorldConfig> config,
+            ILootTableService lootTableService)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -56,6 +58,7 @@ namespace GameServerApp.Managers
             _idGeneratorService = idGeneratorService;
             _worldGenerator = worldGenerator;
             _config = config.Value;
+            _lootTableService = lootTableService;
         }
 
         // ... resto do código permanece igual
@@ -199,15 +202,14 @@ namespace GameServerApp.Managers
 
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
 
-                // Roll for drop (30% chance for healing potion)
-                if (Random.Shared.NextDouble() < 0.3)
+                var dropped = _lootTableService.RollLoot(
+                    monster.Position,
+                    _idGeneratorService.GenerateId().ToString()
+                );
+                if (dropped != null)
                 {
-                    var potion = new HealingPotion(
-                        id: _idGeneratorService.GenerateId().ToString(),
-                        position: monster.Position
-                    );
-                    _itemManager.DropItem(potion);
-                    _worldEvents.OnItemDropped(potion);
+                    _itemManager.DropItem(dropped);
+                    _worldEvents.OnItemDropped(dropped);
                 }
 
                 // Remove o monstro do manager para liberar a colisão e memória
