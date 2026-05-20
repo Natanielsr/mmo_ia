@@ -317,27 +317,17 @@ public class MonsterSyncDiagnosticTests
         _collisionManagerMock.Setup(c => c.IsPositionBlocked(It.IsAny<Position>()))
             .Returns(false);
 
-        Console.WriteLine($"Starting diagnostic test for monster sync issue");
-        Console.WriteLine($"Attempting to spawn {expectedMonsterCount} monsters...");
-
         // Spawn monsters
         var spawnedMonsters = _monsterManager.SpawnRandomMonsters(
             expectedMonsterCount, width, height, safeSpawnRadius, seed);
 
         spawnedIds.AddRange(spawnedMonsters.Select(m => m.Id));
 
-        Console.WriteLine($"Successfully spawned {spawnedMonsters.Count} monsters");
-        Console.WriteLine($"Spawned monster IDs: {string.Join(", ", spawnedIds)}");
-
         // Act - Simulate GameHub sync
         var allMonsters = _monsterManager.GetAllMonsters();
         var syncedIds = allMonsters.Select(m => m.Id).ToList();
 
-        Console.WriteLine($"Monsters returned by GetAllMonsters(): {allMonsters.Count}");
-        Console.WriteLine($"Synced monster IDs: {string.Join(", ", syncedIds)}");
-
         // Try getting each monster by ID individually
-        Console.WriteLine("\nAttempting to get each monster by ID:");
         foreach (var spawnedId in spawnedIds)
         {
             var monster = _monsterManager.GetMonsterById(spawnedId);
@@ -345,20 +335,11 @@ public class MonsterSyncDiagnosticTests
             {
                 Console.WriteLine($"  ERROR: Monster ID {spawnedId} not found by GetMonsterById()!");
             }
-            else
-            {
-                Console.WriteLine($"  OK: Monster ID {spawnedId} found - Name: {monster.Name}, Position: ({monster.Position.X}, {monster.Position.Y})");
-            }
         }
 
         // Check for missing monsters
         var missingInSync = spawnedIds.Except(syncedIds).ToList();
         var extraInSync = syncedIds.Except(spawnedIds).ToList();
-
-        Console.WriteLine($"\nDiagnostic Results:");
-        Console.WriteLine($"  Expected monster count: {expectedMonsterCount}");
-        Console.WriteLine($"  Actually spawned: {spawnedMonsters.Count}");
-        Console.WriteLine($"  Returned by GetAllMonsters(): {allMonsters.Count}");
 
         if (missingInSync.Any())
         {
