@@ -81,7 +81,7 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player's inventory changes.
         /// </summary>
-        void OnInventoryUpdated(long playerId, IReadOnlyList<IItem> items);
+        void OnInventoryUpdated(long playerId, IReadOnlyList<(int SlotIndex, IItem Item)> slots);
 
         /// <summary>
         /// Triggered when a player's equipment changes.

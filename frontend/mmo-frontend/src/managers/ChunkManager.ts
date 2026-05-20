@@ -38,7 +38,6 @@ export class ChunkManager {
         // Renderiza Objetos Estáticos (Árvores, Pedras, etc.)
         this.renderChunkObjects(data.objects, group);
 
-        console.log(`[ChunkManager] Chunk otimizado carregado: ${chunkKey} (${data.objects.length} objetos).`);
     }
 
     private renderChunkTilesToTexture(cx: number, cy: number): Phaser.GameObjects.RenderTexture {
@@ -113,7 +112,6 @@ export class ChunkManager {
                 chunk.group.destroy(true);
                 chunk.rt?.destroy();
                 this.loadedChunks.delete(key);
-                console.log(`[ChunkManager] Chunk ${key} removido por distância.`);
             }
         });
 

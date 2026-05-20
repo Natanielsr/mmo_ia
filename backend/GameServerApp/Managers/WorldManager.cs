@@ -483,7 +483,7 @@ namespace GameServerApp.Managers
             _worldEvents.OnItemPickedUp(item.Id, player.Id);
 
             var inv = _inventoryManager.GetInventory(player.Id);
-            _worldEvents.OnInventoryUpdated(player.Id, inv?.GetItems() ?? Array.Empty<IItem>());
+            _worldEvents.OnInventoryUpdated(player.Id, inv?.GetSlottedItems() ?? []);
         }
 
         public void ProcessUseItem(IPlayer player, string itemId)
@@ -502,7 +502,7 @@ namespace GameServerApp.Managers
                 Level = player.Level,
                 Experience = player.Experience
             });
-            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
         }
 
         public void ProcessDropItem(IPlayer player, string itemId, Position targetPos)
@@ -516,7 +516,7 @@ namespace GameServerApp.Managers
             inv.DropItem(itemId, targetPos);
             _itemManager.DropItem(item);
             _worldEvents.OnItemDropped(item);
-            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
         }
 
         public bool ProcessEquipItem(IPlayer player, string itemId)
@@ -547,7 +547,7 @@ namespace GameServerApp.Managers
                 Defense     = player.TotalDefense
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
-            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             return true;
         }
 
@@ -575,7 +575,16 @@ namespace GameServerApp.Managers
                 Defense     = player.TotalDefense
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
-            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
+            return true;
+        }
+
+        public bool ProcessMoveItemInInventory(IPlayer player, string itemId, int toIndex)
+        {
+            var inv = _inventoryManager.GetInventory(player.Id);
+            if (inv == null) return false;
+            if (!inv.MoveItem(itemId, toIndex)) return false;
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             return true;
         }
 

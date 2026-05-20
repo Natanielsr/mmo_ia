@@ -7,6 +7,7 @@ export class InventoryManager {
 
     public onUseItem?: (itemId: string) => void;
     public onDropItem?: (itemId: string, x: number, y: number) => void;
+    public onEquipItem?: (itemId: string) => void;
 
     public addItem(item: ItemData): void {
         if (this.items.length >= MAX_SLOTS) return;
@@ -22,7 +23,12 @@ export class InventoryManager {
     }
 
     public useItem(itemId: string): void {
-        this.onUseItem?.(itemId);
+        const item = this.items.find(i => i.id === itemId);
+        if (item && (item.type === 'Weapon' || item.type === 'Armor')) {
+            this.onEquipItem?.(itemId);
+        } else {
+            this.onUseItem?.(itemId);
+        }
     }
 
     public dropItem(itemId: string, x: number, y: number): void {

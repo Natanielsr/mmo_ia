@@ -11,4 +11,5 @@ public record class ItemData
     public required ItemType Type { get; init; }
     public int? AttackBonus { get; init; }
     public int? DefenseBonus { get; init; }
+    public int SlotIndex { get; init; } = 0;
 }

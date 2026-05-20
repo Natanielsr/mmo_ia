@@ -70,7 +70,7 @@ namespace GameServer.Tests.Managers
 
             _b.Build().ProcessPlayerMovement(player, "east");
 
-            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<IItem>>()), Times.Once);
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace GameServer.Tests.Managers
             Assert.True(player.Hp > hpBefore);
             _b.Events.Verify(e => e.OnPlayerStatusUpdated(It.Is<PlayerStatusData>(d =>
                 d.Id == "1")), Times.Once);
-            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<IItem>>()), Times.Once);
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
 
         [Fact]
@@ -110,7 +110,7 @@ namespace GameServer.Tests.Managers
 
             _b.ItemManager.Verify(m => m.DropItem(sword), Times.Once);
             _b.Events.Verify(e => e.OnItemDropped(sword), Times.Once);
-            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<IItem>>()), Times.Once);
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
     }
 }

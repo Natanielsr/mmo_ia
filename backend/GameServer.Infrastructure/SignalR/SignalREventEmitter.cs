@@ -113,19 +113,20 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
-        public void OnInventoryUpdated(long playerId, IReadOnlyList<IItem> items)
+        public void OnInventoryUpdated(long playerId, IReadOnlyList<(int SlotIndex, IItem Item)> slots)
         {
             var connId = _playerManager.GetConnectionIdByPlayerId(playerId);
             if (connId == null) return;
 
-            var payload = items.Select(item => new ItemData
+            var payload = slots.Select(s => new ItemData
             {
-                Id           = item.Id,
-                Name         = item.Name,
-                Position     = item.Position,
-                Type         = item.Type,
-                AttackBonus  = (item as Weapon)?.AttackBonus,
-                DefenseBonus = (item as Armor)?.DefenseBonus,
+                Id           = s.Item.Id,
+                Name         = s.Item.Name,
+                Position     = s.Item.Position,
+                Type         = s.Item.Type,
+                AttackBonus  = (s.Item as Weapon)?.AttackBonus,
+                DefenseBonus = (s.Item as Armor)?.DefenseBonus,
+                SlotIndex    = s.SlotIndex,
             });
 
             _hubContext.Clients.Client(connId).SendAsync("InventoryUpdated", payload);

@@ -40,7 +40,7 @@ namespace GameServer.Tests.Managers
             Assert.Same(sword, eq.GetItem(EquipmentSlot.Weapon));
             Assert.Empty(inv.GetItems());
             _b.Events.Verify(e => e.OnEquipmentUpdated(1L, It.IsAny<IReadOnlyDictionary<EquipmentSlot, IItem?>>()), Times.Once);
-            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<IItem>>()), Times.Once);
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace GameServer.Tests.Managers
             Assert.Null(eq.GetItem(EquipmentSlot.Weapon));
             Assert.Contains(sword, inv.GetItems());
             _b.Events.Verify(e => e.OnEquipmentUpdated(1L, It.IsAny<IReadOnlyDictionary<EquipmentSlot, IItem?>>()), Times.Once);
-            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<IItem>>()), Times.Once);
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
 
         [Fact]

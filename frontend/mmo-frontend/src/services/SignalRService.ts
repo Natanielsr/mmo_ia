@@ -53,6 +53,21 @@ export class SignalRService {
         this.mainScene.onAttackMonster = (targetId: string) => {
             this.attackMonster(targetId).catch(console.error);
         };
+        this.mainScene.onRequestUseItem = (itemId: string) => {
+            this.invoke("RequestUseItem", itemId).catch(console.error);
+        };
+        this.mainScene.onRequestDropItem = (itemId: string, x: number, y: number) => {
+            this.invoke("RequestDropItem", itemId, x, y).catch(console.error);
+        };
+        this.mainScene.onRequestEquipItem = (itemId: string) => {
+            this.invoke("RequestEquipItem", itemId).catch(console.error);
+        };
+        this.mainScene.onRequestUnequipItem = (slot: string) => {
+            this.invoke("RequestUnequipItem", slot).catch(console.error);
+        };
+        this.mainScene.onRequestMoveItemInInventory = (itemId: string, toIndex: number) => {
+            this.invoke("RequestMoveItemInInventory", itemId, toIndex).catch(console.error);
+        };
 
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
@@ -70,7 +85,6 @@ export class SignalRService {
         });
 
         this.connection.on("PlayerStatusUpdated", (statusData: any) => {
-            console.log("[DEBUG] PlayerStatusUpdated received:", JSON.stringify(statusData));
             this.mainScene?.updatePlayerStatus(statusData);
             const myPlayer = this.mainScene?.getMyPlayer();
             if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
@@ -213,6 +227,35 @@ export class SignalRService {
             if (player) {
                 addLog(`${player.name} pegou um item!`, "success");
             }
+        });
+
+        this.connection.on("InventoryUpdated", (items: any[]) => {
+            const normalized = items.map(item => ({
+                id: String(item.id ?? item.Id),
+                name: String(item.name ?? item.Name),
+                position: item.position ?? item.Position ?? { x: 0, y: 0 },
+                type: String(item.type ?? item.Type),
+                attackBonus: item.attackBonus ?? item.AttackBonus,
+                defenseBonus: item.defenseBonus ?? item.DefenseBonus,
+                slotIndex: item.slotIndex ?? item.SlotIndex,
+            }));
+            this.mainScene?.inventoryUpdated(normalized);
+        });
+
+        this.connection.on("EquipmentUpdated", (slotData: any) => {
+            const slots: Record<string, any> = {};
+            for (const key of Object.keys(slotData)) {
+                const item = slotData[key];
+                slots[key] = item == null ? null : {
+                    id: String(item.id ?? item.Id),
+                    name: String(item.name ?? item.Name),
+                    position: item.position ?? item.Position ?? { x: 0, y: 0 },
+                    type: String(item.type ?? item.Type),
+                    attackBonus: item.attackBonus ?? item.AttackBonus,
+                    defenseBonus: item.defenseBonus ?? item.DefenseBonus,
+                };
+            }
+            this.mainScene?.equipmentUpdated(slots as any);
         });
 
         this.connection.on("ChunkLoaded", (data: any) => {

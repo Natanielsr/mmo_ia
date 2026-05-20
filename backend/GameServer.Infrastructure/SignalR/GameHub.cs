@@ -164,6 +164,13 @@ namespace GameServer.Infrastructure.SignalR
                 _worldProcessor.ProcessUnequipItem(player, equipSlot);
         }
 
+        public void RequestMoveItemInInventory(string itemId, int toIndex)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+                _worldProcessor.ProcessMoveItemInInventory(player, itemId, toIndex);
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)

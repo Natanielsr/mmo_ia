@@ -7,6 +7,8 @@ export class InputManager {
     private wasd!: Record<string, Phaser.Input.Keyboard.Key>;
     public debugKey!: Phaser.Input.Keyboard.Key;
     public mapKey!: Phaser.Input.Keyboard.Key;
+    public inventoryKey!: Phaser.Input.Keyboard.Key;
+    public equipmentKey!: Phaser.Input.Keyboard.Key;
 
     private touchDirection: string | null = null;
     private touchAttackPressed: boolean = false;
@@ -29,8 +31,10 @@ export class InputManager {
             right: Phaser.Input.Keyboard.KeyCodes.D
         }) as Record<string, Phaser.Input.Keyboard.Key>;
 
-        this.debugKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F3);
-        this.mapKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+        this.debugKey     = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F3);
+        this.mapKey       = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+        this.inventoryKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I);
+        this.equipmentKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
         this.setupTouchControls();
     }
@@ -94,5 +98,13 @@ export class InputManager {
 
     public isDebugJustPressed(): boolean {
         return Phaser.Input.Keyboard.JustDown(this.debugKey);
+    }
+
+    public isInventoryJustPressed(): boolean {
+        return Phaser.Input.Keyboard.JustDown(this.inventoryKey);
+    }
+
+    public isEquipmentJustPressed(): boolean {
+        return Phaser.Input.Keyboard.JustDown(this.equipmentKey);
     }
 }
