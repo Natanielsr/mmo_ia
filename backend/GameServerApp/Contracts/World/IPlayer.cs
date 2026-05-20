@@ -19,6 +19,8 @@ namespace GameServerApp.Contracts.World
         long Experience { get; }
         double Speed { get; }
         int AttackPoints { get; }
+        int TotalAttackPower { get; }
+        int TotalDefense { get; }
         DateTime LastMoveTime { get; }
         DateTime LastAttackTime { get; }
         PlayerState State { get; }
@@ -34,5 +36,6 @@ namespace GameServerApp.Contracts.World
         void GainExperience(long amount);
         void EquipItem(string itemId);
         void UnequipItem(string itemId);
+        void ApplyEquipmentBonuses(int attackBonus, int defenseBonus);
     }
 }

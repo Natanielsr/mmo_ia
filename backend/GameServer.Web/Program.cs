@@ -52,6 +52,7 @@ builder.Services.AddSingleton<IMonsterManager, MonsterManager>();
 builder.Services.AddSingleton<IPlayerManager, PlayerManager>();
 builder.Services.AddSingleton<IItemManager, ItemManager>();
 builder.Services.AddSingleton<IInventoryManager, InventoryManager>();
+builder.Services.AddSingleton<IEquipmentManager, EquipmentManager>();
 
 // CollisionManager depende de IStaticWorldManager
 builder.Services.AddSingleton<ICollisionManager>(sp =>

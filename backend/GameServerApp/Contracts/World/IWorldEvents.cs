@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Dtos;
 
@@ -81,6 +82,11 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player's inventory changes.
         /// </summary>
         void OnInventoryUpdated(long playerId, IReadOnlyList<IItem> items);
+
+        /// <summary>
+        /// Triggered when a player's equipment changes.
+        /// </summary>
+        void OnEquipmentUpdated(long playerId, IReadOnlyDictionary<EquipmentSlot, IItem?> slots);
 
         /// <summary>
         /// Triggered when a chunk is loaded for a player.

@@ -26,5 +26,7 @@ namespace GameServerApp.Contracts.Managers
         void ProcessChunkLoading(IPlayer player, string connectionId);
         void ProcessUseItem(IPlayer player, string itemId);
         void ProcessDropItem(IPlayer player, string itemId, Position targetPos);
+        bool ProcessEquipItem(IPlayer player, string itemId);
+        bool ProcessUnequipItem(IPlayer player, EquipmentSlot slot);
     }
 }

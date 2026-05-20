@@ -6,11 +6,15 @@ namespace GameServerApp.World
     public class Armor : Item
     {
         public int DefenseBonus { get; }
+        private readonly EquipmentSlot _slot;
+        public override EquipmentSlot? Slot => _slot;
 
-        public Armor(string id, string name, float weight, Position position, int defenseBonus)
+        public Armor(string id, string name, float weight, Position position, int defenseBonus,
+                     EquipmentSlot slot = EquipmentSlot.Chest)
             : base(id, name, weight, position, ItemType.Armor)
         {
             DefenseBonus = defenseBonus;
+            _slot = slot;
         }
     }
 }

@@ -16,7 +16,11 @@ export interface PlayerStatusData {
     isDead: boolean;
     level: number;
     experience: number;
+    attackPower?: number;
+    defense?: number;
 }
+
+export type EquipmentSlot = 'Weapon' | 'Helmet' | 'Chest' | 'Legs' | 'Boots' | 'Shield';
 
 export interface AttackData {
     attackerId: string;

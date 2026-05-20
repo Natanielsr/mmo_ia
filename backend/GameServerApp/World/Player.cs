@@ -24,6 +24,8 @@ namespace GameServerApp.World
         public double Speed { get; private set; }
 
         public int AttackPoints { get; private set; }
+        public int TotalAttackPower { get; private set; }
+        public int TotalDefense { get; private set; }
         public DateTime LastMoveTime { get; private set; }
         public DateTime LastAttackTime { get; private set; }
         public PlayerState State { get; private set; }
@@ -44,6 +46,8 @@ namespace GameServerApp.World
             MaxHp = maxHp;
             Hp = maxHp;
             AttackPoints = attackPoints;
+            TotalAttackPower = attackPoints;
+            TotalDefense = 0;
             Level = 1;
             Experience = 0;
             Speed = 2.0;
@@ -72,13 +76,18 @@ namespace GameServerApp.World
 
         public void TakeDamage(int damage)
         {
-            if (State == PlayerState.Dead)
-                return;
+            if (State == PlayerState.Dead) return;
 
-            Hp = Math.Max(0, Hp - damage);
+            int effective = Math.Max(0, damage - TotalDefense);
+            Hp = Math.Max(0, Hp - effective);
 
-            if (Hp == 0)
-                Die();
+            if (Hp == 0) Die();
+        }
+
+        public void ApplyEquipmentBonuses(int attackBonus, int defenseBonus)
+        {
+            TotalAttackPower = AttackPoints + attackBonus;
+            TotalDefense = defenseBonus;
         }
 
         public void Die()

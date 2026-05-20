@@ -10,6 +10,7 @@ namespace GameServerApp.World
         public Position Position { get; set; }
         public float Weight { get; }
         public ItemType Type { get; }
+        public virtual EquipmentSlot? Slot => null;
 
         public Item(string id, string name, float weight, Position position = null!, ItemType type = ItemType.Generic)
         {

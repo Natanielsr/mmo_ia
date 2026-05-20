@@ -19,6 +19,8 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IMonsterManager _monsterManager;
         private readonly IPlayerManager _playerManager;
         private readonly IItemManager _itemManager;
+        private readonly IInventoryManager _inventoryManager;
+        private readonly IEquipmentManager _equipmentManager;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -27,8 +29,9 @@ namespace GameServer.Infrastructure.SignalR
             IIdGeneratorService idGeneratorService,
             IMonsterManager monsterManager,
             IPlayerManager playerManager,
-            IItemManager itemManager
-            )
+            IItemManager itemManager,
+            IInventoryManager inventoryManager,
+            IEquipmentManager equipmentManager)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
@@ -37,6 +40,8 @@ namespace GameServer.Infrastructure.SignalR
             _monsterManager = monsterManager;
             _playerManager = playerManager;
             _itemManager = itemManager;
+            _inventoryManager = inventoryManager;
+            _equipmentManager = equipmentManager;
         }
 
         public async Task JoinGame(string playerName)
@@ -145,12 +150,28 @@ namespace GameServer.Infrastructure.SignalR
                 _worldProcessor.ProcessDropItem(player, itemId, new Position(x, y));
         }
 
+        public void RequestEquipItem(string itemId)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+                _worldProcessor.ProcessEquipItem(player, itemId);
+        }
+
+        public void RequestUnequipItem(string slot)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null && System.Enum.TryParse<EquipmentSlot>(slot, ignoreCase: true, out var equipSlot))
+                _worldProcessor.ProcessUnequipItem(player, equipSlot);
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)
             {
                 _worldEvents.OnPlayerLeft(player.Id);
                 _collisionManager.RemoveObject(player.Id);
+                _inventoryManager.Remove(player.Id);
+                _equipmentManager.Remove(player.Id);
             }
             await base.OnDisconnectedAsync(exception);
         }

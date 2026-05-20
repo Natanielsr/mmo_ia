@@ -17,5 +17,6 @@ namespace GameServerApp.Contracts.World
         Position Position { get; set; } // if dropped on map
         float Weight { get; }
         ItemType Type { get; }
+        EquipmentSlot? Slot { get; }
     }
 }

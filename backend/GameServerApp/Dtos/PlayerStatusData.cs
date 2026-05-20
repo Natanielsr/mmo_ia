@@ -10,4 +10,6 @@ public record class PlayerStatusData
     public bool IsDead { get; init; }
     public int Level { get; init; }
     public long Experience { get; init; }
+    public int AttackPower { get; init; }
+    public int Defense { get; init; }
 }

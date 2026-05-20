@@ -4,6 +4,7 @@ using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Dtos;
 using GameServerApp.World;
+using System.Collections.Generic;
 
 namespace GameServer.Infrastructure.SignalR
 {
@@ -119,15 +120,34 @@ namespace GameServer.Infrastructure.SignalR
 
             var payload = items.Select(item => new ItemData
             {
-                Id          = item.Id,
-                Name        = item.Name,
-                Position    = item.Position,
-                Type        = item.Type,
+                Id           = item.Id,
+                Name         = item.Name,
+                Position     = item.Position,
+                Type         = item.Type,
                 AttackBonus  = (item as Weapon)?.AttackBonus,
                 DefenseBonus = (item as Armor)?.DefenseBonus,
             });
 
             _hubContext.Clients.Client(connId).SendAsync("InventoryUpdated", payload);
+        }
+
+        public void OnEquipmentUpdated(long playerId, IReadOnlyDictionary<EquipmentSlot, IItem?> slots)
+        {
+            var connId = _playerManager.GetConnectionIdByPlayerId(playerId);
+            if (connId == null) return;
+
+            var payload = slots.ToDictionary(
+                kv => kv.Key.ToString(),
+                kv => kv.Value == null ? null : (object?)new
+                {
+                    Id           = kv.Value.Id,
+                    Name         = kv.Value.Name,
+                    Type         = kv.Value.Type.ToString(),
+                    AttackBonus  = (kv.Value as Weapon)?.AttackBonus,
+                    DefenseBonus = (kv.Value as Armor)?.DefenseBonus,
+                });
+
+            _hubContext.Clients.Client(connId).SendAsync("EquipmentUpdated", payload);
         }
 
         public void OnChunkLoaded(string connectionId, ChunkData chunkData)

@@ -26,6 +26,7 @@ namespace GameServerApp.Managers
         private readonly IWorldGenerator _worldGenerator;
         private readonly ILootTableService _lootTableService;
         private readonly IInventoryManager _inventoryManager;
+        private readonly IEquipmentManager _equipmentManager;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
         private DateTime _lastRegenTime = DateTime.UtcNow;
@@ -45,7 +46,8 @@ namespace GameServerApp.Managers
             IWorldGenerator worldGenerator,
             IOptions<WorldConfig> config,
             ILootTableService lootTableService,
-            IInventoryManager inventoryManager)
+            IInventoryManager inventoryManager,
+            IEquipmentManager equipmentManager)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -62,6 +64,7 @@ namespace GameServerApp.Managers
             _config = config.Value;
             _lootTableService = lootTableService;
             _inventoryManager = inventoryManager;
+            _equipmentManager = equipmentManager;
         }
 
         // ... resto do código permanece igual
@@ -514,6 +517,66 @@ namespace GameServerApp.Managers
             _itemManager.DropItem(item);
             _worldEvents.OnItemDropped(item);
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+        }
+
+        public bool ProcessEquipItem(IPlayer player, string itemId)
+        {
+            if (player.State == PlayerState.Dead) return false;
+
+            var inv = _inventoryManager.GetInventory(player.Id);
+            if (inv == null) return false;
+
+            var item = inv.GetItems().FirstOrDefault(i => i.Id == itemId);
+            if (item == null || item.Slot == null) return false;
+
+            var eq = _equipmentManager.GetOrCreate(player.Id);
+            inv.RemoveItem(itemId);
+            var displaced = eq.Equip(item);
+            if (displaced != null) inv.AddItem(displaced);
+
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+            {
+                Id          = player.Id.ToString(),
+                Hp          = player.Hp,
+                MaxHp       = player.MaxHp,
+                Level       = player.Level,
+                Experience  = player.Experience,
+                AttackPower = player.TotalAttackPower,
+                Defense     = player.TotalDefense
+            });
+            _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            return true;
+        }
+
+        public bool ProcessUnequipItem(IPlayer player, EquipmentSlot slot)
+        {
+            var eq = _equipmentManager.GetEquipment(player.Id);
+            if (eq == null) return false;
+
+            var item = eq.Unequip(slot);
+            if (item == null) return false;
+
+            var inv = _inventoryManager.GetOrCreate(player.Id);
+            inv.AddItem(item);
+
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+            {
+                Id          = player.Id.ToString(),
+                Hp          = player.Hp,
+                MaxHp       = player.MaxHp,
+                Level       = player.Level,
+                Experience  = player.Experience,
+                AttackPower = player.TotalAttackPower,
+                Defense     = player.TotalDefense
+            });
+            _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+            return true;
         }
 
         public void ProcessChunkLoading(IPlayer player, string connectionId)
