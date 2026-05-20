@@ -1,17 +1,21 @@
 using Microsoft.AspNetCore.SignalR;
+using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Dtos;
+using GameServerApp.World;
 
 namespace GameServer.Infrastructure.SignalR
 {
     public partial class SignalREventEmitter : IWorldEvents
     {
         private readonly IHubContext<GameHub> _hubContext;
+        private readonly IPlayerManager _playerManager;
 
-        public SignalREventEmitter(IHubContext<GameHub> hubContext)
+        public SignalREventEmitter(IHubContext<GameHub> hubContext, IPlayerManager playerManager)
         {
             _hubContext = hubContext;
+            _playerManager = playerManager;
         }
 
         public void OnPlayerMoved(PlayerPositionData playerPositionData)
@@ -106,6 +110,24 @@ namespace GameServer.Infrastructure.SignalR
                 ItemId = itemId,
                 PlayerId = playerId.ToString()
             });
+        }
+
+        public void OnInventoryUpdated(long playerId, IReadOnlyList<IItem> items)
+        {
+            var connId = _playerManager.GetConnectionIdByPlayerId(playerId);
+            if (connId == null) return;
+
+            var payload = items.Select(item => new ItemData
+            {
+                Id          = item.Id,
+                Name        = item.Name,
+                Position    = item.Position,
+                Type        = item.Type,
+                AttackBonus  = (item as Weapon)?.AttackBonus,
+                DefenseBonus = (item as Armor)?.DefenseBonus,
+            });
+
+            _hubContext.Clients.Client(connId).SendAsync("InventoryUpdated", payload);
         }
 
         public void OnChunkLoaded(string connectionId, ChunkData chunkData)

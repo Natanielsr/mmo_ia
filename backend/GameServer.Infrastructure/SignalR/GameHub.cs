@@ -131,6 +131,20 @@ namespace GameServer.Infrastructure.SignalR
             }
         }
 
+        public void RequestUseItem(string itemId)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+                _worldProcessor.ProcessUseItem(player, itemId);
+        }
+
+        public void RequestDropItem(string itemId, int x, int y)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+                _worldProcessor.ProcessDropItem(player, itemId, new Position(x, y));
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)

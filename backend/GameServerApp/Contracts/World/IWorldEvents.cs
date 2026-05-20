@@ -78,6 +78,11 @@ namespace GameServerApp.Contracts.World
         void OnItemPickedUp(string itemId, long playerId);
 
         /// <summary>
+        /// Triggered when a player's inventory changes.
+        /// </summary>
+        void OnInventoryUpdated(long playerId, IReadOnlyList<IItem> items);
+
+        /// <summary>
         /// Triggered when a chunk is loaded for a player.
         /// </summary>
         void OnChunkLoaded(string connectionId, ChunkData chunkData);

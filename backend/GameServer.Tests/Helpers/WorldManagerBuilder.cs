@@ -37,6 +37,7 @@ namespace GameServer.Tests.Helpers
         public Mock<IIdGeneratorService>     IdGenerator          { get; } = new();
         public Mock<IWorldGenerator>         WorldGenerator       { get; } = new();
         public Mock<ILootTableService>       LootTable            { get; } = new();
+        public Mock<IInventoryManager>       InventoryManager     { get; } = new();
 
         // ── Overrides opcionais via fluent API ────────────────────────────────
         private IMovementService?    _movementService;
@@ -119,7 +120,8 @@ namespace GameServer.Tests.Helpers
                 IdGenerator.Object,
                 WorldGenerator.Object,
                 Options.Create(_config),
-                LootTable.Object
+                LootTable.Object,
+                InventoryManager.Object
             );
         }
     }

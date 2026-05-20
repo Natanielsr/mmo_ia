@@ -1,3 +1,4 @@
+using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 
 namespace GameServerApp.Contracts.Managers
@@ -23,5 +24,7 @@ namespace GameServerApp.Contracts.Managers
 
         void InstantiateObject(IWorldObject worldObject);
         void ProcessChunkLoading(IPlayer player, string connectionId);
+        void ProcessUseItem(IPlayer player, string itemId);
+        void ProcessDropItem(IPlayer player, string itemId, Position targetPos);
     }
 }

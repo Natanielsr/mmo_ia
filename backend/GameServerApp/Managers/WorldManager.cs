@@ -25,6 +25,7 @@ namespace GameServerApp.Managers
         private readonly IIdGeneratorService _idGeneratorService;
         private readonly IWorldGenerator _worldGenerator;
         private readonly ILootTableService _lootTableService;
+        private readonly IInventoryManager _inventoryManager;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
         private DateTime _lastRegenTime = DateTime.UtcNow;
@@ -43,7 +44,8 @@ namespace GameServerApp.Managers
             IIdGeneratorService idGeneratorService,
             IWorldGenerator worldGenerator,
             IOptions<WorldConfig> config,
-            ILootTableService lootTableService)
+            ILootTableService lootTableService,
+            IInventoryManager inventoryManager)
         {
             _movementService = movementService;
             _collisionManager = collisionManager;
@@ -59,6 +61,7 @@ namespace GameServerApp.Managers
             _worldGenerator = worldGenerator;
             _config = config.Value;
             _lootTableService = lootTableService;
+            _inventoryManager = inventoryManager;
         }
 
         // ... resto do código permanece igual
@@ -468,24 +471,49 @@ namespace GameServerApp.Managers
         private void ProcessItemPickup(IPlayer player)
         {
             var item = _itemManager.GetItemAt(player.Position);
-            if (item != null)
-            {
-                if (item.Type == ItemType.Potion)
-                {
-                    player.Heal(20);
-                    _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
-                    {
-                        Id = player.Id.ToString(),
-                        Hp = player.Hp,
-                        MaxHp = player.MaxHp,
-                        Level = player.Level,
-                        Experience = player.Experience
-                    });
-                }
+            if (item == null) return;
 
-                _itemManager.RemoveItem(item.Id);
-                _worldEvents.OnItemPickedUp(item.Id, player.Id);
-            }
+            bool added = _inventoryManager.AddItem(player.Id, item);
+            if (!added) return;
+
+            _itemManager.RemoveItem(item.Id);
+            _worldEvents.OnItemPickedUp(item.Id, player.Id);
+
+            var inv = _inventoryManager.GetInventory(player.Id);
+            _worldEvents.OnInventoryUpdated(player.Id, inv?.GetItems() ?? Array.Empty<IItem>());
+        }
+
+        public void ProcessUseItem(IPlayer player, string itemId)
+        {
+            var inv = _inventoryManager.GetInventory(player.Id);
+            if (inv == null) return;
+
+            bool used = inv.UseItem(itemId, player);
+            if (!used) return;
+
+            _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+            {
+                Id = player.Id.ToString(),
+                Hp = player.Hp,
+                MaxHp = player.MaxHp,
+                Level = player.Level,
+                Experience = player.Experience
+            });
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
+        }
+
+        public void ProcessDropItem(IPlayer player, string itemId, Position targetPos)
+        {
+            var inv = _inventoryManager.GetInventory(player.Id);
+            if (inv == null) return;
+
+            var item = inv.GetItems().FirstOrDefault(i => i.Id == itemId);
+            if (item == null) return;
+
+            inv.DropItem(itemId, targetPos);
+            _itemManager.DropItem(item);
+            _worldEvents.OnItemDropped(item);
+            _worldEvents.OnInventoryUpdated(player.Id, inv.GetItems());
         }
 
         public void ProcessChunkLoading(IPlayer player, string connectionId)
