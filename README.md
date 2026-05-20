@@ -1,4 +1,4 @@
-# Antigravity MMO
+# MMO Web
 
 Um projeto de MMO em tempo real utilizando **C# (ASP.NET Core SignalR)** no backend e **Phaser 3 / TypeScript** no frontend.
 
@@ -51,4 +51,4 @@ dotnet test backend/GameServer.Tests/GameServer.Tests.csproj
 - **Design**: UI moderna com Inter (Google Fonts) e efeitos de transparência.
 
 ---
-*Desenvolvido com Antigravity*
+*Desenvolvido com IA*
