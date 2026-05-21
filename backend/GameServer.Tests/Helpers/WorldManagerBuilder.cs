@@ -40,7 +40,8 @@ namespace GameServer.Tests.Helpers
         public Mock<IWorldGenerator>         WorldGenerator         { get; } = new();
         public Mock<ILootTableService>       LootTable              { get; } = new();
         public Mock<IInventoryManager>       InventoryManager       { get; } = new();
-        public Mock<IEquipmentManager>       EquipmentManager       { get; } = new();
+        public Mock<IEquipmentManager>            EquipmentManager      { get; } = new();
+        public Mock<IPlayerRegenerationProcessor> RegenerationProcessor { get; } = new();
 
         // ── Overrides opcionais via fluent API ────────────────────────────────
         private IMovementService?    _movementService;
@@ -55,6 +56,10 @@ namespace GameServer.Tests.Helpers
         /// <summary>O CollisionManager construído por Build(). Use para RegisterDynamicObject
         /// ou para compartilhá-lo entre dois WorldManagers no mesmo teste.</summary>
         public ICollisionManager? BuiltCollision { get; private set; }
+
+        /// <summary>O PlayerRegenerationProcessor construído por Build(). Use para manipular
+        /// _lastRegenTime via reflexão em testes de regeneração.</summary>
+        public PlayerRegenerationProcessor? BuiltRegeneration { get; private set; }
 
         // ── Fluent API ────────────────────────────────────────────────────────
 
@@ -148,6 +153,11 @@ namespace GameServer.Tests.Helpers
                 Events.Object,
                 opts);
 
+            BuiltRegeneration = new PlayerRegenerationProcessor(
+                PlayerManager.Object,
+                Events.Object);
+            var regenerationProcessor = BuiltRegeneration;
+
             return new WorldManager(
                 movementProcessor,
                 combatProcessor,
@@ -155,10 +165,10 @@ namespace GameServer.Tests.Helpers
                 itemProcessor,
                 equipmentProcessor,
                 chunkProcessor,
+                regenerationProcessor,
                 PlayerManager.Object,
                 BuiltCollision,
-                staticWorld,
-                Events.Object);
+                staticWorld);
         }
     }
 }

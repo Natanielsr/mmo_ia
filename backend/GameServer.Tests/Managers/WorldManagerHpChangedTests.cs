@@ -35,9 +35,9 @@ namespace GameServer.Tests.Managers
             _b.MonsterManager.Setup(m => m.GetAllMonsters()).Returns([]);
 
             var wm = _b.Build();
-            var field = typeof(GameServerApp.Managers.WorldManager)
+            var field = typeof(GameServerApp.Processors.PlayerRegenerationProcessor)
                 .GetField("_lastRegenTime", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            field!.SetValue(wm, System.DateTime.UtcNow.AddSeconds(-3));
+            field!.SetValue(_b.BuiltRegeneration, System.DateTime.UtcNow.AddSeconds(-3));
 
             wm.Tick();
 

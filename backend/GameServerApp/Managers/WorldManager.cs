@@ -2,7 +2,6 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Processors;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
-using GameServerApp.Dtos;
 
 namespace GameServerApp.Managers
 {
@@ -14,11 +13,10 @@ namespace GameServerApp.Managers
         private readonly IItemProcessor _itemProcessor;
         private readonly IEquipmentProcessor _equipmentProcessor;
         private readonly IChunkProcessor _chunkProcessor;
+        private readonly IPlayerRegenerationProcessor _regenerationProcessor;
         private readonly IPlayerManager _playerManager;
         private readonly ICollisionManager _collisionManager;
         private readonly IStaticWorldManager _staticWorldManager;
-        private readonly IWorldEvents _worldEvents;
-        private DateTime _lastRegenTime = DateTime.UtcNow;
 
         public WorldManager(
             IPlayerMovementProcessor movementProcessor,
@@ -27,10 +25,10 @@ namespace GameServerApp.Managers
             IItemProcessor itemProcessor,
             IEquipmentProcessor equipmentProcessor,
             IChunkProcessor chunkProcessor,
+            IPlayerRegenerationProcessor regenerationProcessor,
             IPlayerManager playerManager,
             ICollisionManager collisionManager,
-            IStaticWorldManager staticWorldManager,
-            IWorldEvents worldEvents)
+            IStaticWorldManager staticWorldManager)
         {
             _movementProcessor = movementProcessor;
             _combatProcessor = combatProcessor;
@@ -38,10 +36,10 @@ namespace GameServerApp.Managers
             _itemProcessor = itemProcessor;
             _equipmentProcessor = equipmentProcessor;
             _chunkProcessor = chunkProcessor;
+            _regenerationProcessor = regenerationProcessor;
             _playerManager = playerManager;
             _collisionManager = collisionManager;
             _staticWorldManager = staticWorldManager;
-            _worldEvents = worldEvents;
         }
 
         public bool ProcessPlayerMovement(IPlayer player, string direction)
@@ -68,7 +66,7 @@ namespace GameServerApp.Managers
             _combatProcessor.ProcessMonsterCombat();
             _monsterLifecycleProcessor.ProcessMonsterDespawn();
             _monsterLifecycleProcessor.ProcessMonsterRespawn();
-            ProcessPlayerRegeneration();
+            _regenerationProcessor.ProcessPlayerRegeneration();
         }
 
         public void InstantiateObject(IWorldObject worldObject)
@@ -99,27 +97,5 @@ namespace GameServerApp.Managers
         public bool ProcessMoveItemInInventory(IPlayer player, string itemId, int toIndex)
             => _equipmentProcessor.ProcessMoveItemInInventory(player, itemId, toIndex);
 
-        private void ProcessPlayerRegeneration()
-        {
-            var now = DateTime.UtcNow;
-            if ((now - _lastRegenTime).TotalSeconds < 2.0) return;
-
-            _lastRegenTime = now;
-
-            foreach (var player in _playerManager.GetAllPlayers())
-            {
-                if (player.State != PlayerState.Dead && player.Hp < player.MaxHp)
-                {
-                    player.Heal(2);
-                    _worldEvents.OnPlayerHpChanged(new PlayerHpData
-                    {
-                        Id     = player.Id.ToString(),
-                        Hp     = player.Hp,
-                        MaxHp  = player.MaxHp,
-                        IsDead = false
-                    });
-                }
-            }
-        }
     }
 }
