@@ -88,6 +88,18 @@ export class SignalRService {
             this.mainScene?.openDefaultPanels();
         });
 
+        this.connection.on("PlayerHpChanged", (hpData: any) => {
+            this.mainScene?.updatePlayerStatus(hpData);
+            const myPlayer = this.mainScene?.getMyPlayer();
+            if (myPlayer && String(hpData.id ?? hpData.Id) === String(myPlayer.id)) {
+                updateUIHealthBar(hpData.hp ?? hpData.Hp, hpData.maxHp ?? hpData.MaxHp);
+                updateCharacterStatus({
+                    hp: hpData.hp ?? hpData.Hp,
+                    maxHp: hpData.maxHp ?? hpData.MaxHp,
+                });
+            }
+        });
+
         this.connection.on("PlayerStatusUpdated", (statusData: any) => {
             this.mainScene?.updatePlayerStatus(statusData);
             const myPlayer = this.mainScene?.getMyPlayer();

@@ -37,6 +37,7 @@ export function setCharacterName(name: string) {
 
 export function updateCharacterStatus(data: any) {
     characterStatusUI?.update(data);
+    characterAttributesModal?.update(data);
 }
 
 export function updateServerStatus(msg: string, isVisible: boolean) {

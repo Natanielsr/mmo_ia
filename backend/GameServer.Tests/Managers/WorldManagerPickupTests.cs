@@ -89,7 +89,7 @@ namespace GameServer.Tests.Managers
             _b.Build().ProcessUseItem(player, "p1");
 
             Assert.True(player.Hp > hpBefore);
-            _b.Events.Verify(e => e.OnPlayerStatusUpdated(It.Is<PlayerStatusData>(d =>
+            _b.Events.Verify(e => e.OnPlayerHpChanged(It.Is<PlayerHpData>(d =>
                 d.Id == "1")), Times.Once);
             _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }

@@ -81,41 +81,23 @@ export class CharacterAttributesModal {
         attackPower?: number;
         defense?: number;
     }) {
-        // Update Name
         const nameElement = this.overlay.querySelector('.attr-row-name .attr-value');
-        if (nameElement) {
-            nameElement.textContent = data.name;
-        }
+        if (nameElement && data.name !== undefined) nameElement.textContent = data.name;
 
-        // Update Level
         const levelElement = this.overlay.querySelector('.attr-row-level .attr-value');
-        if (levelElement) {
-            levelElement.textContent = String(data.level);
-        }
+        if (levelElement && data.level !== undefined) levelElement.textContent = String(data.level);
 
-        // Update HP
         const hpElement = this.overlay.querySelector('.attr-row-hp .attr-value');
-        if (hpElement) {
-            hpElement.textContent = `${Math.ceil(data.hp)} / ${data.maxHp}`;
-        }
+        if (hpElement && data.hp !== undefined) hpElement.textContent = `${Math.ceil(data.hp)} / ${data.maxHp}`;
 
-        // Update XP
         const xpElement = this.overlay.querySelector('.attr-row-xp .attr-value');
-        if (xpElement) {
-            xpElement.textContent = String(Math.ceil(data.experience));
-        }
+        if (xpElement && data.experience !== undefined) xpElement.textContent = String(Math.ceil(data.experience));
 
-        // Update Attack
         const attackElement = this.overlay.querySelector('.attr-row-attack .attr-value');
-        if (attackElement) {
-            attackElement.textContent = data.attackPower !== undefined ? String(data.attackPower) : '-';
-        }
+        if (attackElement && data.attackPower !== undefined) attackElement.textContent = String(data.attackPower);
 
-        // Update Defense
         const defenseElement = this.overlay.querySelector('.attr-row-defense .attr-value');
-        if (defenseElement) {
-            defenseElement.textContent = data.defense !== undefined ? String(data.defense) : '-';
-        }
+        if (defenseElement && data.defense !== undefined) defenseElement.textContent = String(data.defense);
     }
 
     public show() {

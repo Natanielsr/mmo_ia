@@ -11,6 +11,15 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player moves to a new position.
         /// </summary>
         void OnPlayerMoved(PlayerPositionData playerPositionData);
+
+        /// <summary>
+        /// Triggered when player HP changes (damage, regen, heal). Does not carry level/stats.
+        /// </summary>
+        void OnPlayerHpChanged(PlayerHpData playerHpData);
+
+        /// <summary>
+        /// Triggered when player status changes due to level-up or equipment change.
+        /// </summary>
         void OnPlayerStatusUpdated(PlayerStatusData playerStatusData);
 
         /// <summary>

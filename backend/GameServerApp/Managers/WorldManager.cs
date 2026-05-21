@@ -129,11 +129,13 @@ namespace GameServerApp.Managers
 
                 _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
                 {
-                    Id = player.Id.ToString(),
-                    Hp = player.Hp,
-                    MaxHp = player.MaxHp,
-                    Level = player.Level,
-                    Experience = player.Experience
+                    Id          = player.Id.ToString(),
+                    Hp          = player.Hp,
+                    MaxHp       = player.MaxHp,
+                    Level       = player.Level,
+                    Experience  = player.Experience,
+                    AttackPower = player.TotalAttackPower,
+                    Defense     = player.TotalDefense
                 });
 
                 _worldEvents.OnPlayerDied(target.Id);
@@ -179,7 +181,7 @@ namespace GameServerApp.Managers
 
             player.Attack(monster); // player.Attack(IPlayer) expects player, but works for state change
 
-            int damage = player.AttackPoints;
+            int damage = player.TotalAttackPower;
             monster.TakeDamage(damage);
             _worldEvents.OnMonsterDamaged(monster.Id.ToString(), damage, monster.Hp);
 
@@ -199,11 +201,13 @@ namespace GameServerApp.Managers
 
                 _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
                 {
-                    Id = player.Id.ToString(),
-                    Hp = player.Hp,
-                    MaxHp = player.MaxHp,
-                    Level = player.Level,
-                    Experience = player.Experience
+                    Id          = player.Id.ToString(),
+                    Hp          = player.Hp,
+                    MaxHp       = player.MaxHp,
+                    Level       = player.Level,
+                    Experience  = player.Experience,
+                    AttackPower = player.TotalAttackPower,
+                    Defense     = player.TotalDefense
                 });
 
                 _worldEvents.OnMonsterDied(monster.Id.ToString());
@@ -300,6 +304,14 @@ namespace GameServerApp.Managers
                             Damage = monster.AttackPower
                         });
 
+                        _worldEvents.OnPlayerHpChanged(new PlayerHpData
+                        {
+                            Id    = player.Id.ToString(),
+                            Hp    = player.Hp,
+                            MaxHp = player.MaxHp,
+                            IsDead = player.State == PlayerState.Dead
+                        });
+
                         if (player.State == PlayerState.Dead)
                         {
                             _gameStateManager.PlayerDied(player);
@@ -326,14 +338,13 @@ namespace GameServerApp.Managers
                 if (player.State != PlayerState.Dead && player.Hp < player.MaxHp)
                 {
                     player.Heal(2); // Regenera 2 HP a cada 2 segundos
-                    
-                    _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+
+                    _worldEvents.OnPlayerHpChanged(new PlayerHpData
                     {
-                        Id = player.Id.ToString(),
-                        Hp = player.Hp,
+                        Id    = player.Id.ToString(),
+                        Hp    = player.Hp,
                         MaxHp = player.MaxHp,
-                        Level = player.Level,
-                        Experience = player.Experience
+                        IsDead = false
                     });
                 }
             }
@@ -494,13 +505,12 @@ namespace GameServerApp.Managers
             bool used = inv.UseItem(itemId, player);
             if (!used) return;
 
-            _worldEvents.OnPlayerStatusUpdated(new PlayerStatusData
+            _worldEvents.OnPlayerHpChanged(new PlayerHpData
             {
-                Id = player.Id.ToString(),
-                Hp = player.Hp,
+                Id    = player.Id.ToString(),
+                Hp    = player.Hp,
                 MaxHp = player.MaxHp,
-                Level = player.Level,
-                Experience = player.Experience
+                IsDead = false
             });
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
         }
