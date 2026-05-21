@@ -49,8 +49,8 @@ export class CharacterStatusUI {
     public update(data: {
         hp: number;
         maxHp: number;
-        level: number;
-        experience: number;
+        level?: number;
+        experience?: number;
         attackPower?: number;
         defense?: number;
     }) {
@@ -69,27 +69,27 @@ export class CharacterStatusUI {
             hpText.textContent = `${Math.ceil(currentHp)} / ${totalHp}`;
         }
 
-        // Update Level
-        const levelText = document.getElementById('level-text');
-        if (levelText) {
-            levelText.textContent = `Lv ${data.level}`;
-        }
+        if (data.level !== undefined && data.experience !== undefined) {
+            const levelText = document.getElementById('level-text');
+            if (levelText) {
+                levelText.textContent = `Lv ${data.level}`;
+            }
 
-        // Update XP
-        const prevLevelMaxXP = (data.level - 1) * 1000;
-        const currentLevelMaxXP = data.level * 1000;
-        const xpIntoLevel = Math.max(0, data.experience - prevLevelMaxXP);
-        const xpRequiredForNextLevel = currentLevelMaxXP - prevLevelMaxXP;
-        const xpPercent = Math.min(100, Math.max(0, (xpIntoLevel / xpRequiredForNextLevel) * 100));
+            const prevLevelMaxXP = (data.level - 1) * 1000;
+            const currentLevelMaxXP = data.level * 1000;
+            const xpIntoLevel = Math.max(0, data.experience - prevLevelMaxXP);
+            const xpRequiredForNextLevel = currentLevelMaxXP - prevLevelMaxXP;
+            const xpPercent = Math.min(100, Math.max(0, (xpIntoLevel / xpRequiredForNextLevel) * 100));
 
-        const xpFill = document.getElementById('xp-fill') as HTMLElement;
-        if (xpFill) {
-            xpFill.style.width = `${xpPercent}%`;
-        }
+            const xpFill = document.getElementById('xp-fill') as HTMLElement;
+            if (xpFill) {
+                xpFill.style.width = `${xpPercent}%`;
+            }
 
-        const xpText = document.getElementById('xp-text');
-        if (xpText) {
-            xpText.textContent = `${Math.ceil(xpIntoLevel)} / ${xpRequiredForNextLevel} XP`;
+            const xpText = document.getElementById('xp-text');
+            if (xpText) {
+                xpText.textContent = `${Math.ceil(xpIntoLevel)} / ${xpRequiredForNextLevel} XP`;
+            }
         }
 
         // Update Attack Power
