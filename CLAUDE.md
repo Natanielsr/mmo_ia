@@ -1,4 +1,4 @@
-# Antigravity MMO — CLAUDE.md
+# MMO Web — CLAUDE.md
 
 ## Visão Geral
 
