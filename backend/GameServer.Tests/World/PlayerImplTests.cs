@@ -261,4 +261,79 @@ public class PlayerImplTests
         Assert.Equal(0, player.Hp);
         Assert.Equal(PlayerState.Dead, player.State);
     }
+
+    [Fact]
+    public void Player_SetLevel_Should_Set_Correct_Level()
+    {
+        var player = CreatePlayer();
+
+        player.SetLevel(5);
+
+        Assert.Equal(5, player.Level);
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Reset_Experience_To_Zero()
+    {
+        var player = CreatePlayer();
+        player.GainExperience(5000);
+
+        player.SetLevel(5);
+
+        Assert.Equal(0, player.Experience);
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Update_MaxHp_Correctly()
+    {
+        var player = CreatePlayer();
+
+        player.SetLevel(5);
+
+        // Level 5 = 100 + (10 * (5 - 1)) = 100 + 40 = 140
+        Assert.Equal(140, player.MaxHp);
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Heal_To_Full()
+    {
+        var player = CreatePlayer();
+        player.TakeDamage(50);
+        Assert.Equal(50, player.Hp);
+
+        player.SetLevel(5);
+
+        Assert.Equal(140, player.Hp);
+        Assert.Equal(140, player.MaxHp);
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Work_From_Any_Starting_Level()
+    {
+        var player = CreatePlayer();
+        player.GainExperience(1000);
+        Assert.Equal(2, player.Level);
+
+        player.SetLevel(8);
+
+        Assert.Equal(8, player.Level);
+        // Level 8 = 100 + (10 * (8 - 1)) = 100 + 70 = 170
+        Assert.Equal(170, player.MaxHp);
+        Assert.Equal(170, player.Hp);
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Allow_Downgrade()
+    {
+        var player = CreatePlayer();
+        player.SetLevel(10);
+        Assert.Equal(10, player.Level);
+
+        player.SetLevel(3);
+
+        Assert.Equal(3, player.Level);
+        // Level 3 = 100 + (10 * (3 - 1)) = 100 + 20 = 120
+        Assert.Equal(120, player.MaxHp);
+        Assert.Equal(120, player.Hp);
+    }
 }

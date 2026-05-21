@@ -171,11 +171,10 @@ namespace GameServerApp.World
 
         public void SetLevel(int targetLevel)
         {
-            if (targetLevel <= Level) return;
-
-            long needed = 0;
-            for (int i = Level; i < targetLevel; i++) needed += i * 1000L;
-            GainExperience(needed);
+            Level = targetLevel;
+            Experience = 0;
+            MaxHp = 100 + (10 * (targetLevel - 1));
+            Hp = MaxHp;
         }
     }
 }
