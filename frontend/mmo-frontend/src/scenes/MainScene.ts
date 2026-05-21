@@ -59,10 +59,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     public openDefaultPanels(): void {
+        this.panelToggleBar.show();
         if (!isMobileDevice()) {
             this.inventoryUI.toggle();
             this.equipmentUI.toggle();
-            this.panelToggleBar.show();
         }
     }
 
