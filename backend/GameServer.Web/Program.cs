@@ -3,9 +3,11 @@ using GameServer.Infrastructure.Services;
 using GameServer.Infrastructure.SignalR;
 using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Processors;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
+using GameServerApp.Processors;
 using GameServerApp.Services;
 using GameServerApp.World;
 using Microsoft.Extensions.Options;
@@ -48,6 +50,14 @@ builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>()
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 builder.Services.AddSingleton<IWorldGenerator, WorldGenerator>();
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
+
+// Register Processors
+builder.Services.AddSingleton<IPlayerMovementProcessor, PlayerMovementProcessor>();
+builder.Services.AddSingleton<ICombatProcessor, CombatProcessor>();
+builder.Services.AddSingleton<IMonsterLifecycleProcessor, MonsterLifecycleProcessor>();
+builder.Services.AddSingleton<IItemProcessor, ItemProcessor>();
+builder.Services.AddSingleton<IEquipmentProcessor, EquipmentProcessor>();
+builder.Services.AddSingleton<IChunkProcessor, ChunkProcessor>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();
