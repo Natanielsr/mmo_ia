@@ -61,8 +61,7 @@ export class MainScene extends Phaser.Scene {
     public openDefaultPanels(): void {
         this.panelToggleBar.show();
         if (!isMobileDevice()) {
-            this.inventoryUI.toggle();
-            this.equipmentUI.toggle();
+            this.panelToggleBar.toggleGear();
         }
     }
 
@@ -145,13 +144,11 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (this.inputManager.isInventoryJustPressed()) {
-            console.log('Toggle Inventory UI');
-            this.inventoryUI.toggle();
+            this.panelToggleBar.toggleInventory();
         }
 
         if (this.inputManager.isEquipmentJustPressed()) {
-            console.log('Toggle Equipment UI');
-            this.equipmentUI.toggle();
+            this.panelToggleBar.toggleEquipment();
         }
 
         if (this.inputManager.isAttributesJustPressed()) {

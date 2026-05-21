@@ -23,9 +23,10 @@ export class PanelToggleBar {
         this.bar.id = 'panel-toggle-bar';
         this.bar.style.display = 'none';
 
-        // Create gear panel wrapper
+        // Create gear panel wrapper (starts hidden)
         this.gearPanel = document.createElement('div');
         this.gearPanel.id = 'gear-panel';
+        this.gearPanel.style.display = 'none';
         const gearCloseBtn = document.createElement('button');
         gearCloseBtn.className = 'gear-panel-close';
         gearCloseBtn.textContent = '×';
@@ -83,10 +84,33 @@ export class PanelToggleBar {
 
     public toggleGear(): void {
         const visible = this.gearPanel.style.display !== 'none';
+        if (!visible) {
+            this.inventoryUI.getElement().style.display = 'grid';
+            this.equipmentUI.getElement().style.display = 'grid';
+        }
         this.gearPanel.style.display = visible ? 'none' : 'flex';
         this.updateButtonStates();
     }
 
+    public toggleInventory(): void {
+        const el = this.inventoryUI.getElement();
+        el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+        this.syncGearPanelVisibility();
+        this.updateButtonStates();
+    }
+
+    public toggleEquipment(): void {
+        const el = this.equipmentUI.getElement();
+        el.style.display = el.style.display === 'none' ? 'grid' : 'none';
+        this.syncGearPanelVisibility();
+        this.updateButtonStates();
+    }
+
+    private syncGearPanelVisibility(): void {
+        const invVisible = this.inventoryUI.getElement().style.display !== 'none';
+        const eqVisible = this.equipmentUI.getElement().style.display !== 'none';
+        this.gearPanel.style.display = (invVisible || eqVisible) ? 'flex' : 'none';
+    }
 
     private updateButtonStates(): void {
         const gearBtn = this.buttons.get('gear');
