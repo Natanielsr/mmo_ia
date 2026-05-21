@@ -1,11 +1,9 @@
-// backend/GameServerApp/Managers/WorldProcessor.cs
 using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 using GameServerApp.Dtos;
-using GameServerApp.World;
 using Microsoft.Extensions.Options;
 
 namespace GameServerApp.Managers
@@ -294,6 +292,7 @@ namespace GameServerApp.Managers
                     // Adjacente (incluindo diagonais se for grid de 1 casa)
                     if (dx <= 1 && dy <= 1)
                     {
+                        int effectiveDamage = Math.Max(0, monster.AttackPower - player.TotalDefense);
                         monster.Attack(player);
                         _worldEvents.OnPlayerAttacked(new PlayerAttackData
                         {
@@ -301,7 +300,7 @@ namespace GameServerApp.Managers
                             AttackerName = monster.Name,
                             TargetId = player.Id.ToString(),
                             TargetName = player.Name,
-                            Damage = monster.AttackPower
+                            Damage = effectiveDamage
                         });
 
                         _worldEvents.OnPlayerHpChanged(new PlayerHpData
