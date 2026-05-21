@@ -69,6 +69,116 @@ export class DragDropHandler {
         }
     }
 
+    private setupTouchListeners(invPanel: HTMLElement, eqPanel: HTMLElement): void {
+        let dragItemId    = '';
+        let dragItemType  = '';
+        let dragSource: 'inventory' | 'equipment' = 'inventory';
+        let dragSourceSlot = '';
+        let ghostEl: HTMLElement | null = null;
+        let lastHighlighted: HTMLElement | null = null;
+
+        const clearState = () => {
+            ghostEl?.remove();
+            ghostEl = null;
+            lastHighlighted?.classList.remove('drag-over');
+            lastHighlighted = null;
+            dragItemId = '';
+            dragItemType = '';
+            dragSource = 'inventory';
+            dragSourceSlot = '';
+        };
+
+        const getElUnder = (x: number, y: number): Element | null => {
+            if (ghostEl) ghostEl.style.display = 'none';
+            const el = document.elementFromPoint(x, y);
+            if (ghostEl) ghostEl.style.display = '';
+            return el;
+        };
+
+        const createGhost = (source: HTMLElement, x: number, y: number): HTMLElement => {
+            const ghost = source.cloneNode(true) as HTMLElement;
+            ghost.style.cssText = `position:fixed;pointer-events:none;opacity:0.7;z-index:9999;width:${source.offsetWidth}px;height:${source.offsetHeight}px;transform:translate(-50%,-50%);left:${x}px;top:${y}px;`;
+            document.body.appendChild(ghost);
+            return ghost;
+        };
+
+        invPanel.addEventListener('touchstart', (e) => {
+            const slot = (e.target as HTMLElement).closest<HTMLElement>('.inv-slot');
+            if (!slot?.dataset.itemId) return;
+            e.preventDefault();
+            dragItemId    = slot.dataset.itemId;
+            dragItemType  = slot.dataset.itemType ?? '';
+            dragSource    = 'inventory';
+            dragSourceSlot = '';
+            ghostEl = createGhost(slot, e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        eqPanel.addEventListener('touchstart', (e) => {
+            const slot = (e.target as HTMLElement).closest<HTMLElement>('.eq-slot');
+            if (!slot?.dataset.itemId) return;
+            e.preventDefault();
+            dragItemId    = slot.dataset.itemId;
+            dragItemType  = slot.dataset.itemType ?? '';
+            dragSource    = 'equipment';
+            dragSourceSlot = slot.dataset.slot ?? '';
+            ghostEl = createGhost(slot, e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!dragItemId || !ghostEl) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            ghostEl.style.left = `${touch.clientX}px`;
+            ghostEl.style.top  = `${touch.clientY}px`;
+
+            const el      = getElUnder(touch.clientX, touch.clientY);
+            const eqSlot  = el?.closest<HTMLElement>('.eq-slot') ?? null;
+            const invSlot = el?.closest<HTMLElement>('.inv-slot') ?? null;
+            const newHL   = eqSlot ?? invSlot;
+
+            if (newHL !== lastHighlighted) {
+                lastHighlighted?.classList.remove('drag-over');
+                if (newHL) {
+                    const fakeItem: ItemData = { id: dragItemId, name: '', position: { x: 0, y: 0 }, type: dragItemType };
+                    const target = eqSlot ? (eqSlot.dataset.slot as EquipmentSlot) : 'inventory';
+                    if (this.canDrop(fakeItem, target)) {
+                        newHL.classList.add('drag-over');
+                        lastHighlighted = newHL;
+                    } else {
+                        lastHighlighted = null;
+                    }
+                } else {
+                    lastHighlighted = null;
+                }
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', (e) => {
+            if (!dragItemId) return;
+            const touch   = e.changedTouches[0];
+            const el      = getElUnder(touch.clientX, touch.clientY);
+            const eqSlot  = el?.closest<HTMLElement>('.eq-slot') ?? null;
+            const invSlot = el?.closest<HTMLElement>('.inv-slot') ?? null;
+
+            if (eqSlot) {
+                const targetSlot = eqSlot.dataset.slot as EquipmentSlot;
+                const fakeItem: ItemData = { id: dragItemId, name: '', position: { x: 0, y: 0 }, type: dragItemType };
+                if (this.canDrop(fakeItem, targetSlot)) {
+                    this.onEquip(dragItemId);
+                }
+            } else if (invSlot) {
+                if (dragSource === 'equipment') {
+                    this.onUnequip(dragSourceSlot as EquipmentSlot);
+                } else {
+                    this.onMoveInInventory(dragItemId, parseInt(invSlot.dataset.index ?? '0', 10));
+                }
+            }
+            clearState();
+        });
+
+        document.addEventListener('touchcancel', () => { clearState(); });
+    }
+
     public setup(_invUI: InventoryUI, _eqUI: EquipmentUI): void {
         const invPanel = document.getElementById('inventory-panel');
         const eqPanel  = document.getElementById('equipment-panel');
@@ -199,5 +309,7 @@ export class DragDropHandler {
                 dragItemId = '';
             });
         }
+
+        this.setupTouchListeners(invPanel, eqPanel);
     }
 }

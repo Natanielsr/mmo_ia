@@ -2,6 +2,18 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { DragDropHandler } from '../../ui/DragDropHandler';
 import type { ItemData, EquipmentSlot } from '../../types';
 
+if (typeof TouchEvent === 'undefined') {
+    (globalThis as Record<string, unknown>).TouchEvent = class extends Event {
+        touches: Touch[];
+        changedTouches: Touch[];
+        constructor(type: string, init: Record<string, unknown> = {}) {
+            super(type, init);
+            this.touches = (init.touches as Touch[]) ?? [];
+            this.changedTouches = (init.changedTouches as Touch[]) ?? [];
+        }
+    };
+}
+
 if (typeof DragEvent === 'undefined') {
     (globalThis as Record<string, unknown>).DragEvent = class extends MouseEvent {
         dataTransfer: DataTransfer | null;
@@ -168,6 +180,131 @@ describe('DragDropHandler — setup DOM interactions', () => {
         startDragFrom('a1', 'Armor');
         const weaponSlot = document.querySelector<HTMLElement>('[data-slot="Weapon"]')!;
         weaponSlot.dispatchEvent(new DragEvent('drop', { bubbles: false, cancelable: true }));
+        expect(vi.mocked(onEquip)).not.toHaveBeenCalled();
+    });
+});
+
+describe('DragDropHandler — touch interactions', () => {
+    let handler: DragDropHandler;
+    let onEquip: (itemId: string) => void;
+    let onUnequip: (slot: EquipmentSlot) => void;
+    let onMove: (itemId: string, toIndex: number) => void;
+
+    function makeTouchEvent(type: string, x: number, y: number): TouchEvent {
+        const touch = { clientX: x, clientY: y, identifier: 0, target: document.body } as unknown as Touch;
+        return new TouchEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            touches: type === 'touchend' || type === 'touchcancel' ? [] : [touch],
+            changedTouches: [touch],
+        } as Record<string, unknown>);
+    }
+
+    beforeEach(() => {
+        document.body.innerHTML = '';
+
+        const invPanel = document.createElement('div');
+        invPanel.id = 'inventory-panel';
+        for (let i = 0; i < 3; i++) {
+            const s = document.createElement('div');
+            s.className = 'inv-slot';
+            s.dataset.index = String(i);
+            invPanel.appendChild(s);
+        }
+
+        const eqPanel = document.createElement('div');
+        eqPanel.id = 'equipment-panel';
+        for (const name of ['Weapon', 'Helmet', 'Chest']) {
+            const s = document.createElement('div');
+            s.className = 'eq-slot';
+            s.dataset.slot = name;
+            eqPanel.appendChild(s);
+        }
+
+        document.body.appendChild(invPanel);
+        document.body.appendChild(eqPanel);
+
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = () => null;
+        }
+
+        onEquip   = vi.fn();
+        onUnequip = vi.fn();
+        onMove    = vi.fn();
+        handler   = new DragDropHandler(onEquip, onUnequip, onMove);
+        handler.setup({} as never, {} as never);
+    });
+
+    afterEach(() => {
+        document.body.innerHTML = '';
+        vi.restoreAllMocks();
+    });
+
+    it('touch drag inventory → valid eq slot: calls onEquip', () => {
+        const invSlot = document.querySelector<HTMLElement>('.inv-slot')!;
+        invSlot.dataset.itemId   = 'w1';
+        invSlot.dataset.itemType = 'Weapon';
+        const weaponSlot = document.querySelector<HTMLElement>('[data-slot="Weapon"]')!;
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(weaponSlot);
+
+        invSlot.dispatchEvent(makeTouchEvent('touchstart', 100, 100));
+        document.dispatchEvent(makeTouchEvent('touchend', 200, 200));
+
+        expect(vi.mocked(onEquip)).toHaveBeenCalledWith('w1');
+    });
+
+    it('touch drag inventory → wrong eq slot (Armor → Weapon): NOT calls onEquip', () => {
+        const invSlot = document.querySelector<HTMLElement>('.inv-slot')!;
+        invSlot.dataset.itemId   = 'a1';
+        invSlot.dataset.itemType = 'Armor';
+        const weaponSlot = document.querySelector<HTMLElement>('[data-slot="Weapon"]')!;
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(weaponSlot);
+
+        invSlot.dispatchEvent(makeTouchEvent('touchstart', 100, 100));
+        document.dispatchEvent(makeTouchEvent('touchend', 200, 200));
+
+        expect(vi.mocked(onEquip)).not.toHaveBeenCalled();
+    });
+
+    it('touch drag inventory → inventory slot: calls onMoveInInventory', () => {
+        const slots = document.querySelectorAll<HTMLElement>('.inv-slot');
+        const src = slots[0];
+        const dst = slots[2];
+        src.dataset.itemId   = 'w1';
+        src.dataset.itemType = 'Weapon';
+        dst.dataset.index    = '2';
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(dst);
+
+        src.dispatchEvent(makeTouchEvent('touchstart', 100, 100));
+        document.dispatchEvent(makeTouchEvent('touchend', 200, 200));
+
+        expect(vi.mocked(onMove)).toHaveBeenCalledWith('w1', 2);
+    });
+
+    it('touch drag equipment → inventory: calls onUnequip', () => {
+        const eqSlot = document.querySelector<HTMLElement>('[data-slot="Weapon"]')!;
+        eqSlot.dataset.itemId   = 'w1';
+        eqSlot.dataset.itemType = 'Weapon';
+        const invSlot = document.querySelector<HTMLElement>('.inv-slot')!;
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(invSlot);
+
+        eqSlot.dispatchEvent(makeTouchEvent('touchstart', 100, 100));
+        document.dispatchEvent(makeTouchEvent('touchend', 200, 200));
+
+        expect(vi.mocked(onUnequip)).toHaveBeenCalledWith('Weapon');
+    });
+
+    it('touchcancel → clears state, no callbacks on later touchend', () => {
+        const invSlot = document.querySelector<HTMLElement>('.inv-slot')!;
+        invSlot.dataset.itemId   = 'w1';
+        invSlot.dataset.itemType = 'Weapon';
+        const weaponSlot = document.querySelector<HTMLElement>('[data-slot="Weapon"]')!;
+        vi.spyOn(document, 'elementFromPoint').mockReturnValue(weaponSlot);
+
+        invSlot.dispatchEvent(makeTouchEvent('touchstart', 100, 100));
+        document.dispatchEvent(new Event('touchcancel', { bubbles: true }));
+        document.dispatchEvent(makeTouchEvent('touchend', 200, 200));
+
         expect(vi.mocked(onEquip)).not.toHaveBeenCalled();
     });
 });
