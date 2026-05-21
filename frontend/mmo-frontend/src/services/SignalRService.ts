@@ -82,6 +82,7 @@ export class SignalRService {
             }
 
             this.mainScene?.updatePlayerPosition(playerData, true);
+            this.mainScene?.openDefaultPanels();
         });
 
         this.connection.on("PlayerStatusUpdated", (statusData: any) => {

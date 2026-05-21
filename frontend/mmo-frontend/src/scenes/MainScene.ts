@@ -16,6 +16,7 @@ import type { MonsterData, ItemData, EquipmentSlot } from '../types';
 import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
 import { updateUIPosition } from '../ui';
+import { isMobileDevice } from '../utils/device';
 
 export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
@@ -45,6 +46,13 @@ export class MainScene extends Phaser.Scene {
 
     public async loadMap() {
         // Obsoleto: O mapa agora é carregado via Chunks pelo SignalR
+    }
+
+    public openDefaultPanels(): void {
+        if (!isMobileDevice()) {
+            this.inventoryUI.toggle();
+            this.equipmentUI.toggle();
+        }
     }
 
     async create() {
