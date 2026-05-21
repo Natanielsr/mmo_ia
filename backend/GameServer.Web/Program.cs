@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using GameServer.Infrastructure.Services;
 using GameServer.Infrastructure.SignalR;
 using GameServerApp.Contracts.Config;
@@ -16,7 +17,11 @@ builder.Services.Configure<WorldConfig>(
     builder.Configuration.GetSection("WorldSettings"));
 
 // Add SignalR
-builder.Services.AddSignalR();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 // Add CORS
 builder.Services.AddCors(options =>

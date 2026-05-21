@@ -546,6 +546,11 @@ input {
     border-color: var(--primary);
 }
 
+.inv-slot.dragging {
+    opacity: 0.4;
+    border-color: var(--primary-hover, #7b5ea7);
+}
+
 .inv-slot .item-icon {
     font-size: 1.2rem;
     line-height: 1;
@@ -560,6 +565,12 @@ input {
     text-overflow: ellipsis;
     max-width: 100%;
     padding: 0 2px;
+}
+
+.inv-slot .item-icon,
+.inv-slot .item-name {
+    pointer-events: none;
+    user-select: none;
 }
 
 .icon-sword::before  { content: '⚔️'; }
@@ -627,6 +638,11 @@ input {
     max-width: 100%;
     padding: 0 2px;
     margin-bottom: 8px;
+}
+
+.eq-slot .item-name {
+    pointer-events: none;
+    user-select: none;
 }
 
 /*  Cross layout (3 cols × 4 rows):
