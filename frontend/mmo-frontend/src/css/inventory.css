@@ -152,3 +152,154 @@
 #eq-attack, #eq-defense {
     display: none;
 }
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+    #inventory-panel {
+        bottom: 35px;
+        right: 20px;
+        grid-template-columns: repeat(4, 48px);
+        grid-template-rows: repeat(5, 48px);
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .inv-slot {
+        width: 48px;
+        height: 48px;
+    }
+
+    .inv-slot .item-icon {
+        font-size: 1rem;
+    }
+
+    .inv-slot .item-name {
+        font-size: 0.45rem;
+    }
+
+    #equipment-panel {
+        top: 160px;
+        right: 50px;
+        grid-template-columns: repeat(3, 48px);
+        grid-template-rows: repeat(4, 48px);
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .eq-slot {
+        width: 48px;
+        height: 48px;
+    }
+
+    .eq-slot .item-name {
+        font-size: 0.45rem;
+        margin-bottom: 6px;
+    }
+
+    .eq-slot::after {
+        font-size: 0.4rem;
+    }
+}
+
+/* Mobile (max 768px) */
+@media (max-width: 768px) {
+    #inventory-panel {
+        bottom: 90px;
+        right: 10px;
+        grid-template-columns: repeat(4, 40px);
+        grid-template-rows: repeat(5, 40px);
+        gap: 2px;
+        padding: 3px;
+    }
+
+    .inv-slot {
+        width: 40px;
+        height: 40px;
+        padding: 1px;
+        gap: 1px;
+    }
+
+    .inv-slot .item-icon {
+        font-size: 0.9rem;
+    }
+
+    .inv-slot .item-name {
+        font-size: 0.4rem;
+    }
+
+    #equipment-panel {
+        top: 160px;
+        right: 10px;
+        grid-template-columns: repeat(3, 40px);
+        grid-template-rows: repeat(4, 40px);
+        gap: 2px;
+        padding: 3px;
+    }
+
+    .eq-slot {
+        width: 40px;
+        height: 40px;
+        padding: 2px;
+    }
+
+    .eq-slot .item-name {
+        font-size: 0.4rem;
+        margin-bottom: 5px;
+    }
+
+    .eq-slot::after {
+        font-size: 0.35rem;
+        bottom: 1px;
+    }
+}
+
+/* Small mobile (max 480px) */
+@media (max-width: 480px) {
+    #inventory-panel {
+        bottom: 150px;
+        right: 5px;
+        grid-template-columns: repeat(4, 36px);
+        grid-template-rows: repeat(5, 36px);
+        gap: 2px;
+        padding: 2px;
+    }
+
+    .inv-slot {
+        width: 36px;
+        height: 36px;
+        padding: 1px;
+    }
+
+    .inv-slot .item-icon {
+        font-size: 0.8rem;
+    }
+
+    .inv-slot .item-name {
+        font-size: 0.35rem;
+    }
+
+    #equipment-panel {
+        top: 160px;
+        right: 5px;
+        grid-template-columns: repeat(3, 36px);
+        grid-template-rows: repeat(4, 36px);
+        gap: 2px;
+        padding: 2px;
+    }
+
+    .eq-slot {
+        width: 36px;
+        height: 36px;
+        padding: 1px;
+    }
+
+    .eq-slot .item-name {
+        font-size: 0.35rem;
+        margin-bottom: 4px;
+    }
+
+    .eq-slot::after {
+        font-size: 0.3rem;
+        bottom: 0;
+    }
+}
