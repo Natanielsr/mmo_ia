@@ -21,6 +21,26 @@ Versão atual: **v0.1.x** (desenvolvimento ativo)
 
 ---
 
+## Seleção de Modelo de IA
+
+Use o modelo adequado à complexidade da tarefa:
+
+| Modelo | Analogia | Quando usar |
+|--------|----------|-------------|
+| `claude-haiku-4-5` | Júnior | Tarefas simples: correções pontuais, renomeações, geração de boilerplate, respostas rápidas |
+| `claude-sonnet-4-6` | Pleno | Refatoração de código, implementação de features, revisão de código, debugging |
+| `claude-opus-4-7` | Sênior | Planejamento complexo, decisões de arquitetura, análise de trade-offs, tarefas multi-arquivo de alto impacto |
+
+### Sinalização obrigatória
+
+- **Ao iniciar uma resposta**, declare qual modelo está sendo usado no formato:
+  > `[Modelo: Haiku — júnior]`, `[Modelo: Sonnet — pleno]` ou `[Modelo: Opus — sênior]`
+- **Ao trocar de modelo** (quando a complexidade da tarefa mudar), avise explicitamente:
+  > `Trocando para Sonnet (pleno) — esta tarefa envolve refatoração.`
+- Use `/model haiku`, `/model sonnet` ou `/model opus` no terminal para efetuar a troca.
+
+---
+
 ## Como Executar
 
 ```bash
