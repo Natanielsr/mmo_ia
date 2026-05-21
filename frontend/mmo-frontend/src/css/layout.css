@@ -81,8 +81,6 @@
         right: 0;
         z-index: 10;
         padding: 0.5rem 1rem;
-        flex-direction: row;
-        align-items: center;
         justify-content: space-between;
         background: rgba(15, 23, 42, 0.85);
         border: none;

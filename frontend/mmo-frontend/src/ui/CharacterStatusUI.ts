@@ -12,11 +12,8 @@ export class CharacterStatusUI {
 
     private render() {
         this.panel.innerHTML = `
-            <div class="char-name-row">
-                <span id="char-name">-</span>
-            </div>
             <h3 class="char-title">
-                Personagem <span id="level-text" style="font-size: 0.8em; color: #ffd700;">Lv 1</span>
+                <span id="char-name">-</span> <span id="level-text" style="font-size: 0.8em; color: #ffd700;">Lv 1</span>
             </h3>
             <div class="hp-container">
                 <div class="hp-bar progress-bar">
@@ -29,12 +26,6 @@ export class CharacterStatusUI {
                     <div id="xp-fill" style="width: 0%; height: 100%; background: #0088ff; transition: width 0.3s ease;"></div>
                 </div>
                 <div id="xp-text" style="font-size: 0.8em; text-align: center; margin-top: 2px;">0 / 1000 XP</div>
-            </div>
-            <div class="stat-row" style="margin-top: 5px; font-size: 0.85em;">
-                <span>Ataque:</span> <span id="char-attack">-</span>
-            </div>
-            <div class="stat-row" style="font-size: 0.85em;">
-                <span>Defesa:</span> <span id="char-defense">-</span>
             </div>
         `;
     }
