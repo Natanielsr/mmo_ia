@@ -10,6 +10,7 @@ export class InputManager {
     public inventoryKey!: Phaser.Input.Keyboard.Key;
     public equipmentKey!: Phaser.Input.Keyboard.Key;
     public consoleKey!: Phaser.Input.Keyboard.Key;
+    public attributesKey!: Phaser.Input.Keyboard.Key;
 
     private touchDirection: string | null = null;
     private touchAttackPressed: boolean = false;
@@ -37,6 +38,7 @@ export class InputManager {
         this.inventoryKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I);
         this.equipmentKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
         this.consoleKey   = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKTICK);
+        this.attributesKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
         this.setupTouchControls();
     }
@@ -112,5 +114,9 @@ export class InputManager {
 
     public isConsoleJustPressed(): boolean {
         return Phaser.Input.Keyboard.JustDown(this.consoleKey);
+    }
+
+    public isAttributesJustPressed(): boolean {
+        return Phaser.Input.Keyboard.JustDown(this.attributesKey);
     }
 }

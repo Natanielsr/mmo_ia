@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { addLog, initializeGameLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus } from '../ui';
+import { addLog, initializeGameLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus, initializeCharacterPanel, setCharacterName, updateCharacterStatus } from '../ui';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
@@ -72,6 +72,8 @@ export class SignalRService {
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
             initializeGameLog();
+            initializeCharacterPanel();
+            setCharacterName(playerData.name);
             addLog(`Entrou como ${playerData.name}!`);
             overlay?.classList.add('hidden');
             gameContainer?.classList.remove('hidden');
@@ -92,6 +94,14 @@ export class SignalRService {
             if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
                 updateUIHealthBar(statusData.hp ?? statusData.Hp, statusData.maxHp ?? statusData.MaxHp);
                 updateUIXPBar(statusData.experience ?? statusData.Experience ?? 0, statusData.level ?? statusData.Level ?? 1);
+                updateCharacterStatus({
+                    hp: statusData.hp ?? statusData.Hp,
+                    maxHp: statusData.maxHp ?? statusData.MaxHp,
+                    level: statusData.level ?? statusData.Level,
+                    experience: statusData.experience ?? statusData.Experience,
+                    attackPower: statusData.attackPower ?? statusData.AttackPower,
+                    defense: statusData.defense ?? statusData.Defense
+                });
             }
         });
 
@@ -110,6 +120,14 @@ export class SignalRService {
                 if (myPlayer && String(s.id ?? s.Id) === String(myPlayer.id)) {
                     updateUIHealthBar(s.hp ?? s.Hp, s.maxHp ?? s.MaxHp);
                     updateUIXPBar(s.experience ?? s.Experience ?? 0, s.level ?? s.Level ?? 1);
+                    updateCharacterStatus({
+                        hp: s.hp ?? s.Hp,
+                        maxHp: s.maxHp ?? s.MaxHp,
+                        level: s.level ?? s.Level,
+                        experience: s.experience ?? s.Experience,
+                        attackPower: s.attackPower ?? s.AttackPower,
+                        defense: s.defense ?? s.Defense
+                    });
                 }
             });
         });

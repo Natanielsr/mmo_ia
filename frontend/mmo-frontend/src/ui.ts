@@ -1,4 +1,6 @@
 import { GameLogUI } from './ui/GameLogUI';
+import { CharacterStatusUI } from './ui/CharacterStatusUI';
+import { CharacterAttributesModal } from './ui/CharacterAttributesModal';
 
 // Elementos da UI
 export const overlay = document.getElementById('login-overlay') as HTMLDivElement;
@@ -10,6 +12,32 @@ export const serverStatus = document.getElementById('server-status') as HTMLDivE
 export const statusText = document.getElementById('status-text') as HTMLSpanElement;
 
 export let gameLogUI: GameLogUI;
+export let characterStatusUI: CharacterStatusUI;
+export let characterAttributesModal: CharacterAttributesModal;
+
+export function initializeCharacterPanel() {
+    characterStatusUI = new CharacterStatusUI();
+}
+
+export function initializeAttributesModal() {
+    characterAttributesModal = new CharacterAttributesModal();
+}
+
+export function updateAttributesModal(data: any) {
+    characterAttributesModal?.update(data);
+}
+
+export function toggleAttributesModal() {
+    characterAttributesModal?.toggle();
+}
+
+export function setCharacterName(name: string) {
+    characterStatusUI?.setName(name);
+}
+
+export function updateCharacterStatus(data: any) {
+    characterStatusUI?.update(data);
+}
 
 export function updateServerStatus(msg: string, isVisible: boolean) {
     if (serverStatus) {

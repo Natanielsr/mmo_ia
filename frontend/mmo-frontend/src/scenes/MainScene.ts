@@ -15,7 +15,7 @@ import { CombatSystem } from '../systems/CombatSystem';
 import type { MonsterData, ItemData, EquipmentSlot } from '../types';
 import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
-import { updateUIPosition } from '../ui';
+import { updateUIPosition, initializeAttributesModal, toggleAttributesModal, updateAttributesModal } from '../ui';
 import { isMobileDevice } from '../utils/device';
 import { DevConsole } from './DevConsole';
 
@@ -74,6 +74,7 @@ export class MainScene extends Phaser.Scene {
 
         this.inventoryUI    = new InventoryUI();
         this.equipmentUI    = new EquipmentUI();
+        initializeAttributesModal();
         this.dragDropHandler = new DragDropHandler(
             (itemId) => this.onRequestEquipItem?.(itemId),
             (slot)   => this.onRequestUnequipItem?.(slot),
@@ -145,6 +146,21 @@ export class MainScene extends Phaser.Scene {
         if (this.inputManager.isEquipmentJustPressed()) {
             console.log('Toggle Equipment UI');
             this.equipmentUI.toggle();
+        }
+
+        if (this.inputManager.isAttributesJustPressed()) {
+            console.log('Toggle Attributes Modal');
+            toggleAttributesModal();
+            const myPlayer = this.playerManager.getMyPlayer();
+            if (myPlayer) {
+                updateAttributesModal({
+                    name: myPlayer.name,
+                    level: myPlayer.level,
+                    hp: myPlayer.hp,
+                    maxHp: myPlayer.maxHp,
+                    experience: myPlayer.experience
+                });
+            }
         }
 
         if (this.debugPanel) {
