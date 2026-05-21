@@ -24,6 +24,7 @@ namespace GameServerApp.Contracts.World
         DateTime LastMoveTime { get; }
         DateTime LastAttackTime { get; }
         PlayerState State { get; }
+        bool IsGodMode { get; }
 
         void Move(Position newPosition);
         void Attack(IWorldObject target);
@@ -37,5 +38,7 @@ namespace GameServerApp.Contracts.World
         void EquipItem(string itemId);
         void UnequipItem(string itemId);
         void ApplyEquipmentBonuses(int attackBonus, int defenseBonus);
+        void SetGodMode(bool enabled);
+        void SetLevel(int targetLevel);
     }
 }

@@ -17,6 +17,7 @@ import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
 import { updateUIPosition } from '../ui';
 import { isMobileDevice } from '../utils/device';
+import { DevConsole } from './DevConsole';
 
 export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
@@ -28,6 +29,7 @@ export class MainScene extends Phaser.Scene {
     private inputManager!: InputManager;
     private combatSystem!: CombatSystem;
     private debugPanel?: DebugPanel;
+    private devConsole?: DevConsole;
     private inventoryUI!: InventoryUI;
     private equipmentUI!: EquipmentUI;
     private dragDropHandler!: DragDropHandler;
@@ -39,9 +41,14 @@ export class MainScene extends Phaser.Scene {
     public onRequestEquipItem?: (itemId: string) => void;
     public onRequestUnequipItem?: (slot: string) => void;
     public onRequestMoveItemInInventory?: (itemId: string, toIndex: number) => void;
+    private signalRService?: any;
 
     constructor() {
         super({ key: 'MainScene' });
+    }
+
+    public setSignalRService(service: any): void {
+        this.signalRService = service;
     }
 
     public async loadMap() {
@@ -86,6 +93,9 @@ export class MainScene extends Phaser.Scene {
 
         if (import.meta.env.DEV) {
             this.debugPanel = new DebugPanel();
+            if (this.signalRService) {
+                this.devConsole = new DevConsole(this.signalRService);
+            }
         }
 
         this.monsterManager.onAttackMonster = (id) => {
@@ -116,6 +126,10 @@ export class MainScene extends Phaser.Scene {
 
         if (this.inputManager.isDebugJustPressed()) {
             this.debugPanel?.toggle();
+        }
+
+        if (this.inputManager.isConsoleJustPressed()) {
+            this.devConsole?.toggle();
         }
 
         if (this.inputManager.isMapJustPressed()) {

@@ -30,6 +30,7 @@ namespace GameServerApp.World
         public DateTime LastAttackTime { get; private set; }
         public PlayerState State { get; private set; }
         public bool IsDead => State == PlayerState.Dead;
+        public bool IsGodMode { get; private set; }
 
         private const long ExperiencePerLevel = 1000;
 
@@ -76,7 +77,7 @@ namespace GameServerApp.World
 
         public void TakeDamage(int damage)
         {
-            if (State == PlayerState.Dead) return;
+            if (State == PlayerState.Dead || IsGodMode) return;
 
             int effective = Math.Max(0, damage - TotalDefense);
             Hp = Math.Max(0, Hp - effective);
@@ -161,6 +162,20 @@ namespace GameServerApp.World
                 MaxHp += 10;
                 Hp = MaxHp;
             }
+        }
+
+        public void SetGodMode(bool enabled)
+        {
+            IsGodMode = enabled;
+        }
+
+        public void SetLevel(int targetLevel)
+        {
+            if (targetLevel <= Level) return;
+
+            long needed = 0;
+            for (int i = Level; i < targetLevel; i++) needed += i * 1000L;
+            GainExperience(needed);
         }
     }
 }

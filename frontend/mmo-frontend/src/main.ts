@@ -32,6 +32,7 @@ const signalRService = new SignalRService();
 // Since PreloadScene starts MainScene immediately, we can wait a bit or use events.
 game.events.once('ready', () => {
     const mainScene = game.scene.getScene('MainScene') as MainScene;
+    mainScene.setSignalRService(signalRService);
     signalRService.registerEvents(mainScene, game);
 });
 
