@@ -20,42 +20,42 @@ export class DragDropHandler {
     }
 
     public canDrop(item: ItemData, target: DropTarget): boolean {
-        console.log('[DragDrop] canDrop →', { itemId: item.id, itemType: item.type, target });
+        //console.log('[DragDrop] canDrop →', { itemId: item.id, itemType: item.type, target });
         if (target === 'inventory') {
-            console.log('[DragDrop] canDrop: inventory — always true');
+            //console.log('[DragDrop] canDrop: inventory — always true');
             return true;
         }
         if (target === 'Weapon') {
             const ok = item.type === 'Weapon';
-            console.log('[DragDrop] canDrop: Weapon slot →', ok);
+            //console.log('[DragDrop] canDrop: Weapon slot →', ok);
             return ok;
         }
         if (target === 'Helmet') {
             const ok = item.type === 'Helmet';
-            console.log('[DragDrop] canDrop: Helmet slot →', ok);
+            //console.log('[DragDrop] canDrop: Helmet slot →', ok);
             return ok;
         }
         if (target === 'Chest') {
             const ok = item.type === 'Armor';
-            console.log('[DragDrop] canDrop: Chest slot →', ok);
+            //console.log('[DragDrop] canDrop: Chest slot →', ok);
             return ok;
         }
         if (target === 'Legs') {
             const ok = item.type === 'Legs';
-            console.log('[DragDrop] canDrop: Legs slot →', ok);
+            //console.log('[DragDrop] canDrop: Legs slot →', ok);
             return ok;
         }
         if (target === 'Boots') {
             const ok = item.type === 'Boots';
-            console.log('[DragDrop] canDrop: Boots slot →', ok);
+            //console.log('[DragDrop] canDrop: Boots slot →', ok);
             return ok;
         }
         if (target === 'Shield') {
             const ok = item.type === 'Shield';
-            console.log('[DragDrop] canDrop: Shield slot →', ok);
+            //console.log('[DragDrop] canDrop: Shield slot →', ok);
             return ok;
         }
-        console.log('[DragDrop] canDrop: slot desconhecido — false');
+        //console.log('[DragDrop] canDrop: slot desconhecido — false');
         return false;
     }
 
@@ -81,7 +81,7 @@ export class DragDropHandler {
         let dragSourceEl: HTMLElement | null = null;
 
         const clearDragState = () => {
-            console.log('[DragDrop] clearDragState — drag encerrado');
+            //console.log('[DragDrop] clearDragState — drag encerrado');
             dragSourceEl?.classList.remove('dragging');
             for (const el of document.querySelectorAll<HTMLElement>('.drag-over')) {
                 el.classList.remove('drag-over');
@@ -102,7 +102,7 @@ export class DragDropHandler {
             slot.classList.add('dragging');
             e.dataTransfer!.effectAllowed = 'move';
             e.dataTransfer!.setData('text/plain', dragItemId);
-            console.log('[DragDrop] dragstart inventory →', { dragItemId, dragItemType });
+            //console.log('[DragDrop] dragstart inventory →', { dragItemId, dragItemType });
         });
 
         eqPanel.addEventListener('dragstart', (e) => {
@@ -115,7 +115,7 @@ export class DragDropHandler {
             dragSourceEl   = slot;
             e.dataTransfer!.effectAllowed = 'move';
             e.dataTransfer!.setData('text/plain', dragItemId);
-            console.log('[DragDrop] dragstart equipment →', { dragItemId, dragItemType, dragSourceSlot });
+            //console.log('[DragDrop] dragstart equipment →', { dragItemId, dragItemType, dragSourceSlot });
         });
 
         invPanel.addEventListener('dragend', clearDragState);
@@ -144,7 +144,7 @@ export class DragDropHandler {
             target?.classList.remove('drag-over');
             if (!target || !dragItemId) return;
             const toIndex = parseInt(target.dataset.index ?? '0', 10);
-            console.log('[DragDrop] drop inventory → target index:', toIndex, '| source:', dragSource, '| dragSourceSlot:', dragSourceSlot);
+            //console.log('[DragDrop] drop inventory → target index:', toIndex, '| source:', dragSource, '| dragSourceSlot:', dragSourceSlot);
             if (dragSource === 'inventory') {
                 this.onMoveInInventory(dragItemId, toIndex);
             } else {
@@ -161,7 +161,7 @@ export class DragDropHandler {
                 e.preventDefault();
                 if (!dragItemId) return;
                 const canDrop = this.canDrop(fakeItem(), slotEl.dataset.slot as EquipmentSlot);
-                console.log('[DragDrop] dragenter eq-slot:', slotEl.dataset.slot, '| canDrop:', canDrop);
+                //console.log('[DragDrop] dragenter eq-slot:', slotEl.dataset.slot, '| canDrop:', canDrop);
                 if (canDrop) {
                     slotEl.classList.add('drag-over');
                 }
@@ -175,7 +175,7 @@ export class DragDropHandler {
             slotEl.addEventListener('dragover', (e) => {
                 if (!dragItemId) return;
                 const canDrop = this.canDrop(fakeItem(), slotEl.dataset.slot as EquipmentSlot);
-                console.log('[DragDrop] dragover eq-slot:', slotEl.dataset.slot, '| canDrop:', canDrop);
+                //console.log('[DragDrop] dragover eq-slot:', slotEl.dataset.slot, '| canDrop:', canDrop);
                 if (canDrop) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -189,12 +189,12 @@ export class DragDropHandler {
                 if (!dragItemId) return;
                 const targetSlot = slotEl.dataset.slot as EquipmentSlot;
                 const canDrop = this.canDrop(fakeItem(), targetSlot);
-                console.log('[DragDrop] drop eq-slot:', targetSlot, '| dragItemId:', dragItemId, '| canDrop:', canDrop);
+                //console.log('[DragDrop] drop eq-slot:', targetSlot, '| dragItemId:', dragItemId, '| canDrop:', canDrop);
                 if (canDrop) {
-                    console.log('[DragDrop] ✅ onEquip chamado com itemId:', dragItemId);
+                    //console.log('[DragDrop] ✅ onEquip chamado com itemId:', dragItemId);
                     this.onEquip(dragItemId);
                 } else {
-                    console.log('[DragDrop] ❌ canDrop retornou false — onEquip NÃO chamado');
+                    //console.log('[DragDrop] ❌ canDrop retornou false — onEquip NÃO chamado');
                 }
                 dragItemId = '';
             });
