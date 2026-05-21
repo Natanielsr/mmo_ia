@@ -1,0 +1,44 @@
+#world-map {
+    position: absolute;
+    width: 2048px;
+    height: 2048px;
+    background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 64px 64px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.grid-label {
+    position: absolute;
+    font-size: 8px;
+    color: var(--text-dim);
+    opacity: 0.3;
+    pointer-events: none;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-token {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 15px var(--primary);
+}
+
+.player-token::after {
+    content: attr(data-name);
+    position: absolute;
+    top: -20px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
