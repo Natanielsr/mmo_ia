@@ -8,6 +8,7 @@ import { ItemManager } from '../managers/ItemManager';
 import { ChunkManager } from '../managers/ChunkManager';
 import { InventoryManager } from '../managers/InventoryManager';
 import { EquipmentManager } from '../managers/EquipmentManager';
+import { PanelToggleBar } from '../ui/PanelToggleBar';
 import { InventoryUI } from '../ui/InventoryUI';
 import { EquipmentUI } from '../ui/EquipmentUI';
 import { DragDropHandler } from '../ui/DragDropHandler';
@@ -18,6 +19,7 @@ import type { Monster } from '../entities/Monster';
 import { updateUIPosition, initializeAttributesModal, toggleAttributesModal, updateAttributesModal } from '../ui';
 import { isMobileDevice } from '../utils/device';
 import { DevConsole } from './DevConsole';
+
 
 export class MainScene extends Phaser.Scene {
     public playerManager!: PlayerManager;
@@ -30,6 +32,7 @@ export class MainScene extends Phaser.Scene {
     private combatSystem!: CombatSystem;
     private debugPanel?: DebugPanel;
     private devConsole?: DevConsole;
+    private panelToggleBar!: PanelToggleBar;
     private inventoryUI!: InventoryUI;
     private equipmentUI!: EquipmentUI;
     private dragDropHandler!: DragDropHandler;
@@ -59,6 +62,7 @@ export class MainScene extends Phaser.Scene {
         if (!isMobileDevice()) {
             this.inventoryUI.toggle();
             this.equipmentUI.toggle();
+            this.panelToggleBar.show();
         }
     }
 
@@ -74,6 +78,8 @@ export class MainScene extends Phaser.Scene {
 
         this.inventoryUI    = new InventoryUI();
         this.equipmentUI    = new EquipmentUI();
+        this.panelToggleBar = new PanelToggleBar(this.inventoryUI, this.equipmentUI, () => toggleAttributesModal());
+
         initializeAttributesModal();
         this.dragDropHandler = new DragDropHandler(
             (itemId) => this.onRequestEquipItem?.(itemId),

@@ -77,4 +77,8 @@ export class EquipmentUI {
     public destroy(): void {
         this.panel.remove();
     }
+
+    public getElement(): HTMLDivElement {
+        return this.panel;
+    }
 }

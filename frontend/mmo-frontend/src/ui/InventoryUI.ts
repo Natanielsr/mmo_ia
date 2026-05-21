@@ -80,4 +80,8 @@ export class InventoryUI {
     public destroy(): void {
         this.panel.remove();
     }
+
+    public getElement(): HTMLDivElement {
+        return this.panel;
+    }
 }
