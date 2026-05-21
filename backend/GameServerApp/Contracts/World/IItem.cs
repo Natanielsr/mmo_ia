@@ -7,7 +7,11 @@ namespace GameServerApp.Contracts.World
         Generic,
         Potion,
         Weapon,
-        Armor
+        Armor,
+        Helmet,
+        Shield,
+        Legs,
+        Boots
     }
 
     public interface IItem

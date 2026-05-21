@@ -4,8 +4,6 @@ import type { EquipmentUI } from './EquipmentUI';
 
 type DropTarget = EquipmentSlot | 'inventory';
 
-const ARMOR_SLOTS: DropTarget[] = ['Helmet', 'Chest', 'Legs', 'Boots', 'Shield'];
-
 export class DragDropHandler {
     private readonly onEquip: (itemId: string) => void;
     private readonly onUnequip: (slot: EquipmentSlot) => void;
@@ -32,9 +30,29 @@ export class DragDropHandler {
             console.log('[DragDrop] canDrop: Weapon slot →', ok);
             return ok;
         }
-        if (ARMOR_SLOTS.includes(target)) {
+        if (target === 'Helmet') {
+            const ok = item.type === 'Helmet';
+            console.log('[DragDrop] canDrop: Helmet slot →', ok);
+            return ok;
+        }
+        if (target === 'Chest') {
             const ok = item.type === 'Armor';
-            console.log('[DragDrop] canDrop: Armor slot →', ok);
+            console.log('[DragDrop] canDrop: Chest slot →', ok);
+            return ok;
+        }
+        if (target === 'Legs') {
+            const ok = item.type === 'Legs';
+            console.log('[DragDrop] canDrop: Legs slot →', ok);
+            return ok;
+        }
+        if (target === 'Boots') {
+            const ok = item.type === 'Boots';
+            console.log('[DragDrop] canDrop: Boots slot →', ok);
+            return ok;
+        }
+        if (target === 'Shield') {
+            const ok = item.type === 'Shield';
+            console.log('[DragDrop] canDrop: Shield slot →', ok);
             return ok;
         }
         console.log('[DragDrop] canDrop: slot desconhecido — false');

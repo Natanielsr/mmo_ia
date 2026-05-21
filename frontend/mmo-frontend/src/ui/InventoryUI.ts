@@ -48,6 +48,10 @@ export class InventoryUI {
         icon.classList.add('item-icon');
         if (item.type === 'Weapon') icon.classList.add('icon-sword');
         else if (item.type === 'Armor') icon.classList.add('icon-armor');
+        else if (item.type === 'Helmet') icon.classList.add('icon-helmet');
+        else if (item.type === 'Shield') icon.classList.add('icon-shield');
+        else if (item.type === 'Legs') icon.classList.add('icon-legs');
+        else if (item.type === 'Boots') icon.classList.add('icon-boots');
         else if (item.type === 'Potion') icon.classList.add('icon-potion');
 
         const name = document.createElement('span');

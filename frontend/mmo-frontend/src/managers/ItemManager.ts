@@ -1,6 +1,10 @@
 import { HealingPotion } from '../entities/HealingPotion';
 import { WorldWeapon } from '../entities/WorldWeapon';
 import { WorldArmor } from '../entities/WorldArmor';
+import { WorldHelmet } from '../entities/WorldHelmet';
+import { WorldShield } from '../entities/WorldShield';
+import { WorldLegs } from '../entities/WorldLegs';
+import { WorldBoots } from '../entities/WorldBoots';
 import type { IWorldItem } from '../entities/IWorldItem';
 import type { ItemData } from '../types';
 
@@ -23,6 +27,14 @@ export class ItemManager {
             item = new WorldWeapon(itemData, this.scene);
         } else if (itemData.type === 'Armor') {
             item = new WorldArmor(itemData, this.scene);
+        } else if (itemData.type === 'Helmet') {
+            item = new WorldHelmet(itemData, this.scene);
+        } else if (itemData.type === 'Shield') {
+            item = new WorldShield(itemData, this.scene);
+        } else if (itemData.type === 'Legs') {
+            item = new WorldLegs(itemData, this.scene);
+        } else if (itemData.type === 'Boots') {
+            item = new WorldBoots(itemData, this.scene);
         }
 
         if (item) {
