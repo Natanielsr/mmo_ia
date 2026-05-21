@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { addLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus } from '../ui';
+import { addLog, initializeGameLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus } from '../ui';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
@@ -71,6 +71,7 @@ export class SignalRService {
 
         // --- Eventos do SignalR ---
         this.connection.on("Joined", (playerData: any) => {
+            initializeGameLog();
             addLog(`Entrou como ${playerData.name}!`);
             overlay?.classList.add('hidden');
             gameContainer?.classList.remove('hidden');

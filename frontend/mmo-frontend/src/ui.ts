@@ -1,12 +1,15 @@
+import { GameLogUI } from './ui/GameLogUI';
+
 // Elementos da UI
 export const overlay = document.getElementById('login-overlay') as HTMLDivElement;
 export const gameContainer = document.getElementById('game-container') as HTMLDivElement;
 export const btnJoin = document.getElementById('btn-join') as HTMLButtonElement;
 export const inputName = document.getElementById('username') as HTMLInputElement;
-export const logContent = document.getElementById('log-content') as HTMLDivElement;
 export const errorBanner = document.getElementById('connection-error') as HTMLDivElement;
 export const serverStatus = document.getElementById('server-status') as HTMLDivElement;
 export const statusText = document.getElementById('status-text') as HTMLSpanElement;
+
+export let gameLogUI: GameLogUI;
 
 export function updateServerStatus(msg: string, isVisible: boolean) {
     if (serverStatus) {
@@ -79,11 +82,19 @@ export function updateUIPosition(x: number, y: number) {
     if (posY) posY.innerText = String(y);
 }
 
+export function initializeGameLog() {
+    gameLogUI = new GameLogUI();
+}
+
 export function addLog(msg: string, type: string = '') {
-    const entry = document.createElement('div');
-    entry.className = `log-entry ${type}`;
-    entry.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    if (logContent) {
-        logContent.prepend(entry);
+    if (!gameLogUI) {
+        try {
+            initializeGameLog();
+        } catch {
+            return;
+        }
     }
+
+    const timestamp = new Date().toLocaleTimeString();
+    gameLogUI.addEntry(`[${timestamp}] ${msg}`, type === 'error');
 }
