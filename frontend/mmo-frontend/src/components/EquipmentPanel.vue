@@ -12,6 +12,7 @@
       :data-item-type="store.equipmentSlots[slotName]?.type"
       :draggable="store.equipmentSlots[slotName] != null"
       @dragstart="store.equipmentSlots[slotName] && onDragStart($event, slotName)"
+      @dragend="onDragEnd($event)"
       @dragover="onDragOver($event, slotName)"
       @dragleave="onDragLeave($event)"
       @drop="onDrop($event, slotName)"
@@ -44,8 +45,17 @@ function onDragStart(e: DragEvent, slotName: EquipmentSlot) {
   if (!item) return
   dragState.itemId = item.id
   dragState.itemType = item.type
+  dragState.source = 'equipment'
+  dragState.sourceSlot = slotName
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer!.setData('text/plain', item.id)
+}
+
+function onDragEnd(_e: DragEvent) {
+  dragState.itemId = ''
+  dragState.itemType = ''
+  dragState.source = 'inventory'
+  dragState.sourceSlot = ''
 }
 
 function onDragOver(e: DragEvent, slotName: EquipmentSlot) {

@@ -12,6 +12,7 @@
       :data-item-type="item?.type"
       :draggable="item != null"
       @dragstart="item && onDragStart($event, item)"
+      @dragend="onDragEnd($event)"
       @dragover.prevent
       @dragenter="onDragEnter($event, index)"
       @dragleave="onDragLeave($event)"
@@ -29,7 +30,7 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/gameStore'
 import { dragState } from '../utils/dragState'
-import type { ItemData } from '../types'
+import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
 
@@ -45,9 +46,19 @@ function iconClass(type: string) {
 function onDragStart(e: DragEvent, item: ItemData) {
   dragState.itemId = item.id
   dragState.itemType = item.type
+  dragState.source = 'inventory'
+  dragState.sourceSlot = ''
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer!.setData('text/plain', item.id)
   ;(e.currentTarget as HTMLElement).classList.add('dragging')
+}
+
+function onDragEnd(e: DragEvent) {
+  ;(e.currentTarget as HTMLElement).classList.remove('dragging')
+  dragState.itemId = ''
+  dragState.itemType = ''
+  dragState.source = 'inventory'
+  dragState.sourceSlot = ''
 }
 
 function onDragEnter(e: DragEvent, _index: number) {
@@ -64,9 +75,15 @@ function onDrop(e: DragEvent, toIndex: number) {
   const el = e.currentTarget as HTMLElement
   el.classList.remove('drag-over')
   if (!dragState.itemId) return
-  store.requestMoveInInventory(dragState.itemId, toIndex)
+  if (dragState.source === 'equipment') {
+    store.requestUnequip(dragState.sourceSlot as EquipmentSlot)
+  } else {
+    store.requestMoveInInventory(dragState.itemId, toIndex)
+  }
   dragState.itemId = ''
   dragState.itemType = ''
+  dragState.source = 'inventory'
+  dragState.sourceSlot = ''
 }
 </script>
 
