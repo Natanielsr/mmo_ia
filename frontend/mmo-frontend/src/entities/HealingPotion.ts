@@ -18,7 +18,7 @@ export class HealingPotion extends Phaser.GameObjects.Sprite {
         this.gridPosition = itemData.position;
 
         this.setDisplaySize(GRID_SIZE * 0.6, GRID_SIZE * 0.6);
-        this.setDepth(worldPos.y - 1); // Just below players/monsters depth
+        this.setDepth(worldPos.y + 1); // Above players/monsters depth
 
         // Add a simple idle animation (bobbing)
         scene.tweens.add({

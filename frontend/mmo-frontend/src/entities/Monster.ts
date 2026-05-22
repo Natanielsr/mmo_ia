@@ -161,6 +161,7 @@ export class Monster extends Phaser.GameObjects.Container {
 
     public die(): void {
         this.isDead = true;
+        this.setDepth(this.depth - 2);
         this.sprite.setAlpha(0.5);
         this.nameText.setText(`${this.name} 💀`);
         this.nameText.visible = false;

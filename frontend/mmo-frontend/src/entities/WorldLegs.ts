@@ -18,7 +18,7 @@ export class WorldLegs extends Phaser.GameObjects.Sprite implements IWorldItem {
         this.defenseBonus = itemData.defenseBonus ?? 0;
 
         this.setDisplaySize(GRID_SIZE * 0.5, GRID_SIZE * 0.5);
-        this.setDepth(worldPos.y - 1);
+        this.setDepth(worldPos.y + 1);
 
         scene.tweens.add({
             targets: this,

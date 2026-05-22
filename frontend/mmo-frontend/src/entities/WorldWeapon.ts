@@ -18,7 +18,7 @@ export class WorldWeapon extends Phaser.GameObjects.Sprite implements IWorldItem
         this.attackBonus = itemData.attackBonus ?? 0;
 
         this.setDisplaySize(GRID_SIZE * 0.5, GRID_SIZE * 0.5);
-        this.setDepth(worldPos.y - 1);
+        this.setDepth(worldPos.y + 1);
 
         scene.tweens.add({
             targets: this,
