@@ -129,6 +129,7 @@ describe('registerCallbacks / dispatchers', () => {
       onUnequip: () => {},
       onMoveInInventory: () => {},
       onUseItem: () => {},
+      onDropItem: () => {},
     })
     store.requestEquip('item-1')
     expect(called).toBe('item-1')
@@ -142,6 +143,7 @@ describe('registerCallbacks / dispatchers', () => {
       onUnequip: (slot) => { called = slot },
       onMoveInInventory: () => {},
       onUseItem: () => {},
+      onDropItem: () => {},
     })
     store.requestUnequip('Weapon')
     expect(called).toBe('Weapon')

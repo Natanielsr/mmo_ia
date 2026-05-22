@@ -67,6 +67,7 @@ describe('EquipmentPanel', () => {
       onUnequip: (slot) => unequipped.push(slot),
       onMoveInInventory: () => {},
       onUseItem: () => {},
+      onDropItem: () => {},
     })
     store.updateEquipment({ ...allEmpty(), Weapon: makeItem('w1', 'Weapon') })
     await wrapper.vm.$nextTick()
