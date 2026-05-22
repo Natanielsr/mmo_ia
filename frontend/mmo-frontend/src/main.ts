@@ -1,15 +1,20 @@
 import './css/style.css';
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import App from './components/App.vue';
 import Phaser from 'phaser';
 import { PreloadScene } from './scenes/PreloadScene';
 import { MainScene } from './scenes/MainScene';
 import { WorldMapScene } from './scenes/WorldMapScene';
 import { SignalRService } from './services/SignalRService';
-import { inputName, btnJoin, gameContainer } from './ui';
+import { gameContainer } from './ui';
+import { useGameStore } from './stores/gameStore';
 
-// Impede que o Phaser capture as teclas enquanto o utilizador digita no input
-inputName.addEventListener('keydown', (e) => e.stopPropagation());
-inputName.addEventListener('keyup', (e) => e.stopPropagation());
-inputName.addEventListener('keypress', (e) => e.stopPropagation());
+// Mount Vue app before Phaser so Pinia is available to all modules
+const pinia = createPinia()
+const vueApp = createApp(App)
+vueApp.use(pinia)
+vueApp.mount('#vue-ui')
 
 // Inicializa o Phaser
 const phaserConfig: Phaser.Types.Core.GameConfig = {
@@ -25,6 +30,7 @@ const game = new Phaser.Game(phaserConfig);
 
 // Inicializa o Serviço SignalR
 const signalRService = new SignalRService();
+useGameStore().setJoinCallback((name) => signalRService.invoke("JoinGame", name));
 
 // Register SignalR events. We need to handle the fact that scenes might not be initialized yet.
 // However, signalRService.registerEvents currently expects the instances.
@@ -35,11 +41,6 @@ game.events.once('ready', () => {
     mainScene.setSignalRService(signalRService);
     signalRService.registerEvents(mainScene, game);
 });
-
-btnJoin.onclick = () => {
-  const name = inputName.value.trim();
-  if (name) signalRService.invoke("JoinGame", name);
-};
 
 window.addEventListener('resize', () => {
   if (!gameContainer.classList.contains('hidden')) {

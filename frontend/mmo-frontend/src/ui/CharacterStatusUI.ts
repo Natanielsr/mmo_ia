@@ -27,6 +27,10 @@ export class CharacterStatusUI {
                 </div>
                 <div id="xp-text" style="font-size: 0.8em; text-align: center; margin-top: 2px;">0 / 1000 XP</div>
             </div>
+            <div class="char-stats" style="margin-top: 5px; font-size: 0.85em;">
+                <span>ATK: <span id="char-attack">-</span></span>
+                <span style="margin-left: 8px;">DEF: <span id="char-defense">-</span></span>
+            </div>
         `;
     }
 

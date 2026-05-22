@@ -8,15 +8,11 @@ import { ItemManager } from '../managers/ItemManager';
 import { ChunkManager } from '../managers/ChunkManager';
 import { InventoryManager } from '../managers/InventoryManager';
 import { EquipmentManager } from '../managers/EquipmentManager';
-import { PanelToggleBar } from '../ui/PanelToggleBar';
-import { InventoryUI } from '../ui/InventoryUI';
-import { EquipmentUI } from '../ui/EquipmentUI';
-import { DragDropHandler } from '../ui/DragDropHandler';
 import { CombatSystem } from '../systems/CombatSystem';
 import type { MonsterData, ItemData, EquipmentSlot } from '../types';
 import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
-import { updateUIPosition, initializeAttributesModal, toggleAttributesModal, updateAttributesModal } from '../ui';
+import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
 import { DevConsole } from './DevConsole';
 
@@ -32,10 +28,6 @@ export class MainScene extends Phaser.Scene {
     private combatSystem!: CombatSystem;
     private debugPanel?: DebugPanel;
     private devConsole?: DevConsole;
-    private panelToggleBar!: PanelToggleBar;
-    private inventoryUI!: InventoryUI;
-    private equipmentUI!: EquipmentUI;
-    private dragDropHandler!: DragDropHandler;
 
     public onRequestMove?: (direction: string) => void;
     public onAttackMonster?: (targetId: string) => void;
@@ -59,9 +51,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     public openDefaultPanels(): void {
-        this.panelToggleBar.show();
+        const store = useGameStore();
+        store.panelBarVisible = true;
         if (!isMobileDevice()) {
-            this.panelToggleBar.toggleGear();
+            store.openGearPanel();
         }
     }
 
@@ -75,24 +68,16 @@ export class MainScene extends Phaser.Scene {
         this.equipmentManager = new EquipmentManager();
         this.combatSystem    = new CombatSystem(this, this.playerManager, this.monsterManager);
 
-        this.inventoryUI    = new InventoryUI();
-        this.equipmentUI    = new EquipmentUI();
-        this.panelToggleBar = new PanelToggleBar(this.inventoryUI, this.equipmentUI, () => toggleAttributesModal());
+        this.inventoryManager.onUseItem    = (itemId: string) => this.onRequestUseItem?.(itemId);
+        this.inventoryManager.onDropItem   = (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y);
+        this.inventoryManager.onEquipItem  = (itemId: string) => this.onRequestEquipItem?.(itemId);
 
-        initializeAttributesModal();
-        this.dragDropHandler = new DragDropHandler(
-            (itemId) => this.onRequestEquipItem?.(itemId),
-            (slot)   => this.onRequestUnequipItem?.(slot),
-            (itemId, toIndex) => this.onRequestMoveItemInInventory?.(itemId, toIndex),
-        );
-        this.dragDropHandler.setup(this.inventoryUI, this.equipmentUI);
-
-        this.inventoryManager.onUseItem    = (itemId) => this.onRequestUseItem?.(itemId);
-        this.inventoryManager.onDropItem   = (itemId, x, y) => this.onRequestDropItem?.(itemId, x, y);
-        this.inventoryManager.onEquipItem  = (itemId) => this.onRequestEquipItem?.(itemId);
-
-        this.inventoryUI.onSlotRightClick  = (itemId) => this.onRequestUseItem?.(itemId);
-        this.equipmentUI.onSlotClick       = (slot)   => this.onRequestUnequipItem?.(slot);
+        useGameStore().registerCallbacks({
+            onEquip:           (itemId: string) => this.onRequestEquipItem?.(itemId),
+            onUnequip:         (slot: string)   => this.onRequestUnequipItem?.(slot),
+            onMoveInInventory: (itemId: string, toIndex: number) => this.onRequestMoveItemInInventory?.(itemId, toIndex),
+            onUseItem:         (itemId: string) => this.onRequestUseItem?.(itemId),
+        });
 
         this.scene.launch('WorldMapScene');
         this.inputManager.setup();
@@ -116,7 +101,7 @@ export class MainScene extends Phaser.Scene {
 
         if (myPlayer) {
             this.chunkManager.update(myPlayer.gridPosition, 1);
-            updateUIPosition(myPlayer.gridPosition.x, myPlayer.gridPosition.y);
+            useGameStore().setPosition(myPlayer.gridPosition.x, myPlayer.gridPosition.y);
 
             if (!myPlayer.isAttacking) {
                 const direction = this.inputManager.getMovementDirection();
@@ -143,27 +128,12 @@ export class MainScene extends Phaser.Scene {
             if (mapScene) mapScene.toggle();
         }
 
-        if (this.inputManager.isInventoryJustPressed()) {
-            this.panelToggleBar.toggleInventory();
-        }
-
-        if (this.inputManager.isEquipmentJustPressed()) {
-            this.panelToggleBar.toggleEquipment();
+        if (this.inputManager.isInventoryJustPressed() || this.inputManager.isEquipmentJustPressed()) {
+            useGameStore().toggleGearPanel();
         }
 
         if (this.inputManager.isAttributesJustPressed()) {
-            console.log('Toggle Attributes Modal');
-            toggleAttributesModal();
-            const myPlayer = this.playerManager.getMyPlayer();
-            if (myPlayer) {
-                updateAttributesModal({
-                    name: myPlayer.name,
-                    level: myPlayer.level,
-                    hp: myPlayer.hp,
-                    maxHp: myPlayer.maxHp,
-                    experience: myPlayer.experience
-                });
-            }
+            useGameStore().toggleAttributesModal();
         }
 
         if (this.debugPanel) {
@@ -175,13 +145,14 @@ export class MainScene extends Phaser.Scene {
 
     public inventoryUpdated(items: ItemData[]): void {
         this.inventoryManager.onInventoryUpdated(items);
-        this.inventoryUI.renderItems(items);
+        useGameStore().updateInventory(items);
     }
 
     public equipmentUpdated(slots: Record<EquipmentSlot, ItemData | null>): void {
         this.equipmentManager.onEquipmentUpdated(slots);
-        this.equipmentUI.renderSlots(slots);
-        this.equipmentUI.updateStats(
+        const store = useGameStore();
+        store.updateEquipment(slots);
+        store.setEquipStats(
             this.equipmentManager.getTotalAttackBonus(),
             this.equipmentManager.getTotalDefenseBonus(),
         );

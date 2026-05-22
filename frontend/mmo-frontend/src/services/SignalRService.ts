@@ -1,7 +1,8 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
 import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { addLog, initializeGameLog, updateUIHealthBar, updateUIXPBar, overlay, gameContainer, errorBanner, btnJoin, updateServerStatus, initializeCharacterPanel, setCharacterName, updateCharacterStatus } from '../ui';
+import { gameContainer } from '../ui';
+import { useGameStore } from '../stores/gameStore';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
@@ -16,27 +17,24 @@ export class SignalRService {
     }
 
     public async start(): Promise<void> {
-        if (btnJoin) btnJoin.disabled = true;
-        updateServerStatus("A estabelecer ligação...", true);
+        const store = useGameStore();
+        store.setServerMessage("A estabelecer ligação...", true);
 
-        // Se demorar mais de 3 segundos, avisar que o servidor está a "acordar"
         const wakeUpTimer = setTimeout(() => {
-            updateServerStatus("Conectando ao servidor, por favor aguarde...", true);
+            store.setServerMessage("Conectando ao servidor, por favor aguarde...", true);
         }, 3000);
 
         try {
             await this.connection.start();
             clearTimeout(wakeUpTimer);
             console.log("Conectado ao SignalR!");
-
-            if (errorBanner) errorBanner.classList.add('hidden');
-            if (btnJoin) btnJoin.disabled = false;
-            updateServerStatus("Ligado!", false);
+            store.setConnectionError(false);
+            store.setServerMessage("Ligado!", false);
         } catch (err) {
             clearTimeout(wakeUpTimer);
-            addLog("Não foi possível conectar ao servidor. A tentar novamente...", "error");
-            if (errorBanner) errorBanner.classList.remove('hidden');
-            updateServerStatus("Erro de ligação. A tentar novamente...", true);
+            store.addLog("Não foi possível conectar ao servidor. A tentar novamente...", true);
+            store.setConnectionError(true);
+            store.setServerMessage("Erro de ligação. A tentar novamente...", true);
 
             setTimeout(() => this.start(), 5000);
         }
@@ -70,15 +68,13 @@ export class SignalRService {
         };
 
         // --- Eventos do SignalR ---
+        const store = useGameStore();
+
         this.connection.on("Joined", (playerData: any) => {
-            initializeGameLog();
-            initializeCharacterPanel();
-            setCharacterName(playerData.name);
-            addLog(`Entrou como ${playerData.name}!`);
-            overlay?.classList.add('hidden');
+            store.setLoggedIn(playerData.name);
+            store.addLog(`Entrou como ${playerData.name}!`);
             gameContainer?.classList.remove('hidden');
 
-            // Força o redimensionamento do canvas
             const container = document.getElementById('phaser-game');
             if (container && this.game) {
                 this.game.scale.resize(container.clientWidth, container.clientHeight);
@@ -92,8 +88,7 @@ export class SignalRService {
             this.mainScene?.updatePlayerStatus(hpData);
             const myPlayer = this.mainScene?.getMyPlayer();
             if (myPlayer && String(hpData.id ?? hpData.Id) === String(myPlayer.id)) {
-                updateUIHealthBar(hpData.hp ?? hpData.Hp, hpData.maxHp ?? hpData.MaxHp);
-                updateCharacterStatus({
+                store.updateCharacterStatus({
                     hp: hpData.hp ?? hpData.Hp,
                     maxHp: hpData.maxHp ?? hpData.MaxHp,
                 });
@@ -104,15 +99,13 @@ export class SignalRService {
             this.mainScene?.updatePlayerStatus(statusData);
             const myPlayer = this.mainScene?.getMyPlayer();
             if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
-                updateUIHealthBar(statusData.hp ?? statusData.Hp, statusData.maxHp ?? statusData.MaxHp);
-                updateUIXPBar(statusData.experience ?? statusData.Experience ?? 0, statusData.level ?? statusData.Level ?? 1);
-                updateCharacterStatus({
+                store.updateCharacterStatus({
                     hp: statusData.hp ?? statusData.Hp,
                     maxHp: statusData.maxHp ?? statusData.MaxHp,
                     level: statusData.level ?? statusData.Level,
                     experience: statusData.experience ?? statusData.Experience,
                     attackPower: statusData.attackPower ?? statusData.AttackPower,
-                    defense: statusData.defense ?? statusData.Defense
+                    defense: statusData.defense ?? statusData.Defense,
                 });
             }
         });
@@ -130,22 +123,20 @@ export class SignalRService {
                 this.mainScene?.updatePlayerStatus(s);
                 const myPlayer = this.mainScene?.getMyPlayer();
                 if (myPlayer && String(s.id ?? s.Id) === String(myPlayer.id)) {
-                    updateUIHealthBar(s.hp ?? s.Hp, s.maxHp ?? s.MaxHp);
-                    updateUIXPBar(s.experience ?? s.Experience ?? 0, s.level ?? s.Level ?? 1);
-                    updateCharacterStatus({
+                    store.updateCharacterStatus({
                         hp: s.hp ?? s.Hp,
                         maxHp: s.maxHp ?? s.MaxHp,
                         level: s.level ?? s.Level,
                         experience: s.experience ?? s.Experience,
                         attackPower: s.attackPower ?? s.AttackPower,
-                        defense: s.defense ?? s.Defense
+                        defense: s.defense ?? s.Defense,
                     });
                 }
             });
         });
 
         this.connection.on("PlayerJoined", (playerPosData: PlayerPosData) => {
-            addLog(`${playerPosData.name} entrou no mundo!`);
+            store.addLog(`${playerPosData.name} entrou no mundo!`);
             if (playerPosData.position.x !== undefined && playerPosData.position.y !== undefined) {
                 this.mainScene?.updatePlayerPosition(playerPosData);
             }
@@ -156,7 +147,7 @@ export class SignalRService {
         });
 
         this.connection.on("PlayerLeft", (playerId: string) => {
-            addLog(`${playerId} saiu do mundo.`);
+            store.addLog(`${playerId} saiu do mundo.`);
             this.mainScene?.removePlayer(playerId);
         });
 
@@ -170,13 +161,11 @@ export class SignalRService {
             };
 
             this.mainScene?.playerAttacked(attackData);
-            addLog(`${attackData.attackerName} atacou ${attackData.targetName} causando ${attackData.damage} de dano!`);
+            store.addLog(`${attackData.attackerName} atacou ${attackData.targetName} causando ${attackData.damage} de dano!`);
 
             const myPlayer = this.mainScene?.getMyPlayer();
-            if (myPlayer) {
-                if (attackData.targetId === String(myPlayer.id)) {
-                    updateUIHealthBar(myPlayer.hp, myPlayer.maxHp);
-                }
+            if (myPlayer && attackData.targetId === String(myPlayer.id)) {
+                store.updateCharacterStatus({ hp: myPlayer.hp, maxHp: myPlayer.maxHp });
             }
         });
 
@@ -185,10 +174,10 @@ export class SignalRService {
             const playerName = player ? player.name : `Jogador ${playerId}`;
 
             this.mainScene?.playerDied(playerId);
-            addLog(`${playerName} morreu!`, "error");
+            store.addLog(`${playerName} morreu!`, true);
 
             if (this.mainScene?.getMyPlayer()?.id === playerId.toString()) {
-                updateUIHealthBar(0, 100);
+                store.updateCharacterStatus({ hp: 0, isDead: true });
             }
         });
 
@@ -209,7 +198,7 @@ export class SignalRService {
             const idStr = String(monsterId);
             this.mainScene?.monsterDied(idStr);
             const monster = this.mainScene?.getMonster(monsterId);
-            addLog(`${monster?.name} foi derrotado!`, "success");
+            store.addLog(`${monster?.name} foi derrotado!`);
         });
 
         this.connection.on("MonsterRemoved", (monsterId: string) => {
@@ -257,7 +246,7 @@ export class SignalRService {
 
             const player = this.mainScene?.getPlayer(normalizedData.playerId);
             if (player) {
-                addLog(`${player.name} pegou um item!`, "success");
+                store.addLog(`${player.name} pegou um item!`);
             }
         });
 
