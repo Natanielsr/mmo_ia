@@ -11,7 +11,7 @@ export class WorldArmor extends Phaser.GameObjects.Sprite implements IWorldItem 
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'armor');
+        super(scene, worldPos.x, worldPos.y, 'leather-vest');
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;

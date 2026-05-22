@@ -11,7 +11,7 @@ export class WorldShield extends Phaser.GameObjects.Sprite implements IWorldItem
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'shield');
+        super(scene, worldPos.x, worldPos.y, 'wooden-shield');
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;

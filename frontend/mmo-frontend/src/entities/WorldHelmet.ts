@@ -11,7 +11,7 @@ export class WorldHelmet extends Phaser.GameObjects.Sprite implements IWorldItem
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'helmet');
+        super(scene, worldPos.x, worldPos.y, 'iron-helmet');
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;

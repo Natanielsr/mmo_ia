@@ -48,6 +48,11 @@ const ALL_SLOTS: EquipmentSlot[] = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots'
 
 const ICON_SRC: Record<string, string> = {
   Weapon: '/assets/items_icon/dagger.png',
+  Armor: '/assets/items_icon/leather-vest.png',
+  Helmet: '/assets/items_icon/iron-helmet.png',
+  Shield: '/assets/items_icon/wooden-shield.png',
+  Legs: '/assets/items_icon/leather-pants.png',
+  Boots: '/assets/items_icon/iron-boots.png',
 }
 
 function iconSrc(type: string): string {

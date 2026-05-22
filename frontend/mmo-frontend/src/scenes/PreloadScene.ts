@@ -30,6 +30,11 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('pillar', 'assets/pillar.png');
         this.load.image('potion', 'assets/potion.png');
         this.load.image('dagger', 'assets/items_icon/dagger.png');
+        this.load.image('iron-boots', 'assets/items_icon/iron-boots.png');
+        this.load.image('iron-helmet', 'assets/items_icon/iron-helmet.png');
+        this.load.image('leather-pants', 'assets/items_icon/leather-pants.png');
+        this.load.image('leather-vest', 'assets/items_icon/leather-vest.png');
+        this.load.image('wooden-shield', 'assets/items_icon/wooden-shield.png');
 
         for (let i = 1; i <= 12; i++) {
             this.load.image(`grass${i}`, `assets/grass${i}.png`);

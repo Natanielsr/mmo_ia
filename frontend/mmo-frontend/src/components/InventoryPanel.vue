@@ -41,12 +41,16 @@ const store = useGameStore()
 const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ICON_MAP: Record<string, string> = {
-  Armor: 'icon-armor', Helmet: 'icon-helmet',
-  Shield: 'icon-shield', Legs: 'icon-legs', Boots: 'icon-boots', Potion: 'icon-potion',
+  Potion: 'icon-potion',
 }
 
 const ICON_SRC: Record<string, string> = {
   Weapon: '/assets/items_icon/dagger.png',
+  Armor: '/assets/items_icon/leather-vest.png',
+  Helmet: '/assets/items_icon/iron-helmet.png',
+  Shield: '/assets/items_icon/wooden-shield.png',
+  Legs: '/assets/items_icon/leather-pants.png',
+  Boots: '/assets/items_icon/iron-boots.png',
 }
 
 function iconClass(type: string) {

@@ -11,7 +11,7 @@ export class WorldBoots extends Phaser.GameObjects.Sprite implements IWorldItem 
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'boots');
+        super(scene, worldPos.x, worldPos.y, 'iron-boots');
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;
