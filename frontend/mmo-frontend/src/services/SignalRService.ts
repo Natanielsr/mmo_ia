@@ -1,13 +1,14 @@
 import * as signalR from '@microsoft/signalr';
 import { MainScene } from '../scenes/MainScene';
-import type { PlayerPosData, AttackData, MonsterData } from '../types';
-import { gameContainer } from '../ui';
 import { useGameStore } from '../stores/gameStore';
+import { SceneInputHandler } from './handlers/SceneInputHandler';
+import { PlayerEventHandler } from './handlers/PlayerEventHandler';
+import { MonsterEventHandler } from './handlers/MonsterEventHandler';
+import { ItemEventHandler } from './handlers/ItemEventHandler';
+import { WorldEventHandler } from './handlers/WorldEventHandler';
 
 export class SignalRService {
     private connection: signalR.HubConnection;
-    private mainScene: MainScene | null = null;
-    private game: Phaser.Game | null = null;
 
     constructor(url: string = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/gamehub` : "http://localhost:5258/gamehub") {
         this.connection = new signalR.HubConnectionBuilder()
@@ -41,266 +42,14 @@ export class SignalRService {
     }
 
     public registerEvents(mainScene: MainScene, game: Phaser.Game): void {
-        this.mainScene = mainScene;
-        this.game = game;
-
-        // Conecta o evento de input do Phaser ao envio do SignalR
-        this.mainScene.onRequestMove = (direction: string) => {
-            this.invoke("RequestMove", direction).catch(console.error);
-        };
-        this.mainScene.onAttackMonster = (targetId: string) => {
-            this.attackMonster(targetId).catch(console.error);
-        };
-        this.mainScene.onRequestUseItem = (itemId: string) => {
-            this.invoke("RequestUseItem", itemId).catch(console.error);
-        };
-        this.mainScene.onRequestDropItem = (itemId: string, x: number, y: number) => {
-            this.invoke("RequestDropItem", itemId, x, y).catch(console.error);
-        };
-        this.mainScene.onRequestEquipItem = (itemId: string) => {
-            this.invoke("RequestEquipItem", itemId).catch(console.error);
-        };
-        this.mainScene.onRequestUnequipItem = (slot: string) => {
-            this.invoke("RequestUnequipItem", slot).catch(console.error);
-        };
-        this.mainScene.onRequestMoveItemInInventory = (itemId: string, toIndex: number) => {
-            this.invoke("RequestMoveItemInInventory", itemId, toIndex).catch(console.error);
-        };
-
-        // --- Eventos do SignalR ---
         const store = useGameStore();
+        const conn = this.connection;
 
-        this.connection.on("Joined", (playerData: any) => {
-            store.setLoggedIn(playerData.name);
-            store.addLog(`Entrou como ${playerData.name}!`);
-            gameContainer?.classList.remove('hidden');
-
-            const container = document.getElementById('phaser-game');
-            if (container && this.game) {
-                this.game.scale.resize(container.clientWidth, container.clientHeight);
-            }
-
-            this.mainScene?.updatePlayerPosition(playerData, true);
-            this.mainScene?.openDefaultPanels();
-        });
-
-        this.connection.on("PlayerHpChanged", (hpData: any) => {
-            this.mainScene?.updatePlayerStatus(hpData);
-            const myPlayer = this.mainScene?.getMyPlayer();
-            if (myPlayer && String(hpData.id ?? hpData.Id) === String(myPlayer.id)) {
-                store.updateCharacterStatus({
-                    hp: hpData.hp ?? hpData.Hp,
-                    maxHp: hpData.maxHp ?? hpData.MaxHp,
-                });
-            }
-        });
-
-        this.connection.on("PlayerStatusUpdated", (statusData: any) => {
-            this.mainScene?.updatePlayerStatus(statusData);
-            const myPlayer = this.mainScene?.getMyPlayer();
-            if (myPlayer && String(statusData.id ?? statusData.Id) === String(myPlayer.id)) {
-                store.updateCharacterStatus({
-                    hp: statusData.hp ?? statusData.Hp,
-                    maxHp: statusData.maxHp ?? statusData.MaxHp,
-                    level: statusData.level ?? statusData.Level,
-                    experience: statusData.experience ?? statusData.Experience,
-                    attackPower: statusData.attackPower ?? statusData.AttackPower,
-                    defense: statusData.defense ?? statusData.Defense,
-                });
-            }
-        });
-
-        this.connection.on("SyncPlayers", (playerList: any[]) => {
-            playerList.forEach(p => {
-                if (p.position && (p.position.x !== undefined || p.position.X !== undefined)) {
-                    this.mainScene?.updatePlayerPosition(p);
-                }
-            });
-        });
-
-        this.connection.on("SyncPlayerStatuses", (statusList: any[]) => {
-            statusList.forEach(s => {
-                this.mainScene?.updatePlayerStatus(s);
-                const myPlayer = this.mainScene?.getMyPlayer();
-                if (myPlayer && String(s.id ?? s.Id) === String(myPlayer.id)) {
-                    store.updateCharacterStatus({
-                        hp: s.hp ?? s.Hp,
-                        maxHp: s.maxHp ?? s.MaxHp,
-                        level: s.level ?? s.Level,
-                        experience: s.experience ?? s.Experience,
-                        attackPower: s.attackPower ?? s.AttackPower,
-                        defense: s.defense ?? s.Defense,
-                    });
-                }
-            });
-        });
-
-        this.connection.on("PlayerJoined", (playerPosData: PlayerPosData) => {
-            store.addLog(`${playerPosData.name} entrou no mundo!`);
-            if (playerPosData.position.x !== undefined && playerPosData.position.y !== undefined) {
-                this.mainScene?.updatePlayerPosition(playerPosData);
-            }
-        });
-
-        this.connection.on("PlayerMoved", (playerData: any) => {
-            this.mainScene?.updatePlayerPosition(playerData);
-        });
-
-        this.connection.on("PlayerLeft", (playerId: string) => {
-            store.addLog(`${playerId} saiu do mundo.`);
-            this.mainScene?.removePlayer(playerId);
-        });
-
-        this.connection.on("PlayerAttacked", (data: any) => {
-            const attackData: AttackData = {
-                attackerId: String(data.attackerId ?? data.AttackerId),
-                attackerName: String(data.attackerName ?? data.AttackerName),
-                targetId: String(data.targetId ?? data.TargetId),
-                targetName: String(data.targetName ?? data.TargetName),
-                damage: Number(data.damage ?? data.Damage)
-            };
-
-            this.mainScene?.playerAttacked(attackData);
-            store.addLog(`${attackData.attackerName} atacou ${attackData.targetName} causando ${attackData.damage} de dano!`);
-
-            const myPlayer = this.mainScene?.getMyPlayer();
-            if (myPlayer && attackData.targetId === String(myPlayer.id)) {
-                store.updateCharacterStatus({ hp: myPlayer.hp, maxHp: myPlayer.maxHp });
-            }
-        });
-
-        this.connection.on("PlayerDied", (playerId: string) => {
-            const player = this.mainScene?.getPlayer(playerId);
-            const playerName = player ? player.name : `Jogador ${playerId}`;
-
-            this.mainScene?.playerDied(playerId);
-            store.addLog(`${playerName} morreu!`, true);
-
-            if (this.mainScene?.getMyPlayer()?.id === playerId.toString()) {
-                store.updateCharacterStatus({ hp: 0, isDead: true });
-            }
-        });
-
-        // --- Eventos de Monstros ---
-        this.connection.on("SyncMonsters", (monsterList: MonsterData[]) => {
-            this.mainScene?.syncMonsters(monsterList);
-        });
-
-        this.connection.on("MonsterSpawned", (monsterData: MonsterData) => {
-            this.mainScene?.monsterSpawned(monsterData);
-        });
-
-        this.connection.on("MonsterMoved", (monsterData: MonsterData) => {
-            this.mainScene?.monsterMoved(monsterData);
-        });
-
-        this.connection.on("MonsterDied", (monsterId: string) => {
-            const idStr = String(monsterId);
-            this.mainScene?.monsterDied(idStr);
-            const monster = this.mainScene?.getMonster(monsterId);
-            store.addLog(`${monster?.name} foi derrotado!`);
-        });
-
-        this.connection.on("MonsterRemoved", (monsterId: string) => {
-            const idStr = String(monsterId);
-            this.mainScene?.monsterRemoved(idStr);
-        });
-
-        this.connection.on("MonsterDamaged", (data: any) => {
-            const normalizedData = {
-                id: String(data.id ?? data.Id ?? data.monsterId),
-                damage: Number(data.damage ?? data.Damage),
-                currentHp: Number(data.currentHp ?? data.CurrentHp)
-            };
-            this.mainScene?.monsterDamaged(normalizedData);
-        });
-
-        this.connection.on("SyncItems", (itemList: any[]) => {
-            itemList.forEach(itemData => {
-                const normalizedItem = {
-                    id: String(itemData.id ?? itemData.Id),
-                    name: String(itemData.name ?? itemData.Name),
-                    position: itemData.position ?? itemData.Position,
-                    type: String(itemData.type ?? itemData.Type)
-                };
-                this.mainScene?.itemDropped(normalizedItem);
-            });
-        });
-
-        this.connection.on("ItemDropped", (itemData: any) => {
-            const normalizedItem = {
-                id: String(itemData.id ?? itemData.Id),
-                name: String(itemData.name ?? itemData.Name),
-                position: itemData.position ?? itemData.Position,
-                type: String(itemData.type ?? itemData.Type)
-            };
-            this.mainScene?.itemDropped(normalizedItem);
-        });
-
-        this.connection.on("ItemPickedUp", (data: any) => {
-            const normalizedData = {
-                itemId: String(data.itemId ?? data.ItemId),
-                playerId: String(data.playerId ?? data.PlayerId)
-            };
-            this.mainScene?.itemPickedUp(normalizedData);
-
-            const player = this.mainScene?.getPlayer(normalizedData.playerId);
-            if (player) {
-                store.addLog(`${player.name} pegou um item!`);
-            }
-        });
-
-        this.connection.on("InventoryUpdated", (items: any[]) => {
-            const normalized = items.map(item => ({
-                id: String(item.id ?? item.Id),
-                name: String(item.name ?? item.Name),
-                position: item.position ?? item.Position ?? { x: 0, y: 0 },
-                type: String(item.type ?? item.Type),
-                attackBonus: item.attackBonus ?? item.AttackBonus,
-                defenseBonus: item.defenseBonus ?? item.DefenseBonus,
-                slotIndex: item.slotIndex ?? item.SlotIndex,
-            }));
-            this.mainScene?.inventoryUpdated(normalized);
-        });
-
-        this.connection.on("EquipmentUpdated", (slotData: any) => {
-            const slots: Record<string, any> = {};
-            for (const key of Object.keys(slotData)) {
-                const item = slotData[key];
-                slots[key] = item == null ? null : {
-                    id: String(item.id ?? item.Id),
-                    name: String(item.name ?? item.Name),
-                    position: item.position ?? item.Position ?? { x: 0, y: 0 },
-                    type: String(item.type ?? item.Type),
-                    attackBonus: item.attackBonus ?? item.AttackBonus,
-                    defenseBonus: item.defenseBonus ?? item.DefenseBonus,
-                };
-            }
-            this.mainScene?.equipmentUpdated(slots as any);
-        });
-
-        this.connection.on("ChunkLoaded", (data: any) => {
-            const normalizedData = {
-                cx: data.cx ?? data.Cx ?? data.CX,
-                cy: data.cy ?? data.Cy ?? data.CY,
-                objects: (data.objects ?? data.Objects ?? []).map((obj: any) => ({
-                    id: String(obj.id ?? obj.Id),
-                    name: String(obj.name ?? obj.Name),
-                    objectCode: String(obj.objectCode ?? obj.ObjectCode),
-                    position: {
-                        x: obj.position.x ?? obj.position.X,
-                        y: obj.position.y ?? obj.position.Y
-                    },
-                    type: String(obj.type ?? obj.Type),
-                    isPassable: Boolean(obj.isPassable ?? obj.IsPassable)
-                }))
-            };
-            this.mainScene?.chunkLoaded(normalizedData);
-        });
-    }
-
-    public async attackMonster(targetId: string): Promise<void> {
-        await this.invoke("RequestAttack", targetId);
+        new SceneInputHandler(conn, mainScene).register();
+        new PlayerEventHandler(conn, mainScene, game, store).register();
+        new MonsterEventHandler(conn, mainScene, store).register();
+        new ItemEventHandler(conn, mainScene, store).register();
+        new WorldEventHandler(conn, mainScene).register();
     }
 
     public invoke(methodName: string, ...args: any[]): Promise<any> {
