@@ -3,7 +3,7 @@ using GameServerApp.Contracts.World;
 
 namespace GameServerApp.World
 {
-    public class Helmet : Item
+    public class Helmet : Item, IDefensiveItem
     {
         public int DefenseBonus { get; }
         public override EquipmentSlot? Slot => EquipmentSlot.Helmet;

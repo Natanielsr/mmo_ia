@@ -3,7 +3,7 @@ using GameServerApp.Contracts.World;
 
 namespace GameServerApp.World
 {
-    public class Armor : Item
+    public class Armor : Item, IDefensiveItem
     {
         public int DefenseBonus { get; }
         private readonly EquipmentSlot _slot;

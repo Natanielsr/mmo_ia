@@ -146,5 +146,144 @@ namespace GameServer.Tests.World
             Assert.Null(result);
             Assert.Null(eq.GetItem(EquipmentSlot.Weapon));
         }
+
+        // ── Defense bonus: Helmet, Shield, Legs, Boots ────────────────────────
+
+        [Fact]
+        public void EquipHelmet_Increases_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+
+            eq.Equip(helmet);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(4, player.TotalDefense);
+        }
+
+        [Fact]
+        public void UnequipHelmet_Reduces_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+
+            eq.Equip(helmet);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+            Assert.Equal(4, player.TotalDefense);
+
+            eq.Unequip(EquipmentSlot.Helmet);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(0, player.TotalDefense);
+        }
+
+        [Fact]
+        public void EquipShield_Increases_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var shield = new Shield("s1", "Wooden Shield", 2.5f, P, defenseBonus: 3);
+
+            eq.Equip(shield);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(3, player.TotalDefense);
+        }
+
+        [Fact]
+        public void UnequipShield_Reduces_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var shield = new Shield("s1", "Wooden Shield", 2.5f, P, defenseBonus: 3);
+
+            eq.Equip(shield);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+            Assert.Equal(3, player.TotalDefense);
+
+            eq.Unequip(EquipmentSlot.Shield);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(0, player.TotalDefense);
+        }
+
+        [Fact]
+        public void EquipLegs_Increases_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var legs   = new Legs("l1", "Leather Pants", 1.0f, P, defenseBonus: 2);
+
+            eq.Equip(legs);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(2, player.TotalDefense);
+        }
+
+        [Fact]
+        public void UnequipLegs_Reduces_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var legs   = new Legs("l1", "Leather Pants", 1.0f, P, defenseBonus: 2);
+
+            eq.Equip(legs);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+            Assert.Equal(2, player.TotalDefense);
+
+            eq.Unequip(EquipmentSlot.Legs);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(0, player.TotalDefense);
+        }
+
+        [Fact]
+        public void EquipBoots_Increases_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var boots  = new Boots("b1", "Iron Boots", 1.5f, P, defenseBonus: 2);
+
+            eq.Equip(boots);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(2, player.TotalDefense);
+        }
+
+        [Fact]
+        public void UnequipBoots_Reduces_TotalDefense()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+            var boots  = new Boots("b1", "Iron Boots", 1.5f, P, defenseBonus: 2);
+
+            eq.Equip(boots);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+            Assert.Equal(2, player.TotalDefense);
+
+            eq.Unequip(EquipmentSlot.Boots);
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(0, player.TotalDefense);
+        }
+
+        [Fact]
+        public void AllDefensiveItems_Stack_Additively()
+        {
+            var player = new Player(1, "Hero", P);
+            var eq     = new PlayerEquipment();
+
+            eq.Equip(new Armor ("a1", "Leather Vest",   2.0f, P, defenseBonus: 3));
+            eq.Equip(new Helmet("h1", "Iron Helmet",    1.2f, P, defenseBonus: 4));
+            eq.Equip(new Shield("s1", "Wooden Shield",  2.5f, P, defenseBonus: 3));
+            eq.Equip(new Legs  ("l1", "Leather Pants",  1.0f, P, defenseBonus: 2));
+            eq.Equip(new Boots ("b1", "Iron Boots",     1.5f, P, defenseBonus: 2));
+
+            player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
+
+            Assert.Equal(14, player.TotalDefense); // 3+4+3+2+2
+        }
     }
 }

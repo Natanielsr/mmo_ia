@@ -37,6 +37,6 @@ namespace GameServerApp.World
             => _slots.Values.OfType<Weapon>().Sum(w => w.AttackBonus);
 
         public int GetDefenseBonus()
-            => _slots.Values.OfType<Armor>().Sum(a => a.DefenseBonus);
+            => _slots.Values.OfType<IDefensiveItem>().Sum(d => d.DefenseBonus);
     }
 }
