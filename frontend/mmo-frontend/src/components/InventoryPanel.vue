@@ -94,8 +94,8 @@ function onDrop(e: DragEvent, toIndex: number) {
 
 <style scoped>
 .inv-slot {
-  width: 54px;
-  height: 54px;
+  width: 44px;
+  height: 44px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
@@ -146,19 +146,19 @@ function onDrop(e: DragEvent, toIndex: number) {
 .icon-potion::before { content: '🧪'; }
 
 @media (max-width: 1024px) {
-  .inv-slot { width: 48px; height: 48px; }
+  .inv-slot { width: 40px; height: 40px; }
   .item-icon { font-size: 1rem; }
   .item-name { font-size: 0.45rem; }
 }
 
 @media (max-width: 768px) {
-  .inv-slot { width: 40px; height: 40px; padding: 1px; gap: 1px; }
+  .inv-slot { width: 36px; height: 36px; padding: 1px; gap: 1px; }
   .item-icon { font-size: 0.9rem; }
   .item-name { font-size: 0.4rem; }
 }
 
 @media (max-width: 480px) {
-  .inv-slot { width: 36px; height: 36px; padding: 1px; }
+  .inv-slot { width: 32px; height: 32px; padding: 1px; }
   .item-icon { font-size: 0.8rem; }
   .item-name { font-size: 0.35rem; }
 }

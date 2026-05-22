@@ -1,5 +1,5 @@
 <template>
-  <div class="pointer-events-auto">
+  <div class="pointer-events-auto w-full">
     <h3 class="my-3 text-[0.95rem] text-slate-100">
       <span id="char-name">{{ store.playerName || '-' }}</span>
       <span id="level-text" class="text-[0.8em] text-[#ffd700]"> Lv {{ store.level }}</span>

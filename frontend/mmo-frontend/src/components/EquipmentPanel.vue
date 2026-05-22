@@ -93,13 +93,13 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
 
 <style scoped>
 #equipment-panel {
-  grid-template-columns: repeat(3, 54px);
-  grid-template-rows: repeat(4, 54px);
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(4, 44px);
 }
 
 .eq-slot {
-  width: 54px;
-  height: 54px;
+  width: 44px;
+  height: 44px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
@@ -157,30 +157,30 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
 
 @media (max-width: 1024px) {
   #equipment-panel {
-    grid-template-columns: repeat(3, 48px);
-    grid-template-rows: repeat(4, 48px);
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(4, 40px);
   }
-  .eq-slot { width: 48px; height: 48px; }
+  .eq-slot { width: 40px; height: 40px; }
   .item-name { font-size: 0.45rem; margin-bottom: 6px; }
   .eq-slot::after { font-size: 0.4rem; }
 }
 
 @media (max-width: 768px) {
   #equipment-panel {
-    grid-template-columns: repeat(3, 40px);
-    grid-template-rows: repeat(4, 40px);
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(4, 36px);
   }
-  .eq-slot { width: 40px; height: 40px; padding: 2px; }
+  .eq-slot { width: 36px; height: 36px; padding: 2px; }
   .item-name { font-size: 0.4rem; margin-bottom: 5px; }
   .eq-slot::after { font-size: 0.35rem; bottom: 1px; }
 }
 
 @media (max-width: 480px) {
   #equipment-panel {
-    grid-template-columns: repeat(3, 36px);
-    grid-template-rows: repeat(4, 36px);
+    grid-template-columns: repeat(3, 32px);
+    grid-template-rows: repeat(4, 32px);
   }
-  .eq-slot { width: 36px; height: 36px; padding: 1px; }
+  .eq-slot { width: 32px; height: 32px; padding: 1px; }
   .item-name { font-size: 0.35rem; margin-bottom: 4px; }
   .eq-slot::after { font-size: 0.3rem; bottom: 0; }
 }
