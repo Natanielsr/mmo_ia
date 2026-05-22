@@ -1,26 +1,4 @@
-.btn-primary {
-    width: 100%;
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-primary:hover {
-    background: var(--primary-hover);
-}
-
-.btn-primary:disabled {
-    background: #475569;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-/* Mobile Controls Base Styles */
+/* Mobile Controls — managed by InputManager.ts */
 #mobile-controls {
     display: none;
     position: absolute;

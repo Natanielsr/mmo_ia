@@ -1,22 +1,24 @@
 <template>
   <div class="pointer-events-auto">
-    <h3 class="char-title">
+    <h3 class="my-3 text-[0.95rem] text-slate-100">
       <span id="char-name">{{ store.playerName || '-' }}</span>
-      <span id="level-text" style="font-size:0.8em;color:#ffd700;"> Lv {{ store.level }}</span>
+      <span id="level-text" class="text-[0.8em] text-[#ffd700]"> Lv {{ store.level }}</span>
     </h3>
 
-    <div class="hp-container">
-      <div class="hp-bar progress-bar">
-        <div id="hp-fill" :style="{ width: hpPercent + '%' }" />
+    <div class="relative flex flex-col gap-2">
+      <div class="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
+        <div id="hp-fill" class="h-full bg-gradient-to-r from-red-500 to-red-400 transition-[width] duration-300" :style="{ width: hpPercent + '%' }" />
       </div>
-      <div id="hp-text">{{ Math.ceil(store.hp) }} / {{ store.maxHp }}</div>
+      <div id="hp-text" class="text-xs font-semibold text-slate-400 text-right">
+        {{ Math.ceil(store.hp) }} / {{ store.maxHp }}
+      </div>
     </div>
 
-    <div class="xp-container" style="margin-top:5px;">
-      <div class="xp-bar progress-bar" style="background:rgba(0,0,0,0.5);border-radius:4px;overflow:hidden;height:12px;position:relative;">
-        <div id="xp-fill" :style="{ width: xpPercent + '%', height: '100%', background: '#0088ff', transition: 'width 0.3s ease' }" />
+    <div class="relative flex flex-col gap-1 mt-[5px]">
+      <div class="w-full h-3 bg-black/50 rounded overflow-hidden">
+        <div id="xp-fill" class="h-full transition-[width] duration-300" style="background:#0088ff" :style="{ width: xpPercent + '%' }" />
       </div>
-      <div id="xp-text" style="font-size:0.8em;text-align:center;margin-top:2px;">
+      <div id="xp-text" class="text-[0.8em] text-center mt-[2px] text-slate-400">
         {{ xpIntoLevel }} / {{ xpRequired }} XP
       </div>
     </div>

@@ -1,5 +1,8 @@
 <template>
-  <div id="equipment-panel" class="pointer-events-auto">
+  <div
+    id="equipment-panel"
+    class="pointer-events-auto grid gap-1 p-[5px] rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+  >
     <div
       v-for="slotName in ALL_SLOTS"
       :key="slotName"
@@ -74,3 +77,98 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   dragItemType = ''
 }
 </script>
+
+<style scoped>
+#equipment-panel {
+  grid-template-columns: repeat(3, 54px);
+  grid-template-rows: repeat(4, 54px);
+}
+
+.eq-slot {
+  width: 54px;
+  height: 54px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  overflow: hidden;
+  padding: 3px;
+  gap: 2px;
+  position: relative;
+  touch-action: none;
+}
+
+.eq-slot:hover,
+.eq-slot.drag-over {
+  border-color: #6366f1;
+}
+
+.eq-slot::after {
+  content: attr(data-slot);
+  font-size: 0.45rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  position: absolute;
+  bottom: 2px;
+}
+
+.item-name {
+  font-size: 0.5rem;
+  color: #f8fafc;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  padding: 0 2px;
+  margin-bottom: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Cross layout: col2=center, weapon/chest/shield=row2, legs/boots=rows3-4 */
+.eq-slot[data-slot="Helmet"] { grid-column: 2; grid-row: 1; }
+.eq-slot[data-slot="Weapon"] { grid-column: 1; grid-row: 2; }
+.eq-slot[data-slot="Chest"]  { grid-column: 2; grid-row: 2; }
+.eq-slot[data-slot="Shield"] { grid-column: 3; grid-row: 2; }
+.eq-slot[data-slot="Legs"]   { grid-column: 2; grid-row: 3; }
+.eq-slot[data-slot="Boots"]  { grid-column: 2; grid-row: 4; }
+
+.eq-stats { display: none; }
+
+@media (max-width: 1024px) {
+  #equipment-panel {
+    grid-template-columns: repeat(3, 48px);
+    grid-template-rows: repeat(4, 48px);
+  }
+  .eq-slot { width: 48px; height: 48px; }
+  .item-name { font-size: 0.45rem; margin-bottom: 6px; }
+  .eq-slot::after { font-size: 0.4rem; }
+}
+
+@media (max-width: 768px) {
+  #equipment-panel {
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(4, 40px);
+  }
+  .eq-slot { width: 40px; height: 40px; padding: 2px; }
+  .item-name { font-size: 0.4rem; margin-bottom: 5px; }
+  .eq-slot::after { font-size: 0.35rem; bottom: 1px; }
+}
+
+@media (max-width: 480px) {
+  #equipment-panel {
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(4, 36px);
+  }
+  .eq-slot { width: 36px; height: 36px; padding: 1px; }
+  .item-name { font-size: 0.35rem; margin-bottom: 4px; }
+  .eq-slot::after { font-size: 0.3rem; bottom: 0; }
+}
+</style>

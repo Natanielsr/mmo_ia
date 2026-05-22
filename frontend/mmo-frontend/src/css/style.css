@@ -1,11 +1,7 @@
 @import "tailwindcss";
 @import "./variables.css";
 @import "./reset.css";
-@import "./login.css";
-@import "./buttons.css";
+@import "./mobile-controls.css";
 @import "./layout.css";
 @import "./map.css";
-@import "./sidebar.css";
-@import "./inventory.css";
 @import "./ui.css";
-@import "./modals.css";

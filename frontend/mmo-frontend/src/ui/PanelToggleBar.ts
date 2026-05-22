@@ -1,5 +1,3 @@
-import '../css/panel-toggle-bar.css';
-import '../css/gear-panel.css';
 import type { InventoryUI } from './InventoryUI';
 import type { EquipmentUI } from './EquipmentUI';
 

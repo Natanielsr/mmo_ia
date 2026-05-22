@@ -2,13 +2,12 @@
   <div
     v-show="store.gearPanelOpen"
     id="gear-panel"
-    class="pointer-events-auto sidebar glass"
-    style="position:fixed;top:0;right:0;height:100%;z-index:150;display:flex;flex-direction:column;gap:8px;padding:8px;"
+    class="fixed top-0 right-0 h-full z-[150] flex flex-col gap-2 p-2 bg-slate-800/70 backdrop-blur-md border-l border-white/10 rounded-l-xl pointer-events-auto"
   >
     <CharacterStatusPanel />
     <EquipmentPanel />
     <InventoryPanel />
-    <div class="coordinates" style="font-size:0.8em;color:#94a3b8;margin-top:auto;">
+    <div class="mt-auto text-[0.8em] text-slate-400 pt-2 border-t border-white/10">
       Posição: <span>{{ store.posX }}</span>, <span>{{ store.posY }}</span>
     </div>
   </div>
