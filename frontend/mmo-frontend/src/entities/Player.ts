@@ -233,6 +233,26 @@ export class Player extends Phaser.GameObjects.Container {
         }
     }
 
+    public playHealEffect(): void {
+        const healText = this.scene.add.text(this.x, this.y - this.nameTextOffsetY - 25, '+HP', {
+            fontSize: '18px', color: '#00ff88', fontFamily: 'Inter', stroke: '#004422', strokeThickness: 3, fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(10001);
+
+        this.sprite.setTint(0x00ff88);
+        this.scene.time.delayedCall(200, () => {
+            if (!this.isDead) this.sprite.clearTint();
+        });
+
+        this.scene.tweens.add({
+            targets: healText,
+            y: healText.y - 50,
+            alpha: 0,
+            duration: 800,
+            ease: 'Cubic.easeOut',
+            onComplete: () => healText.destroy(),
+        });
+    }
+
     private playLevelUpEffect(): void {
         // Efeito visual (Tweens no sprite)
         this.scene.tweens.add({

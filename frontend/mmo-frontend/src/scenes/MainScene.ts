@@ -68,7 +68,10 @@ export class MainScene extends Phaser.Scene {
         this.equipmentManager = new EquipmentManager();
         this.combatSystem    = new CombatSystem(this, this.playerManager, this.monsterManager);
 
-        this.inventoryManager.onUseItem    = (itemId: string) => this.onRequestUseItem?.(itemId);
+        this.inventoryManager.onUseItem    = (itemId: string) => {
+            this.playerManager.getMyPlayer()?.playHealEffect();
+            this.onRequestUseItem?.(itemId);
+        };
         this.inventoryManager.onDropItem   = (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y);
         this.inventoryManager.onEquipItem  = (itemId: string) => this.onRequestEquipItem?.(itemId);
 
@@ -76,7 +79,10 @@ export class MainScene extends Phaser.Scene {
             onEquip:           (itemId: string) => this.onRequestEquipItem?.(itemId),
             onUnequip:         (slot: string)   => this.onRequestUnequipItem?.(slot),
             onMoveInInventory: (itemId: string, toIndex: number) => this.onRequestMoveItemInInventory?.(itemId, toIndex),
-            onUseItem:         (itemId: string) => this.onRequestUseItem?.(itemId),
+            onUseItem:         (itemId: string) => {
+                this.playerManager.getMyPlayer()?.playHealEffect();
+                this.onRequestUseItem?.(itemId);
+            },
             onDropItem:        (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y),
         });
 

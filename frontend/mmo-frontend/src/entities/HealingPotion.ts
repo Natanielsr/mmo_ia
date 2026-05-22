@@ -49,18 +49,6 @@ export class HealingPotion extends Phaser.GameObjects.Sprite {
     }
 
     public collect(): void {
-        // Play a small "collect" animation before destroying
-        this.scene.tweens.add({
-            targets: this,
-            y: this.y - 50,
-            alpha: 0,
-            scaleX: 1.5,
-            scaleY: 1.5,
-            duration: 400,
-            ease: 'Power2',
-            onComplete: () => {
-                this.destroy();
-            }
-        });
+        this.destroy();
     }
 }
