@@ -11,7 +11,7 @@ export class WorldWeapon extends Phaser.GameObjects.Sprite implements IWorldItem
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'sword');
+        super(scene, worldPos.x, worldPos.y, 'dagger');
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;

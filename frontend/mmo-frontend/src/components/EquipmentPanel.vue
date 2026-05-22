@@ -22,6 +22,7 @@
       @click="store.equipmentSlots[slotName] && store.requestUnequip(slotName)"
     >
       <template v-if="store.equipmentSlots[slotName]">
+        <img v-if="iconSrc(store.equipmentSlots[slotName]!.type)" :src="iconSrc(store.equipmentSlots[slotName]!.type)" class="item-icon-img" />
         <span class="item-name">{{ store.equipmentSlots[slotName]!.name }}</span>
       </template>
     </div>
@@ -44,6 +45,14 @@ const store = useGameStore()
 const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ALL_SLOTS: EquipmentSlot[] = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots', 'Shield']
+
+const ICON_SRC: Record<string, string> = {
+  Weapon: '/assets/items_icon/dagger.png',
+}
+
+function iconSrc(type: string): string {
+  return ICON_SRC[type] ?? ''
+}
 
 function onDragStart(e: DragEvent, slotName: EquipmentSlot) {
   const item = store.equipmentSlots[slotName]
@@ -129,6 +138,15 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   letter-spacing: 0.04em;
   position: absolute;
   bottom: 2px;
+}
+
+.item-icon-img {
+  width: 1.4rem;
+  height: 1.4rem;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  image-rendering: pixelated;
 }
 
 .item-name {

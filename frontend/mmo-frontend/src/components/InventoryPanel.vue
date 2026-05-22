@@ -23,7 +23,8 @@
       @click.right.prevent="item && store.requestUseItem(item.id)"
     >
       <template v-if="item">
-        <span class="item-icon" :class="iconClass(item.type)" />
+        <img v-if="iconSrc(item.type)" :src="iconSrc(item.type)" class="item-icon-img" />
+        <span v-else class="item-icon" :class="iconClass(item.type)" />
         <span class="item-name">{{ item.name }}</span>
       </template>
     </div>
@@ -40,12 +41,20 @@ const store = useGameStore()
 const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ICON_MAP: Record<string, string> = {
-  Weapon: 'icon-sword', Armor: 'icon-armor', Helmet: 'icon-helmet',
+  Armor: 'icon-armor', Helmet: 'icon-helmet',
   Shield: 'icon-shield', Legs: 'icon-legs', Boots: 'icon-boots', Potion: 'icon-potion',
+}
+
+const ICON_SRC: Record<string, string> = {
+  Weapon: '/assets/items_icon/dagger.png',
 }
 
 function iconClass(type: string) {
   return ICON_MAP[type] ?? ''
+}
+
+function iconSrc(type: string): string {
+  return ICON_SRC[type] ?? ''
 }
 
 function onDragStart(e: DragEvent, item: ItemData) {
@@ -141,7 +150,15 @@ function onDrop(e: DragEvent, toIndex: number) {
   user-select: none;
 }
 
-.icon-sword::before  { content: '⚔️'; }
+.item-icon-img {
+  width: 1.4rem;
+  height: 1.4rem;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  image-rendering: pixelated;
+}
+
 .icon-armor::before  { content: '🛡️'; }
 .icon-potion::before { content: '🧪'; }
 
