@@ -1,7 +1,7 @@
 <template>
   <div
     id="inventory-panel"
-    class="pointer-events-auto grid grid-cols-4 gap-1 p-[5px] rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+    class="pointer-events-auto grid grid-cols-4 gap-2 p-2 rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
   >
     <div
       v-for="(item, index) in store.inventorySlots"
@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '../stores/gameStore'
+import { dragState } from '../utils/dragState'
 import type { ItemData } from '../types'
 
 const store = useGameStore()
@@ -41,12 +42,9 @@ function iconClass(type: string) {
   return ICON_MAP[type] ?? ''
 }
 
-let dragItemId = ''
-let dragItemType = ''
-
 function onDragStart(e: DragEvent, item: ItemData) {
-  dragItemId = item.id
-  dragItemType = item.type
+  dragState.itemId = item.id
+  dragState.itemType = item.type
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer!.setData('text/plain', item.id)
   ;(e.currentTarget as HTMLElement).classList.add('dragging')
@@ -65,10 +63,10 @@ function onDrop(e: DragEvent, toIndex: number) {
   e.preventDefault()
   const el = e.currentTarget as HTMLElement
   el.classList.remove('drag-over')
-  if (!dragItemId) return
-  store.requestMoveInInventory(dragItemId, toIndex)
-  dragItemId = ''
-  dragItemType = ''
+  if (!dragState.itemId) return
+  store.requestMoveInInventory(dragState.itemId, toIndex)
+  dragState.itemId = ''
+  dragState.itemType = ''
 }
 </script>
 

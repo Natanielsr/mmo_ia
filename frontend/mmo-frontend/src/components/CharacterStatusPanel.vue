@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="relative flex flex-col gap-1 mt-[5px]">
+    <div class="relative flex flex-col gap-1 mt-2">
       <div class="w-full h-3 bg-black/50 rounded overflow-hidden">
         <div id="xp-fill" class="h-full transition-[width] duration-300" style="background:#0088ff" :style="{ width: xpPercent + '%' }" />
       </div>

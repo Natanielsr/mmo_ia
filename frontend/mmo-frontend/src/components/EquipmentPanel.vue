@@ -1,7 +1,7 @@
 <template>
   <div
     id="equipment-panel"
-    class="pointer-events-auto grid gap-1 p-[5px] rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+    class="pointer-events-auto grid gap-2 p-2 rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
   >
     <div
       v-for="slotName in ALL_SLOTS"
@@ -32,27 +32,25 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/gameStore'
 import { canDropOnSlot } from '../utils/dragDropRules'
+import { dragState } from '../utils/dragState'
 import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
 
 const ALL_SLOTS: EquipmentSlot[] = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots', 'Shield']
 
-let dragItemId = ''
-let dragItemType = ''
-
 function onDragStart(e: DragEvent, slotName: EquipmentSlot) {
   const item = store.equipmentSlots[slotName]
   if (!item) return
-  dragItemId = item.id
-  dragItemType = item.type
+  dragState.itemId = item.id
+  dragState.itemType = item.type
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer!.setData('text/plain', item.id)
 }
 
 function onDragOver(e: DragEvent, slotName: EquipmentSlot) {
-  if (!dragItemId) return
-  const fakeItem: ItemData = { id: dragItemId, name: '', position: { x: 0, y: 0 }, type: dragItemType }
+  if (!dragState.itemId) return
+  const fakeItem: ItemData = { id: dragState.itemId, name: '', position: { x: 0, y: 0 }, type: dragState.itemType }
   if (canDropOnSlot(fakeItem, slotName)) {
     e.preventDefault()
     ;(e.currentTarget as HTMLElement).classList.add('drag-over')
@@ -68,13 +66,13 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   e.preventDefault()
   const el = e.currentTarget as HTMLElement
   el.classList.remove('drag-over')
-  if (!dragItemId) return
-  const fakeItem: ItemData = { id: dragItemId, name: '', position: { x: 0, y: 0 }, type: dragItemType }
+  if (!dragState.itemId) return
+  const fakeItem: ItemData = { id: dragState.itemId, name: '', position: { x: 0, y: 0 }, type: dragState.itemType }
   if (canDropOnSlot(fakeItem, slotName)) {
-    store.requestEquip(dragItemId)
+    store.requestEquip(dragState.itemId)
   }
-  dragItemId = ''
-  dragItemType = ''
+  dragState.itemId = ''
+  dragState.itemType = ''
 }
 </script>
 
