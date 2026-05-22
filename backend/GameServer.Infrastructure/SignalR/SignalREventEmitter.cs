@@ -132,6 +132,7 @@ namespace GameServer.Infrastructure.SignalR
                 AttackBonus  = (s.Item as Weapon)?.AttackBonus,
                 DefenseBonus = (s.Item as Armor)?.DefenseBonus,
                 SlotIndex    = s.SlotIndex,
+                Quantity     = s.Item.Quantity,
             });
 
             _hubContext.Clients.Client(connId).SendAsync("InventoryUpdated", payload);

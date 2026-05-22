@@ -5,20 +5,17 @@ using Moq;
 
 namespace GameServer.Tests.Inventory
 {
-    /// <summary>
-    /// Testa comportamentos exclusivos de PlayerInventory que não estão cobertos por
-    /// InventoryImplTests (que testa InventoryService — operações básicas add/remove/drop).
-    /// </summary>
     public class PlayerInventoryTests
     {
         private readonly PlayerInventory _inv = new();
 
-        private static IItem MakeItem(string id = "item1", ItemType type = ItemType.Potion)
+        private static IItem MakeItem(string id = "item1", ItemType type = ItemType.Potion, int quantity = 1)
         {
             var m = new Mock<IItem>();
             m.Setup(i => i.Id).Returns(id);
             m.Setup(i => i.Type).Returns(type);
             m.SetupProperty(i => i.Position, new Position(0, 0));
+            m.SetupProperty(i => i.Quantity, quantity);
             return m.Object;
         }
 
@@ -29,14 +26,33 @@ namespace GameServer.Tests.Inventory
         [Fact]
         public void AddItem_Returns_False_When_Inventory_Is_Full_At_20_Slots()
         {
-            for (int i = 0; i < 20; i++) _inv.AddItem(MakeItem($"item{i}"));
-            Assert.False(_inv.AddItem(MakeItem("overflow")));
+            for (int i = 0; i < 20; i++) _inv.AddItem(MakeItem($"item{i}", ItemType.Weapon));
+            Assert.False(_inv.AddItem(MakeItem("overflow", ItemType.Weapon)));
             Assert.Equal(20, _inv.GetItems().Count);
         }
 
         [Fact]
         public void AddItem_Returns_False_For_Null_Item()
             => Assert.False(_inv.AddItem(null!));
+
+        [Fact]
+        public void AddItem_Stacks_Second_Potion_Into_Same_Slot()
+        {
+            var p1 = MakeItem("p1", ItemType.Potion);
+            var p2 = MakeItem("p2", ItemType.Potion);
+            _inv.AddItem(p1);
+            Assert.True(_inv.AddItem(p2));
+            Assert.Single(_inv.GetItems());
+            Assert.Equal(2, _inv.GetItems()[0].Quantity);
+        }
+
+        [Fact]
+        public void AddItem_Non_Potion_Does_Not_Stack()
+        {
+            _inv.AddItem(MakeItem("w1", ItemType.Weapon));
+            _inv.AddItem(MakeItem("w2", ItemType.Weapon));
+            Assert.Equal(2, _inv.GetItems().Count);
+        }
 
         [Fact]
         public void UseItem_Returns_False_When_Item_Not_Found()
@@ -46,9 +62,9 @@ namespace GameServer.Tests.Inventory
         }
 
         [Fact]
-        public void UseItem_On_Potion_Heals_Player_And_Removes_Item()
+        public void UseItem_On_Potion_Heals_Player_And_Removes_Slot_When_Quantity_Is_1()
         {
-            var item = MakeItem("p1", ItemType.Potion);
+            var item = MakeItem("p1", ItemType.Potion, quantity: 1);
             _inv.AddItem(item);
             var player = new Mock<IPlayer>();
 
@@ -56,6 +72,20 @@ namespace GameServer.Tests.Inventory
 
             player.Verify(p => p.Heal(It.IsAny<int>()), Times.Once);
             Assert.Empty(_inv.GetItems());
+        }
+
+        [Fact]
+        public void UseItem_On_Stacked_Potion_Decrements_Quantity_Without_Removing_Slot()
+        {
+            var item = MakeItem("p1", ItemType.Potion, quantity: 3);
+            _inv.AddItem(item);
+            var player = new Mock<IPlayer>();
+
+            Assert.True(_inv.UseItem("p1", player.Object));
+
+            player.Verify(p => p.Heal(It.IsAny<int>()), Times.Once);
+            Assert.Single(_inv.GetItems());
+            Assert.Equal(2, _inv.GetItems()[0].Quantity);
         }
 
         [Fact]
@@ -73,7 +103,7 @@ namespace GameServer.Tests.Inventory
         [Fact]
         public void DropItem_Removes_Item_And_Updates_Position()
         {
-            var item = MakeItem();
+            var item = MakeItem("item1", ItemType.Weapon, quantity: 1);
             _inv.AddItem(item);
             var pos = new Position(5, 5);
 

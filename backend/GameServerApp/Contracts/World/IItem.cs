@@ -18,9 +18,10 @@ namespace GameServerApp.Contracts.World
     {
         string Id { get; }
         string Name { get; }
-        Position Position { get; set; } // if dropped on map
+        Position Position { get; set; }
         float Weight { get; }
         ItemType Type { get; }
         EquipmentSlot? Slot { get; }
+        int Quantity { get; set; }
     }
 }

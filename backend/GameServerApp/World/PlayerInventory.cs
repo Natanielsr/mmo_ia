@@ -11,6 +11,11 @@ namespace GameServerApp.World
         public bool AddItem(IItem item)
         {
             if (item == null) return false;
+            if (item.Type == ItemType.Potion)
+            {
+                var existing = _slots.FirstOrDefault(s => s?.Type == ItemType.Potion);
+                if (existing != null) { existing.Quantity++; return true; }
+            }
             var freeIdx = Array.IndexOf(_slots, null);
             if (freeIdx < 0) return false;
             _slots[freeIdx] = item;
@@ -31,7 +36,8 @@ namespace GameServerApp.World
                 if (_slots[i]?.Id != itemId) continue;
                 if (_slots[i]!.Type != ItemType.Potion) return false;
                 player.Heal(20);
-                _slots[i] = null;
+                _slots[i]!.Quantity--;
+                if (_slots[i]!.Quantity <= 0) _slots[i] = null;
                 return true;
             }
             return false;

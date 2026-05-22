@@ -49,6 +49,7 @@ export const useGameStore = defineStore('game', () => {
   const _onUnequipItem         = ref<((slot: EquipmentSlot) => void) | null>(null)
   const _onMoveItemInInventory = ref<((itemId: string, toIndex: number) => void) | null>(null)
   const _onUseItem             = ref<((itemId: string) => void) | null>(null)
+  const _onDropItem            = ref<((itemId: string, x: number, y: number) => void) | null>(null)
 
   // ── Actions ───────────────────────────────────────────────────────────────
   function setLoggedIn(name: string) {
@@ -135,11 +136,13 @@ export const useGameStore = defineStore('game', () => {
     onUnequip:         (slot: EquipmentSlot) => void
     onMoveInInventory: (itemId: string, toIndex: number) => void
     onUseItem:         (itemId: string) => void
+    onDropItem:        (itemId: string, x: number, y: number) => void
   }) {
     _onEquipItem.value           = callbacks.onEquip
     _onUnequipItem.value         = callbacks.onUnequip
     _onMoveItemInInventory.value = callbacks.onMoveInInventory
     _onUseItem.value             = callbacks.onUseItem
+    _onDropItem.value            = callbacks.onDropItem
   }
 
   function requestEquip(itemId: string) {
@@ -156,6 +159,10 @@ export const useGameStore = defineStore('game', () => {
 
   function requestUseItem(itemId: string) {
     _onUseItem.value?.(itemId)
+  }
+
+  function requestDropItem(itemId: string, x: number, y: number) {
+    _onDropItem.value?.(itemId, x, y)
   }
 
   return {
@@ -181,6 +188,6 @@ export const useGameStore = defineStore('game', () => {
     toggleGearPanel, openGearPanel, toggleAttributesModal,
     setServerMessage, setConnectionError,
     registerCallbacks,
-    requestEquip, requestUnequip, requestMoveInInventory, requestUseItem,
+    requestEquip, requestUnequip, requestMoveInInventory, requestUseItem, requestDropItem,
   }
 })

@@ -3,6 +3,7 @@ using GameServerApp.Contracts.Processors;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 using GameServerApp.Dtos;
+using GameServerApp.World;
 
 namespace GameServerApp.Processors
 {
@@ -63,9 +64,20 @@ namespace GameServerApp.Processors
             var item = inv.GetItems().FirstOrDefault(i => i.Id == itemId);
             if (item == null) return;
 
-            inv.DropItem(itemId, targetPos);
-            _itemManager.DropItem(item);
-            _worldEvents.OnItemDropped(item);
+            IItem worldItem;
+            if (item.Type == ItemType.Potion && item.Quantity > 1)
+            {
+                item.Quantity--;
+                worldItem = new HealingPotion(Guid.NewGuid().ToString(), targetPos);
+            }
+            else
+            {
+                inv.DropItem(itemId, targetPos);
+                worldItem = item;
+            }
+
+            _itemManager.DropItem(worldItem);
+            _worldEvents.OnItemDropped(worldItem);
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
         }
     }

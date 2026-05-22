@@ -12,4 +12,5 @@ public record class ItemData
     public int? AttackBonus { get; init; }
     public int? DefenseBonus { get; init; }
     public int SlotIndex { get; init; } = 0;
+    public int Quantity { get; init; } = 1;
 }

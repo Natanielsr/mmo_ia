@@ -77,6 +77,7 @@ export class MainScene extends Phaser.Scene {
             onUnequip:         (slot: string)   => this.onRequestUnequipItem?.(slot),
             onMoveInInventory: (itemId: string, toIndex: number) => this.onRequestMoveItemInInventory?.(itemId, toIndex),
             onUseItem:         (itemId: string) => this.onRequestUseItem?.(itemId),
+            onDropItem:        (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y),
         });
 
         this.scene.launch('WorldMapScene');

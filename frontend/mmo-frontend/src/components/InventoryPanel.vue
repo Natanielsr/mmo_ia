@@ -23,8 +23,11 @@
       @click.right.prevent="item && store.requestUseItem(item.id)"
     >
       <template v-if="item">
-        <img v-if="iconSrc(item.type)" :src="iconSrc(item.type)" class="item-icon-img" />
-        <span v-else class="item-icon" :class="iconClass(item.type)" />
+        <div class="item-icon-wrap">
+          <img v-if="iconSrc(item.type)" :src="iconSrc(item.type)" class="item-icon-img" />
+          <span v-else class="item-icon" :class="iconClass(item.type)" />
+          <span v-if="item.quantity && item.quantity > 1" class="item-qty">{{ item.quantity }}</span>
+        </div>
         <span class="item-name">{{ item.name }}</span>
       </template>
     </div>
@@ -32,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useGameStore } from '../stores/gameStore'
 import { dragState } from '../utils/dragState'
 import { useTouchDrag } from '../composables/useTouchDrag'
@@ -40,28 +44,26 @@ import type { EquipmentSlot, ItemData } from '../types'
 const store = useGameStore()
 const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
-const ICON_MAP: Record<string, string> = {
-  Potion: 'icon-potion',
-}
+const draggingItemId = ref('')
 
 const ICON_SRC: Record<string, string> = {
-  Weapon: '/assets/items_icon/dagger.png',
-  Armor: '/assets/items_icon/leather-vest.png',
-  Helmet: '/assets/items_icon/iron-helmet.png',
-  Shield: '/assets/items_icon/wooden-shield.png',
-  Legs: '/assets/items_icon/leather-pants.png',
-  Boots: '/assets/items_icon/iron-boots.png',
+  Potion:  '/assets/potion.png',
+  Weapon:  '/assets/items_icon/dagger.png',
+  Armor:   '/assets/items_icon/leather-vest.png',
+  Helmet:  '/assets/items_icon/iron-helmet.png',
+  Shield:  '/assets/items_icon/wooden-shield.png',
+  Legs:    '/assets/items_icon/leather-pants.png',
+  Boots:   '/assets/items_icon/iron-boots.png',
 }
 
-function iconClass(type: string) {
-  return ICON_MAP[type] ?? ''
-}
+function iconClass(_type: string) { return '' }
 
 function iconSrc(type: string): string {
   return ICON_SRC[type] ?? ''
 }
 
 function onDragStart(e: DragEvent, item: ItemData) {
+  draggingItemId.value = item.id
   dragState.itemId = item.id
   dragState.itemType = item.type
   dragState.source = 'inventory'
@@ -73,10 +75,17 @@ function onDragStart(e: DragEvent, item: ItemData) {
 
 function onDragEnd(e: DragEvent) {
   ;(e.currentTarget as HTMLElement).classList.remove('dragging')
+  const itemId = draggingItemId.value
+  draggingItemId.value = ''
   dragState.itemId = ''
   dragState.itemType = ''
   dragState.source = 'inventory'
   dragState.sourceSlot = ''
+
+  // Dropped outside any accepting element → drop on ground at player position
+  if (itemId && e.dataTransfer?.dropEffect === 'none') {
+    store.requestDropItem(itemId, store.posX, store.posY)
+  }
 }
 
 function onDragEnter(e: DragEvent, _index: number) {
@@ -134,6 +143,29 @@ function onDrop(e: DragEvent, toIndex: number) {
   border-color: #4f46e5;
 }
 
+.item-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.item-qty {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 3px;
+  padding: 0 2px;
+  line-height: 1.2;
+  pointer-events: none;
+  user-select: none;
+}
+
 .item-icon {
   font-size: 1.2rem;
   line-height: 1;
@@ -163,8 +195,6 @@ function onDrop(e: DragEvent, toIndex: number) {
   image-rendering: pixelated;
 }
 
-.icon-armor::before  { content: '🛡️'; }
-.icon-potion::before { content: '🧪'; }
 
 @media (max-width: 1024px) {
   .inv-slot { width: 40px; height: 40px; }

@@ -58,6 +58,7 @@ export interface ItemData {
     attackBonus?: number;
     defenseBonus?: number;
     slotIndex?: number;
+    quantity?: number;
 }
 
 export interface ChunkData {

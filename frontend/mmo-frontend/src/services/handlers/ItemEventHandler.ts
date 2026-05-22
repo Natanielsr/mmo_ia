@@ -48,6 +48,7 @@ export class ItemEventHandler {
                 attackBonus: item.attackBonus ?? item.AttackBonus,
                 defenseBonus: item.defenseBonus ?? item.DefenseBonus,
                 slotIndex: item.slotIndex ?? item.SlotIndex,
+                quantity: item.quantity ?? item.Quantity ?? 1,
             }));
             this.scene.inventoryUpdated(normalized);
         });
