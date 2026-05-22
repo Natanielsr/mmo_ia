@@ -4,11 +4,11 @@
     v-show="!store.isLoggedIn"
     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 pointer-events-auto"
   >
-    <div class="w-[400px] text-center p-10 rounded-xl bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] max-[768px]:w-[90%] max-[768px]:p-6">
-      <h1 class="text-4xl font-extrabold mb-2 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+    <div class="w-[440px] text-center p-10 rounded-xl bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] max-[768px]:w-[90%] max-[768px]:p-6">
+      <h1 class="text-4xl font-extrabold mb-3 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
         MMORPG Web
       </h1>
-      <p class="text-slate-400 mb-8">Entre no mundo e começe sua aventura</p>
+      <p class="text-slate-400 mb-10">Entre no mundo e começe sua aventura</p>
 
       <div
         id="connection-error"
@@ -24,7 +24,7 @@
         type="text"
         placeholder="Nome da personagem..."
         maxlength="12"
-        class="w-full bg-black/30 border border-white/10 px-4 py-3 rounded-lg text-white mb-6 outline-none focus:border-indigo-500 placeholder:text-slate-400"
+        class="w-full bg-black/30 border border-white/10 px-4 py-3 rounded-lg text-white mb-4 outline-none focus:border-indigo-500 placeholder:text-slate-400"
         @keydown.stop
         @keyup.stop
         @keypress.stop
@@ -32,7 +32,7 @@
       <button
         id="btn-join"
         :disabled="store.isConnecting"
-        class="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-60 text-white border-none py-3 rounded-lg font-semibold cursor-pointer transition-colors"
+        class="w-full bg-indigo-500 hover:bg-indigo-600 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-60 text-white border-none py-3.5 rounded-lg font-semibold cursor-pointer transition-colors"
         @click="handleJoin"
       >
         ENTRAR NO JOGO
