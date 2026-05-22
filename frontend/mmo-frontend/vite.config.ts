@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -7,10 +7,6 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
-  define: {
-    'typeof CANVAS_RENDERER': "'true'",
-    'typeof WEBGL_RENDERER': "'true'",
-  },
   test: {
     environment: 'jsdom',
     globals: true,
