@@ -17,6 +17,9 @@
       @dragenter="onDragEnter($event, index)"
       @dragleave="onDragLeave($event)"
       @drop="onDrop($event, index)"
+      @touchstart.passive="item && startTouchDrag($event, item, 'inventory')"
+      @touchmove="moveTouchDrag($event)"
+      @touchend="endTouchDrag($event)"
       @click.right.prevent="item && store.requestUseItem(item.id)"
     >
       <template v-if="item">
@@ -30,9 +33,11 @@
 <script setup lang="ts">
 import { useGameStore } from '../stores/gameStore'
 import { dragState } from '../utils/dragState'
+import { useTouchDrag } from '../composables/useTouchDrag'
 import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
+const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ICON_MAP: Record<string, string> = {
   Weapon: 'icon-sword', Armor: 'icon-armor', Helmet: 'icon-helmet',

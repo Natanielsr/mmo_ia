@@ -16,6 +16,9 @@
       @dragover="onDragOver($event, slotName)"
       @dragleave="onDragLeave($event)"
       @drop="onDrop($event, slotName)"
+      @touchstart.passive="store.equipmentSlots[slotName] && startTouchDrag($event, store.equipmentSlots[slotName]!, 'equipment', slotName)"
+      @touchmove="moveTouchDrag($event)"
+      @touchend="endTouchDrag($event)"
       @click="store.equipmentSlots[slotName] && store.requestUnequip(slotName)"
     >
       <template v-if="store.equipmentSlots[slotName]">
@@ -34,9 +37,11 @@
 import { useGameStore } from '../stores/gameStore'
 import { canDropOnSlot } from '../utils/dragDropRules'
 import { dragState } from '../utils/dragState'
+import { useTouchDrag } from '../composables/useTouchDrag'
 import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
+const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ALL_SLOTS: EquipmentSlot[] = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots', 'Shield']
 
