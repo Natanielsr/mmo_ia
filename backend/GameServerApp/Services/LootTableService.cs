@@ -24,7 +24,7 @@ namespace GameServerApp.Services
                 return new HealingPotion(itemId, position);
 
             if (roll < 0.35)
-                return new Weapon(itemId, "Iron Sword", 1.5f, position, attackBonus: 5);
+                return new Weapon(itemId, "Dagger", 1.5f, position, attackBonus: 5);
 
             if (roll < 0.45)
                 return new Armor(itemId, "Leather Vest", 2.0f, position, defenseBonus: 3);
