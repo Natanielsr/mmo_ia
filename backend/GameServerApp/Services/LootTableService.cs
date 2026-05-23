@@ -27,19 +27,19 @@ namespace GameServerApp.Services
                 return new Weapon(itemId, "Dagger", 1.5f, position, attackBonus: 5);
 
             if (roll < 0.45)
-                return new Armor(itemId, "Leather Vest", 2.0f, position, defenseBonus: 3);
+                return new Armor(itemId, "Leather Vest", 2.0f, position, defenseBonus: 1);
 
             if (roll < 0.57)
-                return new Helmet(itemId, "Iron Helmet", 1.2f, position, defenseBonus: 4);
+                return new Helmet(itemId, "Iron Helmet", 1.2f, position, defenseBonus: 1);
 
             if (roll < 0.69)
-                return new Shield(itemId, "Wooden Shield", 2.5f, position, defenseBonus: 3);
+                return new Shield(itemId, "Wooden Shield", 2.5f, position, defenseBonus: 1);
 
             if (roll < 0.81)
-                return new Legs(itemId, "Leather Pants", 1.0f, position, defenseBonus: 2);
+                return new Legs(itemId, "Leather Pants", 1.0f, position, defenseBonus: 1);
 
             if (roll < 0.93)
-                return new Boots(itemId, "Iron Boots", 1.5f, position, defenseBonus: 2);
+                return new Boots(itemId, "Iron Boots", 1.5f, position, defenseBonus: 1);
 
             return null;
         }
