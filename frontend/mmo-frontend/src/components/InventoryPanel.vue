@@ -83,9 +83,13 @@ function onDragEnd(e: DragEvent) {
   dragState.source = 'inventory'
   dragState.sourceSlot = ''
 
-  // Dropped outside any accepting element → drop on ground at player position
+  // Drop on ground only when released over the Phaser game canvas area
   if (itemId && e.dataTransfer?.dropEffect === 'none') {
-    store.requestDropItem(itemId, store.posX, store.posY)
+    const dropTarget = document.elementFromPoint(e.clientX, e.clientY)
+    const gameArea = document.getElementById('phaser-game')
+    if (gameArea?.contains(dropTarget)) {
+      store.requestDropItem(itemId, store.posX, store.posY)
+    }
   }
 }
 

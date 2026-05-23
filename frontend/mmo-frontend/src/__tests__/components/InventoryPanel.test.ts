@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia } from 'pinia'
 import InventoryPanel from '../../components/InventoryPanel.vue'
@@ -51,5 +51,60 @@ describe('InventoryPanel', () => {
     await wrapper.vm.$nextTick()
     const slot = wrapper.findAll('.inv-slot')[2].element as HTMLElement
     expect(slot.dataset.itemId).toBe('xyz')
+  })
+
+  describe('onDragEnd — drop on ground', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('calls requestDropItem when dropEffect is none and released over #phaser-game', async () => {
+      const { wrapper, store } = mountWithStore()
+      store.updateInventory([makeItem('item1', 0)])
+      await wrapper.vm.$nextTick()
+
+      const gameArea = document.createElement('div')
+      const canvas = document.createElement('canvas')
+      gameArea.appendChild(canvas)
+
+      vi.spyOn(document, 'getElementById').mockReturnValue(gameArea)
+      document.elementFromPoint = vi.fn().mockReturnValue(canvas)
+
+      const requestDropSpy = vi.spyOn(store, 'requestDropItem')
+
+      const slot = wrapper.findAll('.inv-slot')[0]
+      await slot.trigger('dragstart', { dataTransfer: { effectAllowed: '', setData: () => {} } })
+      await slot.trigger('dragend', {
+        dataTransfer: { dropEffect: 'none' },
+        clientX: 100,
+        clientY: 100,
+      })
+
+      expect(requestDropSpy).toHaveBeenCalledOnce()
+    })
+
+    it('does NOT call requestDropItem when dropEffect is none but released over Vue panel', async () => {
+      const { wrapper, store } = mountWithStore()
+      store.updateInventory([makeItem('item2', 0)])
+      await wrapper.vm.$nextTick()
+
+      const gameArea = document.createElement('div')
+      const panelElement = document.createElement('div')
+
+      vi.spyOn(document, 'getElementById').mockReturnValue(gameArea)
+      document.elementFromPoint = vi.fn().mockReturnValue(panelElement)
+
+      const requestDropSpy = vi.spyOn(store, 'requestDropItem')
+
+      const slot = wrapper.findAll('.inv-slot')[0]
+      await slot.trigger('dragstart', { dataTransfer: { effectAllowed: '', setData: () => {} } })
+      await slot.trigger('dragend', {
+        dataTransfer: { dropEffect: 'none' },
+        clientX: 800,
+        clientY: 200,
+      })
+
+      expect(requestDropSpy).not.toHaveBeenCalled()
+    })
   })
 })
