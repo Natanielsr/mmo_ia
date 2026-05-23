@@ -19,7 +19,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", new Position(0, 0), maxHp: 50);
             var potion = new HealingPotion("p1", new Position(1, 0));
 
-            _b.ItemManager.Setup(m => m.GetItemAt(new Position(1, 0))).Returns(potion);
+            _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
 
             int hpBefore = player.Hp;
@@ -34,7 +34,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", new Position(0, 0));
             var potion = new HealingPotion("p1", new Position(1, 0));
 
-            _b.ItemManager.Setup(m => m.GetItemAt(new Position(1, 0))).Returns(potion);
+            _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
 
             _b.Build().ProcessPlayerMovement(player, "east");
@@ -49,7 +49,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", new Position(0, 0));
             var potion = new HealingPotion("p1", new Position(1, 0));
 
-            _b.ItemManager.Setup(m => m.GetItemAt(new Position(1, 0))).Returns(potion);
+            _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(false);
 
             _b.Build().ProcessPlayerMovement(player, "east");
@@ -63,13 +63,37 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", new Position(0, 0));
             var potion = new HealingPotion("p1", new Position(1, 0));
 
-            _b.ItemManager.Setup(m => m.GetItemAt(new Position(1, 0))).Returns(potion);
+            _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
             _b.InventoryManager.Setup(m => m.GetInventory(1L))
                                .Returns(() => { var inv = new GameServerApp.World.PlayerInventory(); return inv; });
 
             _b.Build().ProcessPlayerMovement(player, "east");
 
+            _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
+        }
+
+        [Fact]
+        public void Pickup_PicksUp_AllItems_AtSamePosition()
+        {
+            var player  = new Player(1, "Hero", new Position(0, 0));
+            var potion1 = new HealingPotion("p1", new Position(1, 0));
+            var potion2 = new HealingPotion("p2", new Position(1, 0));
+
+            _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion1, potion2]);
+            _b.InventoryManager.Setup(m => m.AddItem(1L, potion1)).Returns(true);
+            _b.InventoryManager.Setup(m => m.AddItem(1L, potion2)).Returns(true);
+            _b.InventoryManager.Setup(m => m.GetInventory(1L))
+                               .Returns(() => new GameServerApp.World.PlayerInventory());
+
+            _b.Build().ProcessPlayerMovement(player, "east");
+
+            _b.InventoryManager.Verify(m => m.AddItem(1L, potion1), Times.Once);
+            _b.InventoryManager.Verify(m => m.AddItem(1L, potion2), Times.Once);
+            _b.ItemManager.Verify(m => m.RemoveItem("p1"), Times.Once);
+            _b.ItemManager.Verify(m => m.RemoveItem("p2"), Times.Once);
+            _b.Events.Verify(e => e.OnItemPickedUp("p1", 1L), Times.Once);
+            _b.Events.Verify(e => e.OnItemPickedUp("p2", 1L), Times.Once);
             _b.Events.Verify(e => e.OnInventoryUpdated(1L, It.IsAny<IReadOnlyList<(int, IItem)>>()), Times.Once);
         }
 

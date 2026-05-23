@@ -29,6 +29,12 @@ namespace GameServerApp.Managers
             return _items.Values.FirstOrDefault(i => i.Position.X == position.X && i.Position.Y == position.Y);
         }
 
+        public IEnumerable<IItem> GetItemsAt(Position position)
+        {
+            if (position == null) return [];
+            return _items.Values.Where(i => i.Position.X == position.X && i.Position.Y == position.Y);
+        }
+
         public void RemoveItem(string itemId)
         {
             if (string.IsNullOrEmpty(itemId)) return;

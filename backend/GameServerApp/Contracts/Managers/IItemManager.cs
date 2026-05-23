@@ -7,6 +7,7 @@ namespace GameServerApp.Contracts.Managers
     {
         void DropItem(IItem item);
         IItem? GetItemAt(Position position);
+        IEnumerable<IItem> GetItemsAt(Position position);
         void RemoveItem(string itemId);
         IReadOnlyCollection<IItem> GetAllItems();
         IReadOnlyCollection<IItem> GetItemsInChunk(ChunkCoord coord);

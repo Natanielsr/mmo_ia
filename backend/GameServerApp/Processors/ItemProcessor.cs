@@ -25,17 +25,25 @@ namespace GameServerApp.Processors
 
         public void ProcessItemPickup(IPlayer player)
         {
-            var item = _itemManager.GetItemAt(player.Position);
-            if (item == null) return;
+            var items = _itemManager.GetItemsAt(player.Position).ToList();
+            if (items.Count == 0) return;
 
-            bool added = _inventoryManager.AddItem(player.Id, item);
-            if (!added) return;
+            bool anyPickedUp = false;
+            foreach (var item in items)
+            {
+                bool added = _inventoryManager.AddItem(player.Id, item);
+                if (!added) continue;
 
-            _itemManager.RemoveItem(item.Id);
-            _worldEvents.OnItemPickedUp(item.Id, player.Id);
+                _itemManager.RemoveItem(item.Id);
+                _worldEvents.OnItemPickedUp(item.Id, player.Id);
+                anyPickedUp = true;
+            }
 
-            var inv = _inventoryManager.GetInventory(player.Id);
-            _worldEvents.OnInventoryUpdated(player.Id, inv?.GetSlottedItems() ?? []);
+            if (anyPickedUp)
+            {
+                var inv = _inventoryManager.GetInventory(player.Id);
+                _worldEvents.OnInventoryUpdated(player.Id, inv?.GetSlottedItems() ?? []);
+            }
         }
 
         public void ProcessUseItem(IPlayer player, string itemId)

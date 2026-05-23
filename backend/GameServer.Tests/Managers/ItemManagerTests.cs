@@ -71,5 +71,30 @@ namespace GameServer.Tests.Managers
             // Assert
             Assert.Equal(2, allItems.Count);
         }
+
+        [Fact]
+        public void GetItemsAt_ShouldReturnAllItems_AtSamePosition()
+        {
+            var itemManager = new ItemManager(_options);
+            itemManager.DropItem(new Item("1", "P1", 0.1f, new Position(5, 5)));
+            itemManager.DropItem(new Item("2", "P2", 0.1f, new Position(5, 5)));
+            itemManager.DropItem(new Item("3", "P3", 0.1f, new Position(9, 9)));
+
+            var result = itemManager.GetItemsAt(new Position(5, 5)).ToList();
+
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, i => i.Id == "1");
+            Assert.Contains(result, i => i.Id == "2");
+        }
+
+        [Fact]
+        public void GetItemsAt_ShouldReturnEmpty_WhenNoItemsAtPosition()
+        {
+            var itemManager = new ItemManager(_options);
+
+            var result = itemManager.GetItemsAt(new Position(10, 10));
+
+            Assert.Empty(result);
+        }
     }
 }
