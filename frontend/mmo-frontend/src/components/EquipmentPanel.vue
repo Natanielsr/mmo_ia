@@ -1,7 +1,7 @@
 <template>
   <div
     id="equipment-panel"
-    class="pointer-events-auto grid gap-2 p-2 rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
+    class="pointer-events-auto grid gap-1 p-2 rounded-lg bg-slate-800/70 backdrop-blur-md border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
   >
     <div
       v-for="slotName in ALL_SLOTS"
