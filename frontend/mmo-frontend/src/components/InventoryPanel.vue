@@ -20,7 +20,7 @@
       @touchstart.passive="item && startTouchDrag($event, item, 'inventory')"
       @touchmove="moveTouchDrag($event)"
       @touchend="endTouchDrag($event)"
-      @click.right.prevent="item && store.requestUseItem(item.id)"
+      @click.right.prevent="item && (isEquippable(item.type) ? store.requestEquip(item.id) : store.requestUseItem(item.id))"
     >
       <template v-if="item">
         <div class="item-icon-wrap">
@@ -38,6 +38,7 @@
 import { ref } from 'vue'
 import { useGameStore } from '../stores/gameStore'
 import { dragState } from '../utils/dragState'
+import { isEquippable } from '../utils/dragDropRules'
 import { useTouchDrag } from '../composables/useTouchDrag'
 import type { EquipmentSlot, ItemData } from '../types'
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { canDropOnSlot } from '../../utils/dragDropRules'
+import { canDropOnSlot, isEquippable } from '../../utils/dragDropRules'
 import type { ItemData, EquipmentSlot } from '../../types'
 
 function makeItem(type: string): ItemData {
@@ -26,5 +26,14 @@ describe('canDropOnSlot', () => {
     it(`${itemType} → ${slot} = ${expected}`, () => {
       expect(canDropOnSlot(makeItem(itemType), slot)).toBe(expected)
     })
+  }
+})
+
+describe('isEquippable', () => {
+  for (const type of ['Weapon', 'Armor', 'Helmet', 'Shield', 'Legs', 'Boots']) {
+    it(`${type} → true`, () => expect(isEquippable(type)).toBe(true))
+  }
+  for (const type of ['Potion', '', 'Unknown']) {
+    it(`${type} → false`, () => expect(isEquippable(type)).toBe(false))
   }
 })
