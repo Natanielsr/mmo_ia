@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import type { Position, PlayerData } from '../types';
-import { getDirectionAnimation, getIdleFrame } from '../utils/playerAnimations';
 import { getPlayerHealthColor } from '../utils/healthColors';
+import { PlayerAnimator } from './PlayerAnimator';
 
 export class Player extends Phaser.GameObjects.Container {
     public id: string;
@@ -18,32 +18,23 @@ export class Player extends Phaser.GameObjects.Container {
     public isDead: boolean = false;
     private healthBar: Phaser.GameObjects.Graphics;
     private healthBarBackground: Phaser.GameObjects.Graphics;
-    private stopWalkingTimer?: Phaser.Time.TimerEvent;
-    public isAttacking: boolean = false;
-    private facingDirection: string = 'south';
-    private weaponSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedWeaponTextureKey: string | null = null;
-    private armorSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedArmorWalkKey: string | null = null;
-    private equippedArmorSlashKey: string | null = null;
-    private legsSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedLegsWalkKey: string | null = null;
-    private equippedLegsSlashKey: string | null = null;
+    private animator: PlayerAnimator;
+
+    public get isAttacking(): boolean { return this.animator.isAttacking; }
 
     constructor(
         id: string,
         name: string,
-        playerPosData: PlayerData, // Modified to receive entire playerData
+        playerPosData: PlayerData,
         worldPosition: Position,
         scene: Phaser.Scene,
         gridSize: number) {
         super(scene, worldPosition.x, worldPosition.y);
         this.id = id;
-        this.worldPosition = worldPosition
+        this.worldPosition = worldPosition;
         const pos = (playerPosData.position ?? (playerPosData as any).Position) as any;
         this.gridPosition = { x: pos.x ?? pos.X, y: pos.y ?? pos.Y };
         this.name = name;
-        // Inicializa com valores seguros, buscando do playerData se ainda estiverem lá (casing flexível)
         const data = playerPosData as any;
         this.hp = Number(data.hp ?? data.Hp ?? 100);
         this.maxHp = Number(data.maxHp ?? data.MaxHp ?? 100);
@@ -51,45 +42,35 @@ export class Player extends Phaser.GameObjects.Container {
         this.experience = Number(data.experience ?? data.Experience ?? 0);
         this.isDead = Boolean(data.isDead ?? data.IsDead ?? false);
 
-        // 1. O Sprite fica na coordenada (0,0) local do Container
         this.sprite = scene.add.sprite(0, 0, 'hero', 0);
         this.sprite.setDisplaySize(gridSize * 1.25, gridSize * 1.25);
-        this.sprite.setDepth(499); // Abaixo do texto
+        this.sprite.setDepth(499);
 
-        // 2. Texto do nome fica FORA do container para controlar depth global da cena
         this.nameTextOffsetY = (gridSize / 2) + 15;
         this.nameText = scene.add.text(worldPosition.x, worldPosition.y - this.nameTextOffsetY, `[Lv ${this.level}] ${this.name}`, {
             fontSize: '14px', color: '#fff', fontFamily: 'Inter', stroke: '#000', strokeThickness: 2
         }).setOrigin(0.5);
-        this.nameText.setDepth(10000); // acima de tudo
+        this.nameText.setDepth(10000);
 
-        // 3. Health bar (Background)
         this.healthBarBackground = scene.add.graphics();
         this.healthBarBackground.fillStyle(0x000000, 0.5);
         this.healthBarBackground.fillRect(-25, -gridSize / 2 - 5, 50, 6);
 
-        // 4. Health bar (Foreground)
         this.healthBar = scene.add.graphics();
         this.updateHealthBar();
 
-        // 5. Adiciona sprite e barras como filhos do Container
         this.add([this.sprite, this.healthBarBackground, this.healthBar]);
-
-        // 6. Registra este Container na Cena para ser renderizado
         scene.add.existing(this);
-
-        // 7. Container do player acima dos objetos do mapa
         this.setDepth(worldPosition.y);
 
-        // Define a pose inicial
-        this.setInitialPose();
+        this.animator = new PlayerAnimator(scene, this.sprite, this, () => this.isDead);
+        this.animator.setInitialPose();
     }
 
-    public updateHealthBar() {
+    public updateHealthBar(): void {
         this.healthBar.clear();
         const healthPercent = Math.max(0, this.hp / this.maxHp);
         const color = getPlayerHealthColor(healthPercent);
-
         this.healthBar.fillStyle(color, 1);
         this.healthBar.fillRect(-25, -37, 50 * healthPercent, 6);
     }
@@ -97,67 +78,27 @@ export class Player extends Phaser.GameObjects.Container {
     public takeDamage(damage: number): void {
         this.hp = Math.max(0, this.hp - damage);
         this.updateHealthBar();
-
-        // Flash vermelho no sprite
-        this.scene.tweens.add({
-            targets: this.sprite,
-            tint: 0xff0000,
-            duration: 100,
-            yoyo: true,
-            onComplete: () => {
-                if (!this.isDead) this.sprite.clearTint();
-            }
-        });
+        this.animator.playTakeDamageFlash();
     }
 
     public die(): void {
         if (this.isDead) return;
         this.isDead = true;
-        this.sprite.setAngle(90); // Deita o personagem
-        this.sprite.setTint(0x666666);
+        this.animator.playDieEffect();
         this.nameText.setText(`[Lv ${this.level}] ${this.name} 💀`);
         this.updateHealthBar();
-    }
-
-    private setInitialPose(): void {
-        this.sprite.setFrame(18); // IDLE Sul padrão
     }
 
     public move(worldPos: Position, duration: number): void {
         const dx = worldPos.x - this.x;
         const dy = worldPos.y - this.y;
 
-        // Cancela o timer de parar de andar se houver um novo movimento em seguida
-        if (this.stopWalkingTimer) {
-            this.stopWalkingTimer.destroy();
-            this.stopWalkingTimer = undefined;
-        }
+        this.animator.cancelStopWalkingTimer();
+        this.animator.playWalkAnimation(dx, dy);
 
-        // Cuida da própria animação
-        const animKey = getDirectionAnimation(dx, dy);
-        if (animKey) {
-            this.facingDirection = animKey.replace('walk-', '');
-            if (!this.isAttacking) {
-                if (this.sprite.texture.key !== 'hero') {
-                    this.sprite.setTexture('hero');
-                }
-                this.sprite.play(animKey, true);
-                if (this.armorSprite && this.equippedArmorWalkKey) {
-                    this.armorSprite.play(`${this.equippedArmorWalkKey}-${this.facingDirection}`, true);
-                }
-                if (this.legsSprite && this.equippedLegsWalkKey) {
-                    this.legsSprite.play(`${this.equippedLegsWalkKey}-${this.facingDirection}`, true);
-                }
-            }
-        }
-
-
-        // Limpa tweens anteriores
         this.scene.tweens.killTweensOf(this);
         this.scene.tweens.killTweensOf(this.nameText);
 
-
-        // Move o container do player
         this.scene.tweens.add({
             targets: this,
             x: worldPos.x,
@@ -168,13 +109,10 @@ export class Player extends Phaser.GameObjects.Container {
                 this.setDepth(this.y);
             },
             onComplete: () => {
-                this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
-                    this.stopWalking();
-                });
+                this.animator.scheduleStopWalking();
             }
         });
 
-        // Move o texto do nome junto, mantendo offset vertical
         this.scene.tweens.add({
             targets: this.nameText,
             x: worldPos.x,
@@ -185,232 +123,41 @@ export class Player extends Phaser.GameObjects.Container {
     }
 
     public setEquippedArmorOverlay(walkKey: string | null, slashKey: string | null): void {
-        if (!walkKey) {
-            this.armorSprite?.destroy();
-            this.armorSprite = null;
-            this.equippedArmorWalkKey = null;
-            this.equippedArmorSlashKey = null;
-            return;
-        }
-        this.equippedArmorWalkKey = walkKey;
-        this.equippedArmorSlashKey = slashKey;
-        if (!this.armorSprite) {
-            this.armorSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
-            this.armorSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.add(this.armorSprite);
-        }
+        this.animator.setEquippedArmorOverlay(walkKey, slashKey);
     }
 
     public setEquippedLegsOverlay(walkKey: string | null, slashKey: string | null): void {
-        if (!walkKey) {
-            this.legsSprite?.destroy();
-            this.legsSprite = null;
-            this.equippedLegsWalkKey = null;
-            this.equippedLegsSlashKey = null;
-            return;
-        }
-        this.equippedLegsWalkKey = walkKey;
-        this.equippedLegsSlashKey = slashKey;
-        if (!this.legsSprite) {
-            this.legsSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
-            this.legsSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.add(this.legsSprite);
-        }
+        this.animator.setEquippedLegsOverlay(walkKey, slashKey);
     }
 
     public setEquippedWeaponOverlay(textureKey: string | null): void {
-        if (!textureKey) {
-            this.weaponSprite?.destroy();
-            this.weaponSprite = null;
-            this.equippedWeaponTextureKey = null;
-            return;
-        }
-        this.equippedWeaponTextureKey = textureKey;
-        if (!this.weaponSprite) {
-            this.weaponSprite = this.scene.add.sprite(0, 0, textureKey, 0);
-            this.weaponSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.weaponSprite.setVisible(false);
-            this.add(this.weaponSprite);
-        }
+        this.animator.setEquippedWeaponOverlay(textureKey);
     }
 
     public playAttackAnimation(targetX: number, targetY: number): void {
-        const dx = targetX - this.x;
-        const dy = targetY - this.y;
-
-        // Determina direção do ataque
-        let animSuffix = this.facingDirection;
-        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-            if (Math.abs(dx) > Math.abs(dy)) {
-                animSuffix = dx > 0 ? 'east' : 'west';
-            } else {
-                animSuffix = dy > 0 ? 'south' : 'north';
-            }
-            this.facingDirection = animSuffix;
-        }
-
-        const animKey = `attack-${animSuffix}`;
-        this.isAttacking = true;
-
-        // Troca para o spritesheet de ataque
-        this.sprite.setTexture('hero_slash');
-        this.sprite.play(animKey, true);
-
-        // Overlay de arma sincronizado com o ataque
-        if (this.weaponSprite && this.equippedWeaponTextureKey) {
-            this.weaponSprite.setVisible(true);
-            this.weaponSprite.play(`${this.equippedWeaponTextureKey}-${animSuffix}`, true);
-        }
-
-        // Overlay de armadura sincronizado com o ataque
-        if (this.armorSprite && this.equippedArmorSlashKey) {
-            this.armorSprite.setTexture(this.equippedArmorSlashKey);
-            this.armorSprite.play(`${this.equippedArmorSlashKey}-${animSuffix}`, true);
-        }
-
-        // Overlay de calças sincronizado com o ataque
-        if (this.legsSprite && this.equippedLegsSlashKey) {
-            this.legsSprite.setTexture(this.equippedLegsSlashKey);
-            this.legsSprite.play(`${this.equippedLegsSlashKey}-${animSuffix}`, true);
-        }
-
-        // Volta ao normal no fim
-        this.sprite.once('animationcomplete', (animation: any) => {
-            if (animation.key === animKey) {
-                this.isAttacking = false;
-                this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
-                this.weaponSprite?.setVisible(false);
-                this.weaponSprite?.stop();
-                if (this.armorSprite && this.equippedArmorWalkKey) {
-                    this.armorSprite.setTexture(this.equippedArmorWalkKey);
-                    this.armorSprite.setFrame(getIdleFrame(this.facingDirection));
-                }
-                if (this.legsSprite && this.equippedLegsWalkKey) {
-                    this.legsSprite.setTexture(this.equippedLegsWalkKey);
-                    this.legsSprite.setFrame(getIdleFrame(this.facingDirection));
-                }
-                this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
-                    this.stopWalking();
-                });
-            }
-        });
+        this.animator.playAttackAnimation(this.x, this.y, targetX, targetY);
     }
 
-    private stopWalking(): void {
-        if (this.isAttacking) return;
-
-        this.sprite.stop();
-        const idleFrame = getIdleFrame(this.facingDirection);
-        this.sprite.setFrame(idleFrame);
-        if (this.armorSprite && this.equippedArmorWalkKey) {
-            this.armorSprite.stop();
-            this.armorSprite.setTexture(this.equippedArmorWalkKey);
-            this.armorSprite.setFrame(idleFrame);
-        }
-        if (this.legsSprite && this.equippedLegsWalkKey) {
-            this.legsSprite.stop();
-            this.legsSprite.setTexture(this.equippedLegsWalkKey);
-            this.legsSprite.setFrame(idleFrame);
-        }
-    }
-
-    // Sobrescreve o destroy para garantir a limpeza da memória
-    public destroy(fromScene?: boolean): void {
-        this.sprite.destroy();
-        this.nameText.destroy();
-        this.weaponSprite?.destroy();
-        this.armorSprite?.destroy();
-        this.legsSprite?.destroy();
-        super.destroy(fromScene);
+    public playHealEffect(): void {
+        this.animator.playHealEffect(this.x, this.y, this.nameTextOffsetY);
     }
 
     public updateLevelAndXP(newLevel: number, newExperience: number): void {
         if (newLevel > this.level) {
-            this.playLevelUpEffect();
+            this.animator.playLevelUpEffect(this.x, this.y, this.nameTextOffsetY);
         }
         this.level = newLevel;
         this.experience = newExperience;
-        
-        if (this.isDead) {
-            this.nameText.setText(`[Lv ${this.level}] ${this.name} 💀`);
-        } else {
-            this.nameText.setText(`[Lv ${this.level}] ${this.name}`);
-        }
+        this.nameText.setText(this.isDead
+            ? `[Lv ${this.level}] ${this.name} 💀`
+            : `[Lv ${this.level}] ${this.name}`
+        );
     }
 
-    public playHealEffect(): void {
-        const healText = this.scene.add.text(this.x, this.y - this.nameTextOffsetY - 25, '+HP', {
-            fontSize: '18px', color: '#00ff88', fontFamily: 'Inter', stroke: '#004422', strokeThickness: 3, fontStyle: 'bold'
-        }).setOrigin(0.5).setDepth(10001);
-
-        this.sprite.setTint(0x00ff88);
-        this.scene.time.delayedCall(200, () => {
-            if (!this.isDead) this.sprite.clearTint();
-        });
-
-        this.scene.tweens.add({
-            targets: healText,
-            y: healText.y - 50,
-            alpha: 0,
-            duration: 800,
-            ease: 'Cubic.easeOut',
-            onComplete: () => healText.destroy(),
-        });
-    }
-
-    private playLevelUpEffect(): void {
-        // Efeito visual (Tweens no sprite)
-        this.scene.tweens.add({
-            targets: this.sprite,
-            scaleY: this.sprite.scaleY * 1.3,
-            scaleX: this.sprite.scaleX * 1.1,
-            duration: 200,
-            yoyo: true,
-            ease: 'Quad.easeInOut'
-        });
-
-        // Efeito de flash glow (amarelo)
-        this.scene.tweens.add({
-            targets: this.sprite,
-            tint: 0xffff00,
-            duration: 300,
-            yoyo: true,
-            onComplete: () => {
-                if (!this.isDead) this.sprite.clearTint();
-            }
-        });
-
-        // Adiciona um texto "LEVEL UP!" temporário subindo
-        const levelUpText = this.scene.add.text(this.x, this.y - this.nameTextOffsetY - 25, "LEVEL UP!", {
-            fontSize: '20px', color: '#ffb700', fontFamily: 'Inter', stroke: '#000', strokeThickness: 4, fontStyle: 'bold'
-        }).setOrigin(0.5);
-        levelUpText.setDepth(10001);
-
-        this.scene.tweens.add({
-            targets: levelUpText,
-            y: levelUpText.y - 50,
-            alpha: 0,
-            duration: 2000,
-            ease: 'Cubic.easeOut',
-            onComplete: () => {
-                levelUpText.destroy();
-            }
-        });
-
-        // Opcional: Efeito de partículas
-        const particles = this.scene.add.particles(this.x, this.y - 10, 'hero', {
-            speed: { min: -100, max: 100 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 0.5, end: 0 },
-            blendMode: 'ADD',
-            lifespan: 1000,
-            gravityY: 100,
-            emitting: false
-        });
-        particles.setDepth(10000);
-        
-        // Emite algumas partículas subitamente e depois destrói o manipulador
-        particles.explode(20);
-        this.scene.time.delayedCall(1000, () => particles.destroy());
+    public destroy(fromScene?: boolean): void {
+        this.sprite.destroy();
+        this.nameText.destroy();
+        this.animator.destroy();
+        super.destroy(fromScene);
     }
 }
