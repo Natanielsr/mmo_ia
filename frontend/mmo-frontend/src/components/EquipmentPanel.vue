@@ -21,10 +21,7 @@
       @touchend="endTouchDrag($event)"
       @click="store.equipmentSlots[slotName] && store.requestUnequip(slotName)"
     >
-      <template v-if="store.equipmentSlots[slotName]">
-        <img v-if="iconSrc(store.equipmentSlots[slotName]!.type)" :src="iconSrc(store.equipmentSlots[slotName]!.type)" class="item-icon-img" />
-        <span class="item-name">{{ store.equipmentSlots[slotName]!.name }}</span>
-      </template>
+      <img v-if="store.equipmentSlots[slotName] && iconSrc(store.equipmentSlots[slotName]!.type)" :src="iconSrc(store.equipmentSlots[slotName]!.type)" class="item-icon-img" />
     </div>
 
     <div class="eq-stats">
@@ -118,14 +115,11 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: border-color 0.15s;
   overflow: hidden;
-  padding: 3px;
-  gap: 2px;
   position: relative;
   touch-action: none;
 }
@@ -135,38 +129,16 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   border-color: #6366f1;
 }
 
-.eq-slot::after {
-  content: attr(data-slot);
-  font-size: 0.45rem;
-  color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  position: absolute;
-  bottom: 2px;
-}
 
 .item-icon-img {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
   image-rendering: pixelated;
 }
 
-.item-name {
-  font-size: 0.5rem;
-  color: #f8fafc;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  padding: 0 2px;
-  margin-bottom: 8px;
-  pointer-events: none;
-  user-select: none;
-}
 
 /* Cross layout: col2=center, weapon/chest/shield=row2, legs/boots=rows3-4 */
 .eq-slot[data-slot="Helmet"] { grid-column: 2; grid-row: 1; }
@@ -184,8 +156,6 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
     grid-template-rows: repeat(4, 40px);
   }
   .eq-slot { width: 40px; height: 40px; }
-  .item-name { font-size: 0.45rem; margin-bottom: 6px; }
-  .eq-slot::after { font-size: 0.4rem; }
 }
 
 @media (max-width: 768px) {
@@ -193,9 +163,7 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
     grid-template-columns: repeat(3, 36px);
     grid-template-rows: repeat(4, 36px);
   }
-  .eq-slot { width: 36px; height: 36px; padding: 2px; }
-  .item-name { font-size: 0.4rem; margin-bottom: 5px; }
-  .eq-slot::after { font-size: 0.35rem; bottom: 1px; }
+  .eq-slot { width: 36px; height: 36px; }
 }
 
 @media (max-width: 480px) {
@@ -203,8 +171,6 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
     grid-template-columns: repeat(3, 32px);
     grid-template-rows: repeat(4, 32px);
   }
-  .eq-slot { width: 32px; height: 32px; padding: 1px; }
-  .item-name { font-size: 0.35rem; margin-bottom: 4px; }
-  .eq-slot::after { font-size: 0.3rem; bottom: 0; }
+  .eq-slot { width: 32px; height: 32px; }
 }
 </style>
