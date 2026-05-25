@@ -11,8 +11,8 @@ import {
 // para que os testes abaixo detectem o conflito.
 const BACKEND_EQUIPMENT_SLOTS = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots', 'Shield'] as const;
 
-// Slots que possuem overlay de body (exclui Weapon e Shield, tratados separadamente)
-const BACKEND_BODY_SLOTS = BACKEND_EQUIPMENT_SLOTS.filter(s => s !== 'Weapon' && s !== 'Shield');
+// Slots que possuem overlay de body (exclui apenas Weapon, tratado separadamente)
+const BACKEND_BODY_SLOTS = BACKEND_EQUIPMENT_SLOTS.filter(s => s !== 'Weapon');
 
 describe('BODY_SLOTS — nomes de slot vs backend EquipmentSlot enum', () => {
     it('nenhum slot usa "Feet" — deve ser "Boots" para coincidir com o backend', () => {
@@ -58,6 +58,11 @@ describe('getBodyOverlayConfig — lookup por slot + item', () => {
 
     it('retorna config para Iron Helmet no slot Helmet', () => {
         const cfg = getBodyOverlayConfig('Helmet', 'Iron Helmet');
+        expect(cfg).not.toBeNull();
+    });
+
+    it('retorna config para Wooden Shield no slot Shield', () => {
+        const cfg = getBodyOverlayConfig('Shield', 'Wooden Shield');
         expect(cfg).not.toBeNull();
     });
 });

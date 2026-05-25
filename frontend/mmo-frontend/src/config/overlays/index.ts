@@ -2,6 +2,7 @@ import { ARMOR_OVERLAY_REGISTRY, type ArmorOverlayConfig } from './armorOverlayR
 import { LEGS_OVERLAY_REGISTRY } from './legsOverlayRegistry'
 import { HEAD_OVERLAY_REGISTRY } from './headOverlayRegistry'
 import { FEET_OVERLAY_REGISTRY } from './feetOverlayRegistry'
+import { SHIELD_OVERLAY_REGISTRY } from './shieldOverlayRegistry'
 
 export type BodyOverlayConfig = ArmorOverlayConfig
 
@@ -10,6 +11,7 @@ const BODY_SLOT_REGISTRIES: Record<string, Record<string, BodyOverlayConfig>> = 
     'Legs':   LEGS_OVERLAY_REGISTRY,
     'Helmet': HEAD_OVERLAY_REGISTRY,
     'Boots':  FEET_OVERLAY_REGISTRY,
+    'Shield': SHIELD_OVERLAY_REGISTRY,
 }
 
 export function getBodyOverlayConfig(slot: string, itemName: string): BodyOverlayConfig | null {

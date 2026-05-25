@@ -135,6 +135,8 @@ export class PlayerAnimator {
             this.container.add(sprite);
             this.overlaySprites.set(slot, sprite);
         }
+        const shieldSprite = this.overlaySprites.get('Shield');
+        if (shieldSprite) this.container.bringToTop(shieldSprite);
     }
 
     setEquippedWeaponOverlay(textureKey: string | null): void {
