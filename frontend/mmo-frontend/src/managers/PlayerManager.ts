@@ -3,7 +3,8 @@ import Phaser from 'phaser';
 import { Player } from '../entities/Player';
 import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '../config/constants';
 import { gridToWorld } from '../utils/coords';
-import type { PlayerPosData, Position } from '../types';
+import type { PlayerData, Position } from '../types';
+import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
 
 export class PlayerManager {
     private scene: Phaser.Scene;
@@ -48,9 +49,15 @@ export class PlayerManager {
         }
     }
 
-    private spawnNewPlayer(id: string, name: string, playerPosData: PlayerPosData, worldPosition: Position, isMe: boolean): void {
+    private spawnNewPlayer(id: string, name: string, playerPosData: PlayerData, worldPosition: Position, isMe: boolean): void {
         const newPlayer = new Player(id, name, playerPosData, worldPosition, this.scene, GRID_SIZE);
         this.players[id] = newPlayer;
+
+        const weaponName = (playerPosData as any).equippedWeaponName ?? (playerPosData as any).EquippedWeaponName;
+        if (weaponName) {
+            const cfg = getWeaponOverlayConfig(weaponName);
+            newPlayer.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+        }
 
         if (isMe) {
             this.myId = id;

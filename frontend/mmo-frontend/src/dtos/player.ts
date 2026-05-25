@@ -1,7 +1,8 @@
-export interface PlayerPosData {
+export interface PlayerData {
     id: string;
     name: string;
     position: import('./position').Position;
+    equippedWeaponName?: string | null;
 }
 
 export interface PlayerStatusData {

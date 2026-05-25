@@ -14,6 +14,7 @@ import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
 import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
+import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
 import { DevConsole } from './DevConsole';
 
 
@@ -163,6 +164,17 @@ export class MainScene extends Phaser.Scene {
             this.equipmentManager.getTotalAttackBonus(),
             this.equipmentManager.getTotalDefenseBonus(),
         );
+
+        const weaponItem = slots['Weapon'];
+        const cfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
+        this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+    }
+
+    public playerWeaponEquipped(playerId: string, weaponName: string | null): void {
+        const player = this.playerManager.getPlayer(playerId);
+        if (!player) return;
+        const cfg = weaponName ? getWeaponOverlayConfig(weaponName) : null;
+        player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
     }
 
     // --- Chunk Logic ---

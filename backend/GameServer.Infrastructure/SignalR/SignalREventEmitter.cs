@@ -19,7 +19,7 @@ namespace GameServer.Infrastructure.SignalR
             _playerManager = playerManager;
         }
 
-        public void OnPlayerMoved(PlayerPositionData playerPositionData)
+        public void OnPlayerMoved(PlayerData playerPositionData)
         {
             _hubContext.Clients.All.SendAsync("PlayerMoved", playerPositionData);
         }
@@ -34,7 +34,7 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerStatusUpdated", playerStatusData);
         }
 
-        public void OnPlayerJoined(PlayerPositionData playerPositionData)
+        public void OnPlayerJoined(PlayerData playerPositionData)
         {
             _hubContext.Clients.All.SendAsync("PlayerJoined", playerPositionData);
         }
@@ -161,6 +161,11 @@ namespace GameServer.Infrastructure.SignalR
         {
             // Envia apenas para o jogador que está carregando o chunk
             _hubContext.Clients.Client(connectionId).SendAsync("ChunkLoaded", chunkData);
+        }
+
+        public void OnPlayerWeaponEquipped(string playerId, string? weaponName)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerWeaponEquipped", new { PlayerId = playerId, WeaponName = weaponName });
         }
     }
 }

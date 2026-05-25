@@ -10,7 +10,7 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player moves to a new position.
         /// </summary>
-        void OnPlayerMoved(PlayerPositionData playerPositionData);
+        void OnPlayerMoved(PlayerData playerPositionData);
 
         /// <summary>
         /// Triggered when player HP changes (damage, regen, heal). Does not carry level/stats.
@@ -25,7 +25,7 @@ namespace GameServerApp.Contracts.World
         /// <summary>
         /// Triggered when a player joins the world.
         /// </summary>
-        void OnPlayerJoined(PlayerPositionData playerPositionData);
+        void OnPlayerJoined(PlayerData playerPositionData);
 
         /// <summary>
         /// Triggered when a player attacks another player/target.
@@ -101,5 +101,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a chunk is loaded for a player.
         /// </summary>
         void OnChunkLoaded(string connectionId, ChunkData chunkData);
+
+        /// <summary>
+        /// Triggered when a player equips or unequips a weapon. Broadcast to all players.
+        /// </summary>
+        void OnPlayerWeaponEquipped(string playerId, string? weaponName);
     }
 }

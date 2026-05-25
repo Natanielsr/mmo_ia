@@ -51,6 +51,8 @@ namespace GameServerApp.Processors
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
+            var equippedWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
+            _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), equippedWeapon);
             return true;
         }
 
@@ -79,6 +81,8 @@ namespace GameServerApp.Processors
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
+            var currentWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
+            _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), currentWeapon);
             return true;
         }
 

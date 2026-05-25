@@ -18,7 +18,7 @@ vi.mock('phaser', () => ({
 
 import { Player } from '../../entities/Player';
 import { makeScene } from '../mocks/scene';
-import type { PlayerPosData } from '../../types';
+import type { PlayerData } from '../../types';
 
 const BASE_DATA = {
     id: 'p1',
@@ -29,11 +29,11 @@ const BASE_DATA = {
     level: 1,
     experience: 0,
     isDead: false,
-} as unknown as PlayerPosData;
+} as unknown as PlayerData;
 
 const WORLD_POS = { x: 160, y: -224 };
 
-function makePlayer(overrides: Partial<PlayerPosData> = {}): Player {
+function makePlayer(overrides: Partial<PlayerData> = {}): Player {
     return new Player('p1', 'Hero', { ...BASE_DATA, ...overrides }, WORLD_POS, makeScene() as never, 64);
 }
 
@@ -48,7 +48,7 @@ describe('Player — constructor', () => {
     });
 
     it('suporta casing flexível (PascalCase do backend)', () => {
-        const data = { id: 'p1', name: 'Hero', position: { x: 0, y: 0 }, Hp: 80, MaxHp: 120, Level: 3, Experience: 2500 } as unknown as PlayerPosData;
+        const data = { id: 'p1', name: 'Hero', position: { x: 0, y: 0 }, Hp: 80, MaxHp: 120, Level: 3, Experience: 2500 } as unknown as PlayerData;
         const p = new Player('p1', 'Hero', data, WORLD_POS, makeScene() as never, 64);
         expect(p.hp).toBe(80);
         expect(p.maxHp).toBe(120);
@@ -57,7 +57,7 @@ describe('Player — constructor', () => {
     });
 
     it('usa defaults quando propriedades estão ausentes', () => {
-        const data = { id: 'p1', name: 'Hero', position: { x: 0, y: 0 } } as unknown as PlayerPosData;
+        const data = { id: 'p1', name: 'Hero', position: { x: 0, y: 0 } } as unknown as PlayerData;
         const p = new Player('p1', 'Hero', data, WORLD_POS, makeScene() as never, 64);
         expect(p.hp).toBe(100);
         expect(p.maxHp).toBe(100);
@@ -144,5 +144,80 @@ describe('Player.destroy', () => {
     it('não lança erro ao destruir', () => {
         const p = makePlayer();
         expect(() => p.destroy()).not.toThrow();
+    });
+});
+
+describe('Player.setEquippedWeaponOverlay', () => {
+    it('null não cria sprite extra', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        p.setEquippedWeaponOverlay(null);
+
+        expect((scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length).toBe(callsBefore);
+    });
+
+    it('textureKey válida cria weaponSprite', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+
+        p.setEquippedWeaponOverlay('weapon_dagger');
+
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+    });
+
+    it('chamar duas vezes com mesma key não cria sprite duplicado', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger');
+
+        expect((scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length).toBe(callsBefore + 1);
+    });
+
+    it('null após weapon definida destrói o sprite', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger');
+        const calls = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results;
+        const weaponSprite = calls[calls.length - 1].value;
+
+        p.setEquippedWeaponOverlay(null);
+
+        expect(weaponSprite.destroy).toHaveBeenCalled();
+    });
+});
+
+describe('Player.playAttackAnimation — weapon overlay', () => {
+    it('com arma equipada: mostra e anima weaponSprite', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        p.playAttackAnimation(0, 50); // south
+
+        expect(weaponSprite.setVisible).toHaveBeenCalledWith(true);
+        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger-south', true);
+    });
+
+    it('sem arma equipada: não lança erro', () => {
+        const p = makePlayer();
+        expect(() => p.playAttackAnimation(0, 50)).not.toThrow();
+    });
+
+    it('com arma equipada: east quando dx > dy', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        // WORLD_POS = (160, -224); target (1000, -224) → dx=840, dy=0 → east
+        p.playAttackAnimation(1000, -224);
+
+        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger-east', true);
     });
 });

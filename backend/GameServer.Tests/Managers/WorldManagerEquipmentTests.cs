@@ -129,5 +129,79 @@ namespace GameServer.Tests.Managers
             _b.Events.Verify(e => e.OnPlayerStatusUpdated(It.Is<PlayerStatusData>(d =>
                 d.Id == "1" && d.AttackPower == 15)), Times.Once);
         }
+
+        // ── OnPlayerWeaponEquipped broadcast ──────────────────────────────────
+
+        [Fact]
+        public void ProcessEquipItem_Weapon_Fires_WeaponEquipped_With_WeaponName()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
+
+            _b.Build().ProcessEquipItem(player, "d1");
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessEquipItem_Armor_With_No_Weapon_Fires_WeaponEquipped_Null()
+        {
+            var vest = new Armor("a1", "Leather Vest", 2f, P, defenseBonus: 3);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(vest));
+
+            _b.Build().ProcessEquipItem(player, "a1");
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Weapon_Fires_WeaponEquipped_Null()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(addToEq: e => e.Equip(dagger));
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Weapon);
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_NonWeaponSlot_Fires_WeaponEquipped_With_CurrentWeaponName()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var vest   = new Armor ("a1", "Leather Vest", 2f, P, defenseBonus: 3);
+            var (player, _, _) = Setup(
+                addToEq: e => { e.Equip(dagger); e.Equip(vest); });
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Chest);
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessEquipItem_DeadPlayer_Does_Not_Fire_WeaponEquipped()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
+            player.Die();
+
+            _b.Build().ProcessEquipItem(player, "d1");
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public void ProcessEquipItem_Displaces_OldWeapon_Fires_WeaponEquipped_With_NewWeaponName()
+        {
+            var sword  = new Weapon("w1", "Sword",  1f, P, attackBonus: 5);
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(
+                addToInv: i => i.AddItem(dagger),
+                addToEq:  e => e.Equip(sword));
+
+            _b.Build().ProcessEquipItem(player, "d1");
+
+            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
+        }
     }
 }

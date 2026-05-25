@@ -132,3 +132,45 @@ describe('PlayerManager.getMyPlayer — edge cases', () => {
         expect(pm.getMyPlayer()).toBeNull();
     });
 });
+
+describe('PlayerManager — weapon overlay ao spawnar', () => {
+    it('equippedWeaponName Dagger → cria weaponSprite com weapon_dagger', () => {
+        const scene = makeScene();
+        const pm = new PlayerManager(scene as never);
+
+        pm.updatePlayerPosition({ ...PLAYER_DATA, equippedWeaponName: 'Dagger' }, false);
+
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+    });
+
+    it('EquippedWeaponName PascalCase também aplica overlay', () => {
+        const scene = makeScene();
+        const pm = new PlayerManager(scene as never);
+
+        pm.updatePlayerPosition({ ...PLAYER_DATA, EquippedWeaponName: 'Dagger' }, false);
+
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+    });
+
+    it('sem equippedWeaponName não cria sprite extra', () => {
+        const scene = makeScene();
+        const pm = new PlayerManager(scene as never);
+
+        pm.updatePlayerPosition(PLAYER_DATA, false);
+
+        const spriteCalls = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls;
+        const weaponCall = spriteCalls.find((args: unknown[]) => String(args[2]).startsWith('weapon_'));
+        expect(weaponCall).toBeUndefined();
+    });
+
+    it('nome de arma desconhecida não cria sprite overlay', () => {
+        const scene = makeScene();
+        const pm = new PlayerManager(scene as never);
+
+        pm.updatePlayerPosition({ ...PLAYER_DATA, equippedWeaponName: 'SwordOfUnknown' }, false);
+
+        const spriteCalls = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls;
+        const weaponCall = spriteCalls.find((args: unknown[]) => String(args[2]).startsWith('weapon_'));
+        expect(weaponCall).toBeUndefined();
+    });
+});

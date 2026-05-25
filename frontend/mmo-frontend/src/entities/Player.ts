@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { Position, PlayerPosData } from '../types';
+import type { Position, PlayerData } from '../types';
 import { getDirectionAnimation, getIdleFrame } from '../utils/playerAnimations';
 import { getPlayerHealthColor } from '../utils/healthColors';
 
@@ -21,11 +21,13 @@ export class Player extends Phaser.GameObjects.Container {
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
     public isAttacking: boolean = false;
     private facingDirection: string = 'south';
+    private weaponSprite: Phaser.GameObjects.Sprite | null = null;
+    private equippedWeaponTextureKey: string | null = null;
 
     constructor(
         id: string,
         name: string,
-        playerPosData: PlayerPosData, // Modified to receive entire playerData
+        playerPosData: PlayerData, // Modified to receive entire playerData
         worldPosition: Position,
         scene: Phaser.Scene,
         gridSize: number) {
@@ -170,6 +172,22 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
 
+    public setEquippedWeaponOverlay(textureKey: string | null): void {
+        if (!textureKey) {
+            this.weaponSprite?.destroy();
+            this.weaponSprite = null;
+            this.equippedWeaponTextureKey = null;
+            return;
+        }
+        this.equippedWeaponTextureKey = textureKey;
+        if (!this.weaponSprite) {
+            this.weaponSprite = this.scene.add.sprite(0, 0, textureKey, 0);
+            this.weaponSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
+            this.weaponSprite.setVisible(false);
+            this.add(this.weaponSprite);
+        }
+    }
+
     public playAttackAnimation(targetX: number, targetY: number): void {
         const dx = targetX - this.x;
         const dy = targetY - this.y;
@@ -192,11 +210,19 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.setTexture('hero_slash');
         this.sprite.play(animKey, true);
 
+        // Overlay de arma sincronizado com o ataque
+        if (this.weaponSprite && this.equippedWeaponTextureKey) {
+            this.weaponSprite.setVisible(true);
+            this.weaponSprite.play(`${this.equippedWeaponTextureKey}-${animSuffix}`, true);
+        }
+
         // Volta ao normal no fim
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key === animKey) {
                 this.isAttacking = false;
                 this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
+                this.weaponSprite?.setVisible(false);
+                this.weaponSprite?.stop();
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
                 });
@@ -216,6 +242,7 @@ export class Player extends Phaser.GameObjects.Container {
     public destroy(fromScene?: boolean): void {
         this.sprite.destroy();
         this.nameText.destroy();
+        this.weaponSprite?.destroy();
         super.destroy(fromScene);
     }
 

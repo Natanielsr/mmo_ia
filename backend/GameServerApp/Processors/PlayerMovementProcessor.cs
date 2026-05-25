@@ -50,7 +50,7 @@ namespace GameServerApp.Processors
             player.Move(targetPos);
             _collisionManager.UpdateObjectPosition(player, oldPos);
 
-            _worldEvents.OnPlayerMoved(new PlayerPositionData
+            _worldEvents.OnPlayerMoved(new PlayerData
             {
                 Id = player.Id.ToString(),
                 Name = player.Name,

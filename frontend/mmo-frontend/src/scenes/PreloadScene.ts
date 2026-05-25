@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { WEAPON_OVERLAY_REGISTRY } from '../utils/weaponOverlayRegistry';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -16,6 +17,13 @@ export class PreloadScene extends Phaser.Scene {
             frameWidth: 64,
             frameHeight: 64
         });
+
+        for (const cfg of Object.values(WEAPON_OVERLAY_REGISTRY)) {
+            this.load.spritesheet(cfg.textureKey, cfg.assetPath, {
+                frameWidth: cfg.frameWidth,
+                frameHeight: cfg.frameHeight
+            });
+        }
 
 
         // Futuro: outros assets podem ser carregados aqui
@@ -115,5 +123,19 @@ export class PreloadScene extends Phaser.Scene {
             frameRate: 24,
             repeat: 0
         });
+
+        // Animações de overlay de armas (geradas automaticamente pelo registry)
+        const dirs = ['north', 'west', 'south', 'east'] as const;
+        for (const cfg of Object.values(WEAPON_OVERLAY_REGISTRY)) {
+            for (const dir of dirs) {
+                const [start, end] = cfg.directionFrames[dir];
+                this.anims.create({
+                    key: `${cfg.textureKey}-${dir}`,
+                    frames: this.anims.generateFrameNumbers(cfg.textureKey, { start, end }),
+                    frameRate: cfg.frameRate,
+                    repeat: 0
+                });
+            }
+        }
     }
 }

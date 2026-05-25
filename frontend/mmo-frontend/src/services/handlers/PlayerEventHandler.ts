@@ -1,6 +1,6 @@
 import type { HubConnection } from '@microsoft/signalr';
 import type { MainScene } from '../../scenes/MainScene';
-import type { PlayerPosData, AttackData } from '../../types';
+import type { PlayerData, AttackData } from '../../types';
 import { gameContainer } from '../../ui';
 import type { useGameStore } from '../../stores/gameStore';
 
@@ -85,7 +85,7 @@ export class PlayerEventHandler {
             });
         });
 
-        this.connection.on("PlayerJoined", (playerPosData: PlayerPosData) => {
+        this.connection.on("PlayerJoined", (playerPosData: PlayerData) => {
             this.store.addLog(`${playerPosData.name} entrou no mundo!`);
             if (playerPosData.position.x !== undefined && playerPosData.position.y !== undefined) {
                 this.scene.updatePlayerPosition(playerPosData);
@@ -129,6 +129,12 @@ export class PlayerEventHandler {
             if (this.scene.getMyPlayer()?.id === playerId.toString()) {
                 this.store.updateCharacterStatus({ hp: 0, isDead: true });
             }
+        });
+
+        this.connection.on("PlayerWeaponEquipped", (data: { playerId: string; weaponName: string | null }) => {
+            const playerId = data.playerId ?? (data as any).PlayerId;
+            const weaponName = data.weaponName ?? (data as any).WeaponName ?? null;
+            this.scene.playerWeaponEquipped(playerId, weaponName);
         });
     }
 }
