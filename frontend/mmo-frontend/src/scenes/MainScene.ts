@@ -15,9 +15,7 @@ import type { Monster } from '../entities/Monster';
 import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
 import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
-import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
-import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
-import { getHeadOverlayConfig } from '../config/overlays/headOverlayRegistry';
+import { getBodyOverlayConfig, BODY_SLOTS } from '../config/overlays';
 import { DevConsole } from './DevConsole';
 
 
@@ -172,17 +170,11 @@ export class MainScene extends Phaser.Scene {
         const weaponCfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
         this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(weaponCfg?.textureKey ?? null);
 
-        const armorItem = slots['Chest'];
-        const armorCfg = armorItem ? getArmorOverlayConfig(armorItem.name) : null;
-        this.playerManager.getMyPlayer()?.setEquippedArmorOverlay(armorCfg?.walkTextureKey ?? null, armorCfg?.slashTextureKey ?? null);
-
-        const legsItem = slots['Legs'];
-        const legsCfg = legsItem ? getLegsOverlayConfig(legsItem.name) : null;
-        this.playerManager.getMyPlayer()?.setEquippedLegsOverlay(legsCfg?.walkTextureKey ?? null, legsCfg?.slashTextureKey ?? null);
-
-        const helmetItem = slots['Helmet'];
-        const helmetCfg = helmetItem ? getHeadOverlayConfig(helmetItem.name) : null;
-        this.playerManager.getMyPlayer()?.setEquippedHeadOverlay(helmetCfg?.walkTextureKey ?? null, helmetCfg?.slashTextureKey ?? null);
+        for (const slot of BODY_SLOTS) {
+            const item = slots[slot as EquipmentSlot];
+            const cfg = item ? getBodyOverlayConfig(slot, item.name) : null;
+            this.playerManager.getMyPlayer()?.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+        }
     }
 
     public playerWeaponEquipped(playerId: string, weaponName: string | null): void {
@@ -192,25 +184,16 @@ export class MainScene extends Phaser.Scene {
         player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
     }
 
-    public playerArmorEquipped(playerId: string, armorName: string | null): void {
+    public playerItemEquipped(playerId: string, slot: string, itemName: string | null): void {
         const player = this.playerManager.getPlayer(playerId);
         if (!player) return;
-        const cfg = armorName ? getArmorOverlayConfig(armorName) : null;
-        player.setEquippedArmorOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
-    }
-
-    public playerLegsEquipped(playerId: string, legsName: string | null): void {
-        const player = this.playerManager.getPlayer(playerId);
-        if (!player) return;
-        const cfg = legsName ? getLegsOverlayConfig(legsName) : null;
-        player.setEquippedLegsOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
-    }
-
-    public playerHelmetEquipped(playerId: string, helmetName: string | null): void {
-        const player = this.playerManager.getPlayer(playerId);
-        if (!player) return;
-        const cfg = helmetName ? getHeadOverlayConfig(helmetName) : null;
-        player.setEquippedHeadOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+        if (slot === 'Weapon') {
+            const cfg = itemName ? getWeaponOverlayConfig(itemName) : null;
+            player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+        } else {
+            const cfg = itemName ? getBodyOverlayConfig(slot, itemName) : null;
+            player.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+        }
     }
 
     // --- Chunk Logic ---

@@ -130,56 +130,88 @@ namespace GameServer.Tests.Managers
                 d.Id == "1" && d.AttackPower == 15)), Times.Once);
         }
 
-        // ── OnPlayerWeaponEquipped broadcast ──────────────────────────────────
+        // ── OnPlayerItemEquipped broadcast ───────────────────────────────────
 
         [Fact]
-        public void ProcessEquipItem_Weapon_Fires_WeaponEquipped_With_WeaponName()
+        public void ProcessEquipItem_Weapon_Fires_ItemEquipped_With_Slot_And_Name()
         {
             var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
 
             _b.Build().ProcessEquipItem(player, "d1");
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
         }
 
         [Fact]
-        public void ProcessEquipItem_Armor_With_No_Weapon_Fires_WeaponEquipped_Null()
+        public void ProcessEquipItem_Legs_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var vest = new Armor("a1", "Leather Vest", 2f, P, defenseBonus: 3);
-            var (player, _, _) = Setup(addToInv: i => i.AddItem(vest));
+            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(pants));
 
-            _b.Build().ProcessEquipItem(player, "a1");
+            _b.Build().ProcessEquipItem(player, "l1");
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", null), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Legs", "Leather Pants"), Times.Once);
         }
 
         [Fact]
-        public void ProcessUnequipItem_Weapon_Fires_WeaponEquipped_Null()
+        public void ProcessEquipItem_Helmet_Fires_ItemEquipped_With_Slot_And_Name()
+        {
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(helmet));
+
+            _b.Build().ProcessEquipItem(player, "h1");
+
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Helmet", "Iron Helmet"), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Weapon_Fires_ItemEquipped_With_Null()
         {
             var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
             var (player, _, _) = Setup(addToEq: e => e.Equip(dagger));
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Weapon);
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", null), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", null), Times.Once);
         }
 
         [Fact]
-        public void ProcessUnequipItem_NonWeaponSlot_Fires_WeaponEquipped_With_CurrentWeaponName()
+        public void ProcessUnequipItem_Legs_Fires_ItemEquipped_With_Null()
+        {
+            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var (player, _, _) = Setup(addToEq: e => e.Equip(pants));
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Legs);
+
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Legs", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Helmet_Fires_ItemEquipped_With_Null()
+        {
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var (player, _, _) = Setup(addToEq: e => e.Equip(helmet));
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Helmet);
+
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Helmet", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Chest_Still_Fires_Weapon_Slot_With_Current_Weapon()
         {
             var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
             var vest   = new Armor ("a1", "Leather Vest", 2f, P, defenseBonus: 3);
-            var (player, _, _) = Setup(
-                addToEq: e => { e.Equip(dagger); e.Equip(vest); });
+            var (player, _, _) = Setup(addToEq: e => { e.Equip(dagger); e.Equip(vest); });
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Chest);
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
         }
 
         [Fact]
-        public void ProcessEquipItem_DeadPlayer_Does_Not_Fire_WeaponEquipped()
+        public void ProcessEquipItem_DeadPlayer_Does_Not_Fire_ItemEquipped()
         {
             var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
@@ -187,11 +219,11 @@ namespace GameServer.Tests.Managers
 
             _b.Build().ProcessEquipItem(player, "d1");
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string?>()), Times.Never);
         }
 
         [Fact]
-        public void ProcessEquipItem_Displaces_OldWeapon_Fires_WeaponEquipped_With_NewWeaponName()
+        public void ProcessEquipItem_Displaces_OldWeapon_Fires_ItemEquipped_With_NewWeaponName()
         {
             var sword  = new Weapon("w1", "Sword",  1f, P, attackBonus: 5);
             var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
@@ -201,77 +233,7 @@ namespace GameServer.Tests.Managers
 
             _b.Build().ProcessEquipItem(player, "d1");
 
-            _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
-        }
-
-        // ── OnPlayerLegsEquipped broadcast ───────────────────────────────────
-
-        [Fact]
-        public void ProcessEquipItem_Legs_Fires_LegsEquipped_With_LegsName()
-        {
-            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
-            var (player, _, _) = Setup(addToInv: i => i.AddItem(pants));
-
-            _b.Build().ProcessEquipItem(player, "l1");
-
-            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", "Leather Pants"), Times.Once);
-        }
-
-        [Fact]
-        public void ProcessUnequipItem_Legs_Fires_LegsEquipped_Null()
-        {
-            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
-            var (player, _, _) = Setup(addToEq: e => e.Equip(pants));
-
-            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Legs);
-
-            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", null), Times.Once);
-        }
-
-        [Fact]
-        public void ProcessEquipItem_Weapon_Fires_LegsEquipped_Null_When_No_Legs()
-        {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
-            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
-
-            _b.Build().ProcessEquipItem(player, "d1");
-
-            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", null), Times.Once);
-        }
-
-        // ── OnPlayerHelmetEquipped broadcast ─────────────────────────────────
-
-        [Fact]
-        public void ProcessEquipItem_Helmet_Fires_HelmetEquipped_With_HelmetName()
-        {
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
-            var (player, _, _) = Setup(addToInv: i => i.AddItem(helmet));
-
-            _b.Build().ProcessEquipItem(player, "h1");
-
-            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", "Iron Helmet"), Times.Once);
-        }
-
-        [Fact]
-        public void ProcessUnequipItem_Helmet_Fires_HelmetEquipped_Null()
-        {
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
-            var (player, _, _) = Setup(addToEq: e => e.Equip(helmet));
-
-            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Helmet);
-
-            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", null), Times.Once);
-        }
-
-        [Fact]
-        public void ProcessEquipItem_Weapon_Fires_HelmetEquipped_Null_When_No_Helmet()
-        {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
-            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
-
-            _b.Build().ProcessEquipItem(player, "d1");
-
-            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", null), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
         }
     }
 }

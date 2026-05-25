@@ -51,14 +51,8 @@ namespace GameServerApp.Processors
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
-            var equippedWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
-            _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), equippedWeapon);
-            var equippedArmor = eq.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) ? a?.Name : null;
-            _worldEvents.OnPlayerArmorEquipped(player.Id.ToString(), equippedArmor);
-            var equippedLegs = eq.GetAllSlots().TryGetValue(EquipmentSlot.Legs, out var l) ? l?.Name : null;
-            _worldEvents.OnPlayerLegsEquipped(player.Id.ToString(), equippedLegs);
-            var equippedHelmet = eq.GetAllSlots().TryGetValue(EquipmentSlot.Helmet, out var h) ? h?.Name : null;
-            _worldEvents.OnPlayerHelmetEquipped(player.Id.ToString(), equippedHelmet);
+            foreach (var kvp in eq.GetAllSlots())
+                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.Name);
             return true;
         }
 
@@ -87,14 +81,8 @@ namespace GameServerApp.Processors
             });
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
-            var currentWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
-            _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), currentWeapon);
-            var currentArmor = eq.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) ? a?.Name : null;
-            _worldEvents.OnPlayerArmorEquipped(player.Id.ToString(), currentArmor);
-            var currentLegs = eq.GetAllSlots().TryGetValue(EquipmentSlot.Legs, out var l) ? l?.Name : null;
-            _worldEvents.OnPlayerLegsEquipped(player.Id.ToString(), currentLegs);
-            var currentHelmet = eq.GetAllSlots().TryGetValue(EquipmentSlot.Helmet, out var h) ? h?.Name : null;
-            _worldEvents.OnPlayerHelmetEquipped(player.Id.ToString(), currentHelmet);
+            foreach (var kvp in eq.GetAllSlots())
+                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.Name);
             return true;
         }
 

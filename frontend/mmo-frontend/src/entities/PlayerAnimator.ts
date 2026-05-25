@@ -9,15 +9,9 @@ export class PlayerAnimator {
 
     private weaponSprite: Phaser.GameObjects.Sprite | null = null;
     private equippedWeaponTextureKey: string | null = null;
-    private armorSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedArmorWalkKey: string | null = null;
-    private equippedArmorSlashKey: string | null = null;
-    private legsSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedLegsWalkKey: string | null = null;
-    private equippedLegsSlashKey: string | null = null;
-    private headSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedHeadWalkKey: string | null = null;
-    private equippedHeadSlashKey: string | null = null;
+    private overlaySprites   = new Map<string, Phaser.GameObjects.Sprite>();
+    private overlayWalkKeys  = new Map<string, string>();
+    private overlaySlashKeys = new Map<string, string | null>();
 
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
     public isAttacking: boolean = false;
@@ -46,12 +40,10 @@ export class PlayerAnimator {
         if (this.isAttacking) return;
         if (this.sprite.texture.key !== 'hero') this.sprite.setTexture('hero');
         this.sprite.play(animKey, true);
-        if (this.armorSprite && this.equippedArmorWalkKey)
-            this.armorSprite.play(`${this.equippedArmorWalkKey}-${this.facingDirection}`, true);
-        if (this.legsSprite && this.equippedLegsWalkKey)
-            this.legsSprite.play(`${this.equippedLegsWalkKey}-${this.facingDirection}`, true);
-        if (this.headSprite && this.equippedHeadWalkKey)
-            this.headSprite.play(`${this.equippedHeadWalkKey}-${this.facingDirection}`, true);
+        for (const [slot, sprite] of this.overlaySprites) {
+            const walkKey = this.overlayWalkKeys.get(slot);
+            if (walkKey) sprite.play(`${walkKey}-${this.facingDirection}`, true);
+        }
     }
 
     cancelStopWalkingTimer(): void {
@@ -70,20 +62,13 @@ export class PlayerAnimator {
         this.sprite.stop();
         const idleFrame = getIdleFrame(this.facingDirection);
         this.sprite.setFrame(idleFrame);
-        if (this.armorSprite && this.equippedArmorWalkKey) {
-            this.armorSprite.stop();
-            this.armorSprite.setTexture(this.equippedArmorWalkKey);
-            this.armorSprite.setFrame(idleFrame);
-        }
-        if (this.legsSprite && this.equippedLegsWalkKey) {
-            this.legsSprite.stop();
-            this.legsSprite.setTexture(this.equippedLegsWalkKey);
-            this.legsSprite.setFrame(idleFrame);
-        }
-        if (this.headSprite && this.equippedHeadWalkKey) {
-            this.headSprite.stop();
-            this.headSprite.setTexture(this.equippedHeadWalkKey);
-            this.headSprite.setFrame(idleFrame);
+        for (const [slot, sprite] of this.overlaySprites) {
+            const walkKey = this.overlayWalkKeys.get(slot);
+            if (walkKey) {
+                sprite.stop();
+                sprite.setTexture(walkKey);
+                sprite.setFrame(idleFrame);
+            }
         }
     }
 
@@ -109,17 +94,12 @@ export class PlayerAnimator {
             this.weaponSprite.setVisible(true);
             this.weaponSprite.play(`${this.equippedWeaponTextureKey}-${animSuffix}`, true);
         }
-        if (this.armorSprite && this.equippedArmorSlashKey) {
-            this.armorSprite.setTexture(this.equippedArmorSlashKey);
-            this.armorSprite.play(`${this.equippedArmorSlashKey}-${animSuffix}`, true);
-        }
-        if (this.legsSprite && this.equippedLegsSlashKey) {
-            this.legsSprite.setTexture(this.equippedLegsSlashKey);
-            this.legsSprite.play(`${this.equippedLegsSlashKey}-${animSuffix}`, true);
-        }
-        if (this.headSprite && this.equippedHeadSlashKey) {
-            this.headSprite.setTexture(this.equippedHeadSlashKey);
-            this.headSprite.play(`${this.equippedHeadSlashKey}-${animSuffix}`, true);
+        for (const [slot, sprite] of this.overlaySprites) {
+            const slashKey = this.overlaySlashKeys.get(slot);
+            if (slashKey) {
+                sprite.setTexture(slashKey);
+                sprite.play(`${slashKey}-${animSuffix}`, true);
+            }
         }
 
         this.sprite.once('animationcomplete', (animation: any) => {
@@ -128,70 +108,32 @@ export class PlayerAnimator {
             this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
             this.weaponSprite?.setVisible(false);
             this.weaponSprite?.stop();
-            if (this.armorSprite && this.equippedArmorWalkKey) {
-                this.armorSprite.setTexture(this.equippedArmorWalkKey);
-                this.armorSprite.setFrame(getIdleFrame(this.facingDirection));
-            }
-            if (this.legsSprite && this.equippedLegsWalkKey) {
-                this.legsSprite.setTexture(this.equippedLegsWalkKey);
-                this.legsSprite.setFrame(getIdleFrame(this.facingDirection));
-            }
-            if (this.headSprite && this.equippedHeadWalkKey) {
-                this.headSprite.setTexture(this.equippedHeadWalkKey);
-                this.headSprite.setFrame(getIdleFrame(this.facingDirection));
+            for (const [slot, sprite] of this.overlaySprites) {
+                const walkKey = this.overlayWalkKeys.get(slot);
+                if (walkKey) {
+                    sprite.setTexture(walkKey);
+                    sprite.setFrame(getIdleFrame(this.facingDirection));
+                }
             }
             this.scheduleStopWalking();
         });
     }
 
-    setEquippedArmorOverlay(walkKey: string | null, slashKey: string | null): void {
+    setEquippedBodyOverlay(slot: string, walkKey: string | null, slashKey: string | null): void {
         if (!walkKey) {
-            this.armorSprite?.destroy();
-            this.armorSprite = null;
-            this.equippedArmorWalkKey = null;
-            this.equippedArmorSlashKey = null;
+            this.overlaySprites.get(slot)?.destroy();
+            this.overlaySprites.delete(slot);
+            this.overlayWalkKeys.delete(slot);
+            this.overlaySlashKeys.delete(slot);
             return;
         }
-        this.equippedArmorWalkKey = walkKey;
-        this.equippedArmorSlashKey = slashKey;
-        if (!this.armorSprite) {
-            this.armorSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
-            this.armorSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.container.add(this.armorSprite);
-        }
-    }
-
-    setEquippedLegsOverlay(walkKey: string | null, slashKey: string | null): void {
-        if (!walkKey) {
-            this.legsSprite?.destroy();
-            this.legsSprite = null;
-            this.equippedLegsWalkKey = null;
-            this.equippedLegsSlashKey = null;
-            return;
-        }
-        this.equippedLegsWalkKey = walkKey;
-        this.equippedLegsSlashKey = slashKey;
-        if (!this.legsSprite) {
-            this.legsSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
-            this.legsSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.container.add(this.legsSprite);
-        }
-    }
-
-    setEquippedHeadOverlay(walkKey: string | null, slashKey: string | null): void {
-        if (!walkKey) {
-            this.headSprite?.destroy();
-            this.headSprite = null;
-            this.equippedHeadWalkKey = null;
-            this.equippedHeadSlashKey = null;
-            return;
-        }
-        this.equippedHeadWalkKey = walkKey;
-        this.equippedHeadSlashKey = slashKey;
-        if (!this.headSprite) {
-            this.headSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
-            this.headSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.container.add(this.headSprite);
+        this.overlayWalkKeys.set(slot, walkKey);
+        this.overlaySlashKeys.set(slot, slashKey);
+        if (!this.overlaySprites.has(slot)) {
+            const sprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
+            sprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
+            this.container.add(sprite);
+            this.overlaySprites.set(slot, sprite);
         }
     }
 
@@ -297,8 +239,7 @@ export class PlayerAnimator {
 
     destroy(): void {
         this.weaponSprite?.destroy();
-        this.armorSprite?.destroy();
-        this.legsSprite?.destroy();
-        this.headSprite?.destroy();
+        for (const sprite of this.overlaySprites.values()) sprite.destroy();
+        this.overlaySprites.clear();
     }
 }

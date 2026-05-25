@@ -5,9 +5,7 @@ import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '.
 import { gridToWorld } from '../utils/coords';
 import type { PlayerData, Position } from '../types';
 import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
-import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
-import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
-import { getHeadOverlayConfig } from '../config/overlays/headOverlayRegistry';
+import { getBodyOverlayConfig } from '../config/overlays';
 
 export class PlayerManager {
     private scene: Phaser.Scene;
@@ -56,28 +54,16 @@ export class PlayerManager {
         const newPlayer = new Player(id, name, playerPosData, worldPosition, this.scene, GRID_SIZE);
         this.players[id] = newPlayer;
 
-        const weaponName = (playerPosData as any).equippedWeaponName ?? (playerPosData as any).EquippedWeaponName;
-        if (weaponName) {
-            const cfg = getWeaponOverlayConfig(weaponName);
-            newPlayer.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
-        }
-
-        const armorName = (playerPosData as any).equippedArmorName ?? (playerPosData as any).EquippedArmorName;
-        if (armorName) {
-            const cfg = getArmorOverlayConfig(armorName);
-            newPlayer.setEquippedArmorOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
-        }
-
-        const legsName = (playerPosData as any).equippedLegsName ?? (playerPosData as any).EquippedLegsName;
-        if (legsName) {
-            const cfg = getLegsOverlayConfig(legsName);
-            newPlayer.setEquippedLegsOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
-        }
-
-        const helmetName = (playerPosData as any).equippedHelmetName ?? (playerPosData as any).EquippedHelmetName;
-        if (helmetName) {
-            const cfg = getHeadOverlayConfig(helmetName);
-            newPlayer.setEquippedHeadOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+        const equippedItems: Record<string, string | null> = (playerPosData as any).equippedItems ?? (playerPosData as any).EquippedItems ?? {};
+        for (const [slot, itemName] of Object.entries(equippedItems)) {
+            if (!itemName) continue;
+            if (slot === 'Weapon') {
+                const cfg = getWeaponOverlayConfig(itemName);
+                newPlayer.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+            } else {
+                const cfg = getBodyOverlayConfig(slot, itemName);
+                newPlayer.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+            }
         }
 
         if (isMe) {

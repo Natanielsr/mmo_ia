@@ -103,23 +103,8 @@ namespace GameServerApp.Contracts.World
         void OnChunkLoaded(string connectionId, ChunkData chunkData);
 
         /// <summary>
-        /// Triggered when a player equips or unequips a weapon. Broadcast to all players.
+        /// Triggered when a player equips or unequips any item. Broadcast to all other players.
         /// </summary>
-        void OnPlayerWeaponEquipped(string playerId, string? weaponName);
-
-        /// <summary>
-        /// Triggered when a player equips or unequips a chest armor. Broadcast to all players.
-        /// </summary>
-        void OnPlayerArmorEquipped(string playerId, string? armorName);
-
-        /// <summary>
-        /// Triggered when a player equips or unequips leg armor. Broadcast to all players.
-        /// </summary>
-        void OnPlayerLegsEquipped(string playerId, string? legsName);
-
-        /// <summary>
-        /// Triggered when a player equips or unequips a helmet. Broadcast to all players.
-        /// </summary>
-        void OnPlayerHelmetEquipped(string playerId, string? helmetName);
+        void OnPlayerItemEquipped(string playerId, string slot, string? itemName);
     }
 }

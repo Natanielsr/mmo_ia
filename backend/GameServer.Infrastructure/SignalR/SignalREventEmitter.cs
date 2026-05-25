@@ -163,24 +163,9 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.Client(connectionId).SendAsync("ChunkLoaded", chunkData);
         }
 
-        public void OnPlayerWeaponEquipped(string playerId, string? weaponName)
+        public void OnPlayerItemEquipped(string playerId, string slot, string? itemName)
         {
-            _hubContext.Clients.All.SendAsync("PlayerWeaponEquipped", new { PlayerId = playerId, WeaponName = weaponName });
-        }
-
-        public void OnPlayerArmorEquipped(string playerId, string? armorName)
-        {
-            _hubContext.Clients.All.SendAsync("PlayerArmorEquipped", new { PlayerId = playerId, ArmorName = armorName });
-        }
-
-        public void OnPlayerLegsEquipped(string playerId, string? legsName)
-        {
-            _hubContext.Clients.All.SendAsync("PlayerLegsEquipped", new { PlayerId = playerId, LegsName = legsName });
-        }
-
-        public void OnPlayerHelmetEquipped(string playerId, string? helmetName)
-        {
-            _hubContext.Clients.All.SendAsync("PlayerHelmetEquipped", new { PlayerId = playerId, HelmetName = helmetName });
+            _hubContext.Clients.All.SendAsync("PlayerItemEquipped", new { PlayerId = playerId, Slot = slot, ItemName = itemName });
         }
     }
 }

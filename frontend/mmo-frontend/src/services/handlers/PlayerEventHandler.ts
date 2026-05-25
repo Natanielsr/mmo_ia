@@ -131,28 +131,11 @@ export class PlayerEventHandler {
             }
         });
 
-        this.connection.on("PlayerWeaponEquipped", (data: { playerId: string; weaponName: string | null }) => {
+        this.connection.on("PlayerItemEquipped", (data: { playerId: string; slot: string; itemName: string | null }) => {
             const playerId = data.playerId ?? (data as any).PlayerId;
-            const weaponName = data.weaponName ?? (data as any).WeaponName ?? null;
-            this.scene.playerWeaponEquipped(playerId, weaponName);
-        });
-
-        this.connection.on("PlayerArmorEquipped", (data: { playerId: string; armorName: string | null }) => {
-            const playerId = data.playerId ?? (data as any).PlayerId;
-            const armorName = data.armorName ?? (data as any).ArmorName ?? null;
-            this.scene.playerArmorEquipped(playerId, armorName);
-        });
-
-        this.connection.on("PlayerLegsEquipped", (data: { playerId: string; legsName: string | null }) => {
-            const playerId = data.playerId ?? (data as any).PlayerId;
-            const legsName = data.legsName ?? (data as any).LegsName ?? null;
-            this.scene.playerLegsEquipped(playerId, legsName);
-        });
-
-        this.connection.on("PlayerHelmetEquipped", (data: { playerId: string; helmetName: string | null }) => {
-            const playerId = data.playerId ?? (data as any).PlayerId;
-            const helmetName = data.helmetName ?? (data as any).HelmetName ?? null;
-            this.scene.playerHelmetEquipped(playerId, helmetName);
+            const slot     = data.slot     ?? (data as any).Slot;
+            const itemName = data.itemName ?? (data as any).ItemName ?? null;
+            this.scene.playerItemEquipped(playerId, slot, itemName);
         });
     }
 }
