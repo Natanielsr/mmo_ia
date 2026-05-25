@@ -4,9 +4,9 @@ import { Player } from '../entities/Player';
 import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '../config/constants';
 import { gridToWorld } from '../utils/coords';
 import type { PlayerData, Position } from '../types';
-import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
-import { getArmorOverlayConfig } from '../utils/armorOverlayRegistry';
-import { getLegsOverlayConfig } from '../utils/legsOverlayRegistry';
+import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
+import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
+import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
 
 export class PlayerManager {
     private scene: Phaser.Scene;

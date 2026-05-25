@@ -14,9 +14,9 @@ import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
 import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
-import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
-import { getArmorOverlayConfig } from '../utils/armorOverlayRegistry';
-import { getLegsOverlayConfig } from '../utils/legsOverlayRegistry';
+import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
+import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
+import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
 import { DevConsole } from './DevConsole';
 
 

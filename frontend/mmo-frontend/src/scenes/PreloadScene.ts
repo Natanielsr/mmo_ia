@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
-import { WEAPON_OVERLAY_REGISTRY } from '../utils/weaponOverlayRegistry';
-import { ARMOR_OVERLAY_REGISTRY } from '../utils/armorOverlayRegistry';
-import { LEGS_OVERLAY_REGISTRY } from '../utils/legsOverlayRegistry';
+import { WEAPON_OVERLAY_REGISTRY } from '../config/overlays/weaponOverlayRegistry';
+import { ARMOR_OVERLAY_REGISTRY } from '../config/overlays/armorOverlayRegistry';
+import { LEGS_OVERLAY_REGISTRY } from '../config/overlays/legsOverlayRegistry';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
