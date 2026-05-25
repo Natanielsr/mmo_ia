@@ -156,7 +156,7 @@ function onDrop(e: DragEvent, toIndex: number) {
   position: absolute;
   bottom: -2px;
   right: -2px;
-  font-size: 0.55rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #fff;
   background: rgba(0, 0, 0, 0.75);
