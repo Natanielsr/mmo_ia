@@ -203,5 +203,40 @@ namespace GameServer.Tests.Managers
 
             _b.Events.Verify(e => e.OnPlayerWeaponEquipped("1", "Dagger"), Times.Once);
         }
+
+        // ── OnPlayerLegsEquipped broadcast ───────────────────────────────────
+
+        [Fact]
+        public void ProcessEquipItem_Legs_Fires_LegsEquipped_With_LegsName()
+        {
+            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(pants));
+
+            _b.Build().ProcessEquipItem(player, "l1");
+
+            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", "Leather Pants"), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Legs_Fires_LegsEquipped_Null()
+        {
+            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var (player, _, _) = Setup(addToEq: e => e.Equip(pants));
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Legs);
+
+            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessEquipItem_Weapon_Fires_LegsEquipped_Null_When_No_Legs()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
+
+            _b.Build().ProcessEquipItem(player, "d1");
+
+            _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", null), Times.Once);
+        }
     }
 }

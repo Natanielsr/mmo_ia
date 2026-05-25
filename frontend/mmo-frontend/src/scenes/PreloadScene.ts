@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { WEAPON_OVERLAY_REGISTRY } from '../utils/weaponOverlayRegistry';
 import { ARMOR_OVERLAY_REGISTRY } from '../utils/armorOverlayRegistry';
+import { LEGS_OVERLAY_REGISTRY } from '../utils/legsOverlayRegistry';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -27,6 +28,17 @@ export class PreloadScene extends Phaser.Scene {
         }
 
         for (const cfg of Object.values(ARMOR_OVERLAY_REGISTRY)) {
+            this.load.spritesheet(cfg.walkTextureKey, cfg.walkAssetPath, {
+                frameWidth: cfg.frameWidth,
+                frameHeight: cfg.frameHeight
+            });
+            this.load.spritesheet(cfg.slashTextureKey, cfg.slashAssetPath, {
+                frameWidth: cfg.frameWidth,
+                frameHeight: cfg.frameHeight
+            });
+        }
+
+        for (const cfg of Object.values(LEGS_OVERLAY_REGISTRY)) {
             this.load.spritesheet(cfg.walkTextureKey, cfg.walkAssetPath, {
                 frameWidth: cfg.frameWidth,
                 frameHeight: cfg.frameHeight
@@ -152,6 +164,26 @@ export class PreloadScene extends Phaser.Scene {
 
         // Animações de overlay de armadura (walk + slash por direção)
         for (const cfg of Object.values(ARMOR_OVERLAY_REGISTRY)) {
+            for (const dir of dirs) {
+                const [ws, we] = cfg.walkDirectionFrames[dir];
+                this.anims.create({
+                    key: `${cfg.walkTextureKey}-${dir}`,
+                    frames: this.anims.generateFrameNumbers(cfg.walkTextureKey, { start: ws, end: we }),
+                    frameRate: cfg.walkFrameRate,
+                    repeat: -1
+                });
+                const [ss, se] = cfg.slashDirectionFrames[dir];
+                this.anims.create({
+                    key: `${cfg.slashTextureKey}-${dir}`,
+                    frames: this.anims.generateFrameNumbers(cfg.slashTextureKey, { start: ss, end: se }),
+                    frameRate: cfg.slashFrameRate,
+                    repeat: 0
+                });
+            }
+        }
+
+        // Animações de overlay de calças (walk + slash por direção)
+        for (const cfg of Object.values(LEGS_OVERLAY_REGISTRY)) {
             for (const dir of dirs) {
                 const [ws, we] = cfg.walkDirectionFrames[dir];
                 this.anims.create({

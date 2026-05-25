@@ -142,5 +142,11 @@ export class PlayerEventHandler {
             const armorName = data.armorName ?? (data as any).ArmorName ?? null;
             this.scene.playerArmorEquipped(playerId, armorName);
         });
+
+        this.connection.on("PlayerLegsEquipped", (data: { playerId: string; legsName: string | null }) => {
+            const playerId = data.playerId ?? (data as any).PlayerId;
+            const legsName = data.legsName ?? (data as any).LegsName ?? null;
+            this.scene.playerLegsEquipped(playerId, legsName);
+        });
     }
 }

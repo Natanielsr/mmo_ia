@@ -26,6 +26,9 @@ export class Player extends Phaser.GameObjects.Container {
     private armorSprite: Phaser.GameObjects.Sprite | null = null;
     private equippedArmorWalkKey: string | null = null;
     private equippedArmorSlashKey: string | null = null;
+    private legsSprite: Phaser.GameObjects.Sprite | null = null;
+    private equippedLegsWalkKey: string | null = null;
+    private equippedLegsSlashKey: string | null = null;
 
     constructor(
         id: string,
@@ -142,6 +145,9 @@ export class Player extends Phaser.GameObjects.Container {
                 if (this.armorSprite && this.equippedArmorWalkKey) {
                     this.armorSprite.play(`${this.equippedArmorWalkKey}-${this.facingDirection}`, true);
                 }
+                if (this.legsSprite && this.equippedLegsWalkKey) {
+                    this.legsSprite.play(`${this.equippedLegsWalkKey}-${this.facingDirection}`, true);
+                }
             }
         }
 
@@ -195,6 +201,23 @@ export class Player extends Phaser.GameObjects.Container {
         }
     }
 
+    public setEquippedLegsOverlay(walkKey: string | null, slashKey: string | null): void {
+        if (!walkKey) {
+            this.legsSprite?.destroy();
+            this.legsSprite = null;
+            this.equippedLegsWalkKey = null;
+            this.equippedLegsSlashKey = null;
+            return;
+        }
+        this.equippedLegsWalkKey = walkKey;
+        this.equippedLegsSlashKey = slashKey;
+        if (!this.legsSprite) {
+            this.legsSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
+            this.legsSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
+            this.add(this.legsSprite);
+        }
+    }
+
     public setEquippedWeaponOverlay(textureKey: string | null): void {
         if (!textureKey) {
             this.weaponSprite?.destroy();
@@ -245,6 +268,12 @@ export class Player extends Phaser.GameObjects.Container {
             this.armorSprite.play(`${this.equippedArmorSlashKey}-${animSuffix}`, true);
         }
 
+        // Overlay de calças sincronizado com o ataque
+        if (this.legsSprite && this.equippedLegsSlashKey) {
+            this.legsSprite.setTexture(this.equippedLegsSlashKey);
+            this.legsSprite.play(`${this.equippedLegsSlashKey}-${animSuffix}`, true);
+        }
+
         // Volta ao normal no fim
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key === animKey) {
@@ -255,6 +284,10 @@ export class Player extends Phaser.GameObjects.Container {
                 if (this.armorSprite && this.equippedArmorWalkKey) {
                     this.armorSprite.setTexture(this.equippedArmorWalkKey);
                     this.armorSprite.setFrame(getIdleFrame(this.facingDirection));
+                }
+                if (this.legsSprite && this.equippedLegsWalkKey) {
+                    this.legsSprite.setTexture(this.equippedLegsWalkKey);
+                    this.legsSprite.setFrame(getIdleFrame(this.facingDirection));
                 }
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
@@ -274,6 +307,11 @@ export class Player extends Phaser.GameObjects.Container {
             this.armorSprite.setTexture(this.equippedArmorWalkKey);
             this.armorSprite.setFrame(idleFrame);
         }
+        if (this.legsSprite && this.equippedLegsWalkKey) {
+            this.legsSprite.stop();
+            this.legsSprite.setTexture(this.equippedLegsWalkKey);
+            this.legsSprite.setFrame(idleFrame);
+        }
     }
 
     // Sobrescreve o destroy para garantir a limpeza da memória
@@ -282,6 +320,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.nameText.destroy();
         this.weaponSprite?.destroy();
         this.armorSprite?.destroy();
+        this.legsSprite?.destroy();
         super.destroy(fromScene);
     }
 

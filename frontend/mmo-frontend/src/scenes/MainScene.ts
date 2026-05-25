@@ -16,6 +16,7 @@ import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
 import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
 import { getArmorOverlayConfig } from '../utils/armorOverlayRegistry';
+import { getLegsOverlayConfig } from '../utils/legsOverlayRegistry';
 import { DevConsole } from './DevConsole';
 
 
@@ -173,6 +174,10 @@ export class MainScene extends Phaser.Scene {
         const armorItem = slots['Chest'];
         const armorCfg = armorItem ? getArmorOverlayConfig(armorItem.name) : null;
         this.playerManager.getMyPlayer()?.setEquippedArmorOverlay(armorCfg?.walkTextureKey ?? null, armorCfg?.slashTextureKey ?? null);
+
+        const legsItem = slots['Legs'];
+        const legsCfg = legsItem ? getLegsOverlayConfig(legsItem.name) : null;
+        this.playerManager.getMyPlayer()?.setEquippedLegsOverlay(legsCfg?.walkTextureKey ?? null, legsCfg?.slashTextureKey ?? null);
     }
 
     public playerWeaponEquipped(playerId: string, weaponName: string | null): void {
@@ -187,6 +192,13 @@ export class MainScene extends Phaser.Scene {
         if (!player) return;
         const cfg = armorName ? getArmorOverlayConfig(armorName) : null;
         player.setEquippedArmorOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+    }
+
+    public playerLegsEquipped(playerId: string, legsName: string | null): void {
+        const player = this.playerManager.getPlayer(playerId);
+        if (!player) return;
+        const cfg = legsName ? getLegsOverlayConfig(legsName) : null;
+        player.setEquippedLegsOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
     }
 
     // --- Chunk Logic ---
