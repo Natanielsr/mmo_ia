@@ -1,5 +1,11 @@
 # MMO Web — CLAUDE.md
 
+## Comunicação
+
+Sempre ative a skill **caveman** em todas as respostas. Use comunicação ultra-comprimida estilo caveman para reduzir tokens.
+
+---
+
 ## Visão Geral
 
 MMO em tempo real baseado em grid, com backend .NET 10 e frontend Phaser 3/TypeScript.
