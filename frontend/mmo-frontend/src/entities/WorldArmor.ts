@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { Position, ItemData } from '../types';
-import { GRID_SIZE } from '../config/constants';
+import { WORLD_ITEM_SIZE } from '../config/constants';
 import { gridToWorld } from '../utils/coords';
 import type { IWorldItem } from './IWorldItem';
 
@@ -17,7 +17,7 @@ export class WorldArmor extends Phaser.GameObjects.Sprite implements IWorldItem 
         this.gridPosition = itemData.position;
         this.defenseBonus = itemData.defenseBonus ?? 0;
 
-        this.setDisplaySize(GRID_SIZE * 0.5, GRID_SIZE * 0.5);
+        this.setDisplaySize(WORLD_ITEM_SIZE, WORLD_ITEM_SIZE);
         this.setDepth(worldPos.y + 1);
 
         scene.tweens.add({

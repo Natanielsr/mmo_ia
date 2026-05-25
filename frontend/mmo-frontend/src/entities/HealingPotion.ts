@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import type { Position, ItemData } from '../types';
-import { GRID_SIZE } from '../config/constants';
+import { WORLD_ITEM_SIZE } from '../config/constants';
 import { gridToWorld } from '../utils/coords';
 
 export class HealingPotion extends Phaser.GameObjects.Sprite {
@@ -17,7 +17,7 @@ export class HealingPotion extends Phaser.GameObjects.Sprite {
         this.id = itemData.id;
         this.gridPosition = itemData.position;
 
-        this.setDisplaySize(GRID_SIZE * 0.6, GRID_SIZE * 0.6);
+        this.setDisplaySize(WORLD_ITEM_SIZE, WORLD_ITEM_SIZE);
         this.setDepth(worldPos.y + 1); // Above players/monsters depth
 
         // Add a simple idle animation (bobbing)
