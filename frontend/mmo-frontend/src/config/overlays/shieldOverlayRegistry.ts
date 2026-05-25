@@ -5,7 +5,7 @@ export const SHIELD_OVERLAY_REGISTRY: Record<string, ArmorOverlayConfig> = {
         walkTextureKey: 'shield_wooden_walk',
         walkAssetPath: 'assets/walkcycle/WEAPON_shield_cutout_body.png',
         slashTextureKey: 'shield_wooden_slash',
-        slashAssetPath: 'assets/walkcycle/WEAPON_shield_cutout_body.png',
+        slashAssetPath: 'assets/slash/WEAPON_shield_cutout_body.png',
         frameWidth: 64,
         frameHeight: 64,
         walkDirectionFrames:  { north: [1, 8], west: [10, 17], south: [19, 26], east: [28, 35] },
