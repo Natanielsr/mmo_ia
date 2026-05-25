@@ -6,6 +6,18 @@ Sempre ative a skill **caveman** em todas as respostas. Use comunicação ultra-
 
 ---
 
+## Commits e Operações
+
+**NÃO adicione co-author** nos commits. Remova a linha `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`.
+
+**ANTES de iniciar qualquer operação significativa** (refatoração, feature, bug fix, testes):
+1. Verifique qual modelo está em uso (no contexto ou com `/model`)
+2. Se **não** for o modelo recomendado, **PAUSE e peça ao usuário** para trocar com `/model haiku|sonnet|opus`
+3. Declare o modelo no início: `[Modelo: Haiku — júnior]` / `[Modelo: Sonnet — pleno]` / `[Modelo: Opus — sênior]`
+4. Só prossiga depois que o usuário confirmar a troca
+
+---
+
 ## Visão Geral
 
 MMO em tempo real baseado em grid, com backend .NET 10 e frontend Phaser 3/TypeScript.
