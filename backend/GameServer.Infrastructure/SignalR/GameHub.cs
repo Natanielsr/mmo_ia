@@ -83,7 +83,8 @@ namespace GameServer.Infrastructure.SignalR
                 {
                     var eq = _equipmentManager.GetEquipment(p.Id);
                     var weaponName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) == true ? w?.Name : null;
-                    return new PlayerData { Id = p.Id.ToString(), Name = p.Name, Position = p.Position, EquippedWeaponName = weaponName };
+                    var armorName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) == true ? a?.Name : null;
+                    return new PlayerData { Id = p.Id.ToString(), Name = p.Name, Position = p.Position, EquippedWeaponName = weaponName, EquippedArmorName = armorName };
                 });
 
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);
@@ -193,7 +194,7 @@ namespace GameServer.Infrastructure.SignalR
             {
                 "weapon" => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dev Sword", 1.0f, player.Position, 15),
                 "helmet" => new Helmet(_idGeneratorService.GenerateId().ToString(), "Dev Helmet", 1.0f, player.Position, 10),
-                "chest" => new Armor(_idGeneratorService.GenerateId().ToString(), "Dev Chest", 2.0f, player.Position, 10, EquipmentSlot.Chest),
+                "chest" => new Armor(_idGeneratorService.GenerateId().ToString(), "Leather Vest", 2.0f, player.Position, 10, EquipmentSlot.Chest),
                 "legs" => new Legs(_idGeneratorService.GenerateId().ToString(), "Dev Legs", 1.5f, player.Position, 8),
                 "boots" => new Boots(_idGeneratorService.GenerateId().ToString(), "Dev Boots", 0.5f, player.Position, 5),
                 "shield" => new Shield(_idGeneratorService.GenerateId().ToString(), "Dev Shield", 2.0f, player.Position, 12),

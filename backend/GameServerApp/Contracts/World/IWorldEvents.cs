@@ -106,5 +106,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player equips or unequips a weapon. Broadcast to all players.
         /// </summary>
         void OnPlayerWeaponEquipped(string playerId, string? weaponName);
+
+        /// <summary>
+        /// Triggered when a player equips or unequips a chest armor. Broadcast to all players.
+        /// </summary>
+        void OnPlayerArmorEquipped(string playerId, string? armorName);
     }
 }

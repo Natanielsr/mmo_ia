@@ -53,6 +53,8 @@ namespace GameServerApp.Processors
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             var equippedWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
             _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), equippedWeapon);
+            var equippedArmor = eq.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) ? a?.Name : null;
+            _worldEvents.OnPlayerArmorEquipped(player.Id.ToString(), equippedArmor);
             return true;
         }
 
@@ -83,6 +85,8 @@ namespace GameServerApp.Processors
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             var currentWeapon = eq.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) ? w?.Name : null;
             _worldEvents.OnPlayerWeaponEquipped(player.Id.ToString(), currentWeapon);
+            var currentArmor = eq.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) ? a?.Name : null;
+            _worldEvents.OnPlayerArmorEquipped(player.Id.ToString(), currentArmor);
             return true;
         }
 

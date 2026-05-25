@@ -23,6 +23,9 @@ export class Player extends Phaser.GameObjects.Container {
     private facingDirection: string = 'south';
     private weaponSprite: Phaser.GameObjects.Sprite | null = null;
     private equippedWeaponTextureKey: string | null = null;
+    private armorSprite: Phaser.GameObjects.Sprite | null = null;
+    private equippedArmorWalkKey: string | null = null;
+    private equippedArmorSlashKey: string | null = null;
 
     constructor(
         id: string,
@@ -136,6 +139,9 @@ export class Player extends Phaser.GameObjects.Container {
                     this.sprite.setTexture('hero');
                 }
                 this.sprite.play(animKey, true);
+                if (this.armorSprite && this.equippedArmorWalkKey) {
+                    this.armorSprite.play(`${this.equippedArmorWalkKey}-${this.facingDirection}`, true);
+                }
             }
         }
 
@@ -170,6 +176,23 @@ export class Player extends Phaser.GameObjects.Container {
             duration: duration,
             ease: 'Linear'
         });
+    }
+
+    public setEquippedArmorOverlay(walkKey: string | null, slashKey: string | null): void {
+        if (!walkKey) {
+            this.armorSprite?.destroy();
+            this.armorSprite = null;
+            this.equippedArmorWalkKey = null;
+            this.equippedArmorSlashKey = null;
+            return;
+        }
+        this.equippedArmorWalkKey = walkKey;
+        this.equippedArmorSlashKey = slashKey;
+        if (!this.armorSprite) {
+            this.armorSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
+            this.armorSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
+            this.add(this.armorSprite);
+        }
     }
 
     public setEquippedWeaponOverlay(textureKey: string | null): void {
@@ -216,6 +239,12 @@ export class Player extends Phaser.GameObjects.Container {
             this.weaponSprite.play(`${this.equippedWeaponTextureKey}-${animSuffix}`, true);
         }
 
+        // Overlay de armadura sincronizado com o ataque
+        if (this.armorSprite && this.equippedArmorSlashKey) {
+            this.armorSprite.setTexture(this.equippedArmorSlashKey);
+            this.armorSprite.play(`${this.equippedArmorSlashKey}-${animSuffix}`, true);
+        }
+
         // Volta ao normal no fim
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key === animKey) {
@@ -223,6 +252,10 @@ export class Player extends Phaser.GameObjects.Container {
                 this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
                 this.weaponSprite?.setVisible(false);
                 this.weaponSprite?.stop();
+                if (this.armorSprite && this.equippedArmorWalkKey) {
+                    this.armorSprite.setTexture(this.equippedArmorWalkKey);
+                    this.armorSprite.setFrame(getIdleFrame(this.facingDirection));
+                }
                 this.stopWalkingTimer = this.scene.time.delayedCall(100, () => {
                     this.stopWalking();
                 });
@@ -236,6 +269,11 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.stop();
         const idleFrame = getIdleFrame(this.facingDirection);
         this.sprite.setFrame(idleFrame);
+        if (this.armorSprite && this.equippedArmorWalkKey) {
+            this.armorSprite.stop();
+            this.armorSprite.setTexture(this.equippedArmorWalkKey);
+            this.armorSprite.setFrame(idleFrame);
+        }
     }
 
     // Sobrescreve o destroy para garantir a limpeza da memória
@@ -243,6 +281,7 @@ export class Player extends Phaser.GameObjects.Container {
         this.sprite.destroy();
         this.nameText.destroy();
         this.weaponSprite?.destroy();
+        this.armorSprite?.destroy();
         super.destroy(fromScene);
     }
 

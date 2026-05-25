@@ -15,6 +15,7 @@ import type { Monster } from '../entities/Monster';
 import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
 import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
+import { getArmorOverlayConfig } from '../utils/armorOverlayRegistry';
 import { DevConsole } from './DevConsole';
 
 
@@ -166,8 +167,12 @@ export class MainScene extends Phaser.Scene {
         );
 
         const weaponItem = slots['Weapon'];
-        const cfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
-        this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+        const weaponCfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
+        this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(weaponCfg?.textureKey ?? null);
+
+        const armorItem = slots['Chest'];
+        const armorCfg = armorItem ? getArmorOverlayConfig(armorItem.name) : null;
+        this.playerManager.getMyPlayer()?.setEquippedArmorOverlay(armorCfg?.walkTextureKey ?? null, armorCfg?.slashTextureKey ?? null);
     }
 
     public playerWeaponEquipped(playerId: string, weaponName: string | null): void {
@@ -175,6 +180,13 @@ export class MainScene extends Phaser.Scene {
         if (!player) return;
         const cfg = weaponName ? getWeaponOverlayConfig(weaponName) : null;
         player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+    }
+
+    public playerArmorEquipped(playerId: string, armorName: string | null): void {
+        const player = this.playerManager.getPlayer(playerId);
+        if (!player) return;
+        const cfg = armorName ? getArmorOverlayConfig(armorName) : null;
+        player.setEquippedArmorOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
     }
 
     // --- Chunk Logic ---

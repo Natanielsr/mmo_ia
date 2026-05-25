@@ -8,4 +8,5 @@ public record class PlayerData
     public required string Name { get; init; }
     public required Position Position { get; init; }
     public string? EquippedWeaponName { get; init; }
+    public string? EquippedArmorName { get; init; }
 }

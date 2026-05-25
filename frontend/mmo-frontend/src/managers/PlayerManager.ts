@@ -5,6 +5,7 @@ import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '.
 import { gridToWorld } from '../utils/coords';
 import type { PlayerData, Position } from '../types';
 import { getWeaponOverlayConfig } from '../utils/weaponOverlayRegistry';
+import { getArmorOverlayConfig } from '../utils/armorOverlayRegistry';
 
 export class PlayerManager {
     private scene: Phaser.Scene;
@@ -57,6 +58,12 @@ export class PlayerManager {
         if (weaponName) {
             const cfg = getWeaponOverlayConfig(weaponName);
             newPlayer.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+        }
+
+        const armorName = (playerPosData as any).equippedArmorName ?? (playerPosData as any).EquippedArmorName;
+        if (armorName) {
+            const cfg = getArmorOverlayConfig(armorName);
+            newPlayer.setEquippedArmorOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
         }
 
         if (isMe) {
