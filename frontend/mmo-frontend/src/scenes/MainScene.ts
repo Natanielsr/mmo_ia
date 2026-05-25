@@ -17,6 +17,7 @@ import { isMobileDevice } from '../utils/device';
 import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
 import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
 import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
+import { getHeadOverlayConfig } from '../config/overlays/headOverlayRegistry';
 import { DevConsole } from './DevConsole';
 
 
@@ -178,6 +179,10 @@ export class MainScene extends Phaser.Scene {
         const legsItem = slots['Legs'];
         const legsCfg = legsItem ? getLegsOverlayConfig(legsItem.name) : null;
         this.playerManager.getMyPlayer()?.setEquippedLegsOverlay(legsCfg?.walkTextureKey ?? null, legsCfg?.slashTextureKey ?? null);
+
+        const helmetItem = slots['Helmet'];
+        const helmetCfg = helmetItem ? getHeadOverlayConfig(helmetItem.name) : null;
+        this.playerManager.getMyPlayer()?.setEquippedHeadOverlay(helmetCfg?.walkTextureKey ?? null, helmetCfg?.slashTextureKey ?? null);
     }
 
     public playerWeaponEquipped(playerId: string, weaponName: string | null): void {
@@ -199,6 +204,13 @@ export class MainScene extends Phaser.Scene {
         if (!player) return;
         const cfg = legsName ? getLegsOverlayConfig(legsName) : null;
         player.setEquippedLegsOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+    }
+
+    public playerHelmetEquipped(playerId: string, helmetName: string | null): void {
+        const player = this.playerManager.getPlayer(playerId);
+        if (!player) return;
+        const cfg = helmetName ? getHeadOverlayConfig(helmetName) : null;
+        player.setEquippedHeadOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
     }
 
     // --- Chunk Logic ---

@@ -177,5 +177,10 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("PlayerLegsEquipped", new { PlayerId = playerId, LegsName = legsName });
         }
+
+        public void OnPlayerHelmetEquipped(string playerId, string? helmetName)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerHelmetEquipped", new { PlayerId = playerId, HelmetName = helmetName });
+        }
     }
 }

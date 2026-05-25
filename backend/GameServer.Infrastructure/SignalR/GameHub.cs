@@ -85,7 +85,8 @@ namespace GameServer.Infrastructure.SignalR
                     var weaponName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Weapon, out var w) == true ? w?.Name : null;
                     var armorName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Chest, out var a) == true ? a?.Name : null;
                     var legsName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Legs, out var l) == true ? l?.Name : null;
-                    return new PlayerData { Id = p.Id.ToString(), Name = p.Name, Position = p.Position, EquippedWeaponName = weaponName, EquippedArmorName = armorName, EquippedLegsName = legsName };
+                    var helmetName = eq?.GetAllSlots().TryGetValue(EquipmentSlot.Helmet, out var h) == true ? h?.Name : null;
+                    return new PlayerData { Id = p.Id.ToString(), Name = p.Name, Position = p.Position, EquippedWeaponName = weaponName, EquippedArmorName = armorName, EquippedLegsName = legsName, EquippedHelmetName = helmetName };
                 });
 
             await Clients.Caller.SendAsync("SyncPlayers", otherPlayers);

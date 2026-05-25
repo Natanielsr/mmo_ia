@@ -10,4 +10,5 @@ public record class PlayerData
     public string? EquippedWeaponName { get; init; }
     public string? EquippedArmorName { get; init; }
     public string? EquippedLegsName { get; init; }
+    public string? EquippedHelmetName { get; init; }
 }

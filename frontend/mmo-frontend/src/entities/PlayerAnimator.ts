@@ -15,6 +15,9 @@ export class PlayerAnimator {
     private legsSprite: Phaser.GameObjects.Sprite | null = null;
     private equippedLegsWalkKey: string | null = null;
     private equippedLegsSlashKey: string | null = null;
+    private headSprite: Phaser.GameObjects.Sprite | null = null;
+    private equippedHeadWalkKey: string | null = null;
+    private equippedHeadSlashKey: string | null = null;
 
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
     public isAttacking: boolean = false;
@@ -47,6 +50,8 @@ export class PlayerAnimator {
             this.armorSprite.play(`${this.equippedArmorWalkKey}-${this.facingDirection}`, true);
         if (this.legsSprite && this.equippedLegsWalkKey)
             this.legsSprite.play(`${this.equippedLegsWalkKey}-${this.facingDirection}`, true);
+        if (this.headSprite && this.equippedHeadWalkKey)
+            this.headSprite.play(`${this.equippedHeadWalkKey}-${this.facingDirection}`, true);
     }
 
     cancelStopWalkingTimer(): void {
@@ -74,6 +79,11 @@ export class PlayerAnimator {
             this.legsSprite.stop();
             this.legsSprite.setTexture(this.equippedLegsWalkKey);
             this.legsSprite.setFrame(idleFrame);
+        }
+        if (this.headSprite && this.equippedHeadWalkKey) {
+            this.headSprite.stop();
+            this.headSprite.setTexture(this.equippedHeadWalkKey);
+            this.headSprite.setFrame(idleFrame);
         }
     }
 
@@ -107,6 +117,10 @@ export class PlayerAnimator {
             this.legsSprite.setTexture(this.equippedLegsSlashKey);
             this.legsSprite.play(`${this.equippedLegsSlashKey}-${animSuffix}`, true);
         }
+        if (this.headSprite && this.equippedHeadSlashKey) {
+            this.headSprite.setTexture(this.equippedHeadSlashKey);
+            this.headSprite.play(`${this.equippedHeadSlashKey}-${animSuffix}`, true);
+        }
 
         this.sprite.once('animationcomplete', (animation: any) => {
             if (animation.key !== animKey) return;
@@ -121,6 +135,10 @@ export class PlayerAnimator {
             if (this.legsSprite && this.equippedLegsWalkKey) {
                 this.legsSprite.setTexture(this.equippedLegsWalkKey);
                 this.legsSprite.setFrame(getIdleFrame(this.facingDirection));
+            }
+            if (this.headSprite && this.equippedHeadWalkKey) {
+                this.headSprite.setTexture(this.equippedHeadWalkKey);
+                this.headSprite.setFrame(getIdleFrame(this.facingDirection));
             }
             this.scheduleStopWalking();
         });
@@ -157,6 +175,23 @@ export class PlayerAnimator {
             this.legsSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
             this.legsSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
             this.container.add(this.legsSprite);
+        }
+    }
+
+    setEquippedHeadOverlay(walkKey: string | null, slashKey: string | null): void {
+        if (!walkKey) {
+            this.headSprite?.destroy();
+            this.headSprite = null;
+            this.equippedHeadWalkKey = null;
+            this.equippedHeadSlashKey = null;
+            return;
+        }
+        this.equippedHeadWalkKey = walkKey;
+        this.equippedHeadSlashKey = slashKey;
+        if (!this.headSprite) {
+            this.headSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
+            this.headSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
+            this.container.add(this.headSprite);
         }
     }
 
@@ -264,5 +299,6 @@ export class PlayerAnimator {
         this.weaponSprite?.destroy();
         this.armorSprite?.destroy();
         this.legsSprite?.destroy();
+        this.headSprite?.destroy();
     }
 }

@@ -238,5 +238,40 @@ namespace GameServer.Tests.Managers
 
             _b.Events.Verify(e => e.OnPlayerLegsEquipped("1", null), Times.Once);
         }
+
+        // ── OnPlayerHelmetEquipped broadcast ─────────────────────────────────
+
+        [Fact]
+        public void ProcessEquipItem_Helmet_Fires_HelmetEquipped_With_HelmetName()
+        {
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(helmet));
+
+            _b.Build().ProcessEquipItem(player, "h1");
+
+            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", "Iron Helmet"), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessUnequipItem_Helmet_Fires_HelmetEquipped_Null()
+        {
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var (player, _, _) = Setup(addToEq: e => e.Equip(helmet));
+
+            _b.Build().ProcessUnequipItem(player, EquipmentSlot.Helmet);
+
+            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", null), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessEquipItem_Weapon_Fires_HelmetEquipped_Null_When_No_Helmet()
+        {
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
+
+            _b.Build().ProcessEquipItem(player, "d1");
+
+            _b.Events.Verify(e => e.OnPlayerHelmetEquipped("1", null), Times.Once);
+        }
     }
 }

@@ -7,6 +7,7 @@ import type { PlayerData, Position } from '../types';
 import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
 import { getArmorOverlayConfig } from '../config/overlays/armorOverlayRegistry';
 import { getLegsOverlayConfig } from '../config/overlays/legsOverlayRegistry';
+import { getHeadOverlayConfig } from '../config/overlays/headOverlayRegistry';
 
 export class PlayerManager {
     private scene: Phaser.Scene;
@@ -71,6 +72,12 @@ export class PlayerManager {
         if (legsName) {
             const cfg = getLegsOverlayConfig(legsName);
             newPlayer.setEquippedLegsOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+        }
+
+        const helmetName = (playerPosData as any).equippedHelmetName ?? (playerPosData as any).EquippedHelmetName;
+        if (helmetName) {
+            const cfg = getHeadOverlayConfig(helmetName);
+            newPlayer.setEquippedHeadOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
         }
 
         if (isMe) {

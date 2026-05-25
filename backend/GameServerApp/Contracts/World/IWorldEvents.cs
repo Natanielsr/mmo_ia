@@ -116,5 +116,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player equips or unequips leg armor. Broadcast to all players.
         /// </summary>
         void OnPlayerLegsEquipped(string playerId, string? legsName);
+
+        /// <summary>
+        /// Triggered when a player equips or unequips a helmet. Broadcast to all players.
+        /// </summary>
+        void OnPlayerHelmetEquipped(string playerId, string? helmetName);
     }
 }

@@ -130,6 +130,10 @@ export class Player extends Phaser.GameObjects.Container {
         this.animator.setEquippedLegsOverlay(walkKey, slashKey);
     }
 
+    public setEquippedHeadOverlay(walkKey: string | null, slashKey: string | null): void {
+        this.animator.setEquippedHeadOverlay(walkKey, slashKey);
+    }
+
     public setEquippedWeaponOverlay(textureKey: string | null): void {
         this.animator.setEquippedWeaponOverlay(textureKey);
     }
