@@ -1,29 +1,39 @@
 import Phaser from 'phaser';
-import type { Position, ItemData } from '../types';
-import { WORLD_ITEM_SIZE } from '../config/constants';
-import { gridToWorld } from '../utils/coords';
+import type { Position, ItemData } from '../../types';
+import { WORLD_ITEM_SIZE } from '../../config/constants';
+import { gridToWorld } from '../../utils/coords';
 import type { IWorldItem } from './IWorldItem';
 
-export class WorldShield extends Phaser.GameObjects.Sprite implements IWorldItem {
+interface BobConfig {
+    offsetY: number;
+    duration: number;
+}
+
+const DEFAULT_BOB: BobConfig = { offsetY: -4, duration: 950 };
+
+export abstract class BaseWorldItem extends Phaser.GameObjects.Sprite implements IWorldItem {
     public id: string;
     public gridPosition: Position;
-    public defenseBonus: number;
 
-    constructor(itemData: ItemData, scene: Phaser.Scene) {
+    constructor(
+        itemData: ItemData,
+        scene: Phaser.Scene,
+        textureKey: string,
+        bobConfig: BobConfig = DEFAULT_BOB,
+    ) {
         const worldPos = gridToWorld(itemData.position);
-        super(scene, worldPos.x, worldPos.y, 'wooden-shield');
+        super(scene, worldPos.x, worldPos.y, textureKey);
 
         this.id = itemData.id;
         this.gridPosition = itemData.position;
-        this.defenseBonus = itemData.defenseBonus ?? 0;
 
         this.setDisplaySize(WORLD_ITEM_SIZE, WORLD_ITEM_SIZE);
         this.setDepth(worldPos.y + 1);
 
         scene.tweens.add({
             targets: this,
-            y: this.y - 4,
-            duration: 950,
+            y: this.y + bobConfig.offsetY,
+            duration: bobConfig.duration,
             yoyo: true,
             repeat: -1,
             ease: 'Sine.easeInOut',

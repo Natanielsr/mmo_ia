@@ -1,11 +1,11 @@
-import { HealingPotion } from '../entities/HealingPotion';
-import { WorldWeapon } from '../entities/WorldWeapon';
-import { WorldArmor } from '../entities/WorldArmor';
-import { WorldHelmet } from '../entities/WorldHelmet';
-import { WorldShield } from '../entities/WorldShield';
-import { WorldLegs } from '../entities/WorldLegs';
-import { WorldBoots } from '../entities/WorldBoots';
-import type { IWorldItem } from '../entities/IWorldItem';
+import { HealingPotion } from '../entities/items/HealingPotion';
+import { WorldWeapon } from '../entities/items/WorldWeapon';
+import { WorldArmor } from '../entities/items/WorldArmor';
+import { WorldHelmet } from '../entities/items/WorldHelmet';
+import { WorldShield } from '../entities/items/WorldShield';
+import { WorldLegs } from '../entities/items/WorldLegs';
+import { WorldBoots } from '../entities/items/WorldBoots';
+import type { IWorldItem } from '../entities/items/IWorldItem';
 import type { ItemData } from '../types';
 
 export class ItemManager {
