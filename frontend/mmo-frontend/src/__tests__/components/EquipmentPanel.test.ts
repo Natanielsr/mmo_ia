@@ -39,8 +39,8 @@ describe('EquipmentPanel', () => {
     const { wrapper, store } = mountWithStore()
     store.updateEquipment({ ...allEmpty(), Weapon: makeItem('sword', 'Weapon') })
     await wrapper.vm.$nextTick()
-    const weaponSlot = wrapper.find('[data-slot="Weapon"]')
-    expect(weaponSlot.text()).toContain('Item sword')
+    const weaponSlot = wrapper.find('[data-slot="Weapon"]').element as HTMLElement
+    expect(weaponSlot.dataset.itemId).toBe('sword')
   })
 
   it('empty slot shows no item', async () => {

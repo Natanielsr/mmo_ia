@@ -27,7 +27,7 @@ describe('InventoryPanel', () => {
     store.updateInventory([makeItem('a', 3)])
     await wrapper.vm.$nextTick()
     const slots = wrapper.findAll('.inv-slot')
-    expect(slots[3].text()).toContain('Item a')
+    expect((slots[3].element as HTMLElement).dataset.itemId).toBe('a')
     expect(slots[0].text()).toBe('')
   })
 
