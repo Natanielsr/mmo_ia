@@ -9,6 +9,7 @@ vi.mock('phaser', () => ({
                 scene: unknown;
                 constructor(scene: unknown, x = 0, y = 0) { this.scene = scene; this.x = x; this.y = y; }
                 add(_c: unknown) { return this; }
+                bringToTop(_c: unknown) { return this; }
                 setDepth(_d: number) { return this; }
                 destroy(_f?: boolean) {}
             },
@@ -153,18 +154,18 @@ describe('Player.setEquippedWeaponOverlay', () => {
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
         const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
 
-        p.setEquippedWeaponOverlay(null);
+        p.setEquippedWeaponOverlay(null, null);
 
         expect((scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length).toBe(callsBefore);
     });
 
-    it('textureKey válida cria weaponSprite', () => {
+    it('walkKey válida cria weaponSprite com frame idle', () => {
         const scene = makeScene();
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
 
-        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
 
-        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger_walk', expect.any(Number));
     });
 
     it('chamar duas vezes com mesma key não cria sprite duplicado', () => {
@@ -172,8 +173,8 @@ describe('Player.setEquippedWeaponOverlay', () => {
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
         const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
 
-        p.setEquippedWeaponOverlay('weapon_dagger');
-        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
 
         expect((scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length).toBe(callsBefore + 1);
     });
@@ -181,11 +182,11 @@ describe('Player.setEquippedWeaponOverlay', () => {
     it('null após weapon definida destrói o sprite', () => {
         const scene = makeScene();
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
-        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
         const calls = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results;
         const weaponSprite = calls[calls.length - 1].value;
 
-        p.setEquippedWeaponOverlay(null);
+        p.setEquippedWeaponOverlay(null, null);
 
         expect(weaponSprite.destroy).toHaveBeenCalled();
     });
@@ -195,13 +196,13 @@ describe('Player.playAttackAnimation — weapon overlay', () => {
     it('com arma equipada: mostra e anima weaponSprite', () => {
         const scene = makeScene();
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
-        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
         const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
 
         p.playAttackAnimation(0, 50); // south
 
         expect(weaponSprite.setVisible).toHaveBeenCalledWith(true);
-        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger-south', true);
+        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger_slash-south', true);
     });
 
     it('sem arma equipada: não lança erro', () => {
@@ -212,12 +213,63 @@ describe('Player.playAttackAnimation — weapon overlay', () => {
     it('com arma equipada: east quando dx > dy', () => {
         const scene = makeScene();
         const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
-        p.setEquippedWeaponOverlay('weapon_dagger');
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
         const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
 
         // WORLD_POS = (160, -224); target (1000, -224) → dx=840, dy=0 → east
         p.playAttackAnimation(1000, -224);
 
-        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger-east', true);
+        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger_slash-east', true);
+    });
+});
+
+describe('Player overlay z-order', () => {
+    it('weapon fica por cima do body overlay (bringToTop chamado ao equipar weapon)', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedBodyOverlay('Torso', 'armor_walk', 'armor_slash');
+        const bringToTopSpy = vi.spyOn(p, 'bringToTop');
+
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
+
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        expect(bringToTopSpy).toHaveBeenCalledWith(weaponSprite);
+    });
+
+    it('weapon permanece por cima quando body overlay é equipado depois', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        const bringToTopSpy = vi.spyOn(p, 'bringToTop');
+
+        p.setEquippedBodyOverlay('Torso', 'armor_walk', 'armor_slash');
+
+        expect(bringToTopSpy).toHaveBeenCalledWith(weaponSprite);
+    });
+});
+
+describe('Player.move — weapon overlay walk', () => {
+    it('não chama setTexture ao andar com arma equipada (evita flash de frame 0)', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        const setTextureSpy = vi.spyOn(weaponSprite, 'setTexture');
+
+        p.move({ x: WORLD_POS.x, y: WORLD_POS.y + 64 }, 500); // south
+
+        expect(setTextureSpy).not.toHaveBeenCalled();
+    });
+
+    it('chama play no weapon sprite com anim walk correta ao mover', () => {
+        const scene = makeScene();
+        const p = new Player('p1', 'Hero', BASE_DATA, WORLD_POS, scene as never, 64);
+        p.setEquippedWeaponOverlay('weapon_dagger_walk', 'weapon_dagger_slash');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        p.move({ x: WORLD_POS.x, y: WORLD_POS.y + 64 }, 500); // south
+
+        expect(weaponSprite.play).toHaveBeenCalledWith('weapon_dagger_walk-south', true);
     });
 });

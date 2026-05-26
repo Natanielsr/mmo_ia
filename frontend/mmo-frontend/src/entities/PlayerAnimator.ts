@@ -8,7 +8,8 @@ export class PlayerAnimator {
     private getIsDead: () => boolean;
 
     private weaponSprite: Phaser.GameObjects.Sprite | null = null;
-    private equippedWeaponTextureKey: string | null = null;
+    private equippedWeaponWalkKey: string | null = null;
+    private equippedWeaponSlashKey: string | null = null;
     private overlaySprites   = new Map<string, Phaser.GameObjects.Sprite>();
     private overlayWalkKeys  = new Map<string, string>();
     private overlaySlashKeys = new Map<string, string | null>();
@@ -40,6 +41,10 @@ export class PlayerAnimator {
         if (this.isAttacking) return;
         if (this.sprite.texture.key !== 'hero') this.sprite.setTexture('hero');
         this.sprite.play(animKey, true);
+        if (this.weaponSprite && this.equippedWeaponWalkKey) {
+            this.weaponSprite.setVisible(true);
+            this.weaponSprite.play(`${this.equippedWeaponWalkKey}-${this.facingDirection}`, true);
+        }
         for (const [slot, sprite] of this.overlaySprites) {
             const walkKey = this.overlayWalkKeys.get(slot);
             if (walkKey) sprite.play(`${walkKey}-${this.facingDirection}`, true);
@@ -62,6 +67,10 @@ export class PlayerAnimator {
         this.sprite.stop();
         const idleFrame = getIdleFrame(this.facingDirection);
         this.sprite.setFrame(idleFrame);
+        if (this.weaponSprite && this.equippedWeaponWalkKey) {
+            this.weaponSprite.stop();
+            this.weaponSprite.setTexture(this.equippedWeaponWalkKey, idleFrame);
+        }
         for (const [slot, sprite] of this.overlaySprites) {
             const walkKey = this.overlayWalkKeys.get(slot);
             if (walkKey) {
@@ -90,9 +99,9 @@ export class PlayerAnimator {
         this.sprite.setTexture('hero_slash');
         this.sprite.play(animKey, true);
 
-        if (this.weaponSprite && this.equippedWeaponTextureKey) {
+        if (this.weaponSprite && this.equippedWeaponSlashKey) {
             this.weaponSprite.setVisible(true);
-            this.weaponSprite.play(`${this.equippedWeaponTextureKey}-${animSuffix}`, true);
+            this.weaponSprite.play(`${this.equippedWeaponSlashKey}-${animSuffix}`, true);
         }
         for (const [slot, sprite] of this.overlaySprites) {
             const slashKey = this.overlaySlashKeys.get(slot);
@@ -106,8 +115,9 @@ export class PlayerAnimator {
             if (animation.key !== animKey) return;
             this.isAttacking = false;
             this.sprite.setTexture('hero', getIdleFrame(this.facingDirection));
-            this.weaponSprite?.setVisible(false);
-            this.weaponSprite?.stop();
+            if (this.weaponSprite && this.equippedWeaponWalkKey) {
+                this.weaponSprite.setTexture(this.equippedWeaponWalkKey, getIdleFrame(this.facingDirection));
+            }
             for (const [slot, sprite] of this.overlaySprites) {
                 const walkKey = this.overlayWalkKeys.get(slot);
                 if (walkKey) {
@@ -135,24 +145,29 @@ export class PlayerAnimator {
             this.container.add(sprite);
             this.overlaySprites.set(slot, sprite);
         }
+        if (this.weaponSprite) this.container.bringToTop(this.weaponSprite);
         const shieldSprite = this.overlaySprites.get('Shield');
         if (shieldSprite) this.container.bringToTop(shieldSprite);
     }
 
-    setEquippedWeaponOverlay(textureKey: string | null): void {
-        if (!textureKey) {
+    setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null): void {
+        if (!walkKey) {
             this.weaponSprite?.destroy();
             this.weaponSprite = null;
-            this.equippedWeaponTextureKey = null;
+            this.equippedWeaponWalkKey = null;
+            this.equippedWeaponSlashKey = null;
             return;
         }
-        this.equippedWeaponTextureKey = textureKey;
+        this.equippedWeaponWalkKey = walkKey;
+        this.equippedWeaponSlashKey = slashKey;
         if (!this.weaponSprite) {
-            this.weaponSprite = this.scene.add.sprite(0, 0, textureKey, 0);
+            this.weaponSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
             this.weaponSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
-            this.weaponSprite.setVisible(false);
             this.container.add(this.weaponSprite);
         }
+        this.container.bringToTop(this.weaponSprite);
+        const shieldSprite = this.overlaySprites.get('Shield');
+        if (shieldSprite) this.container.bringToTop(shieldSprite);
     }
 
     playTakeDamageFlash(): void {

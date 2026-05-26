@@ -29,6 +29,7 @@ class PhaserBase {
 class MockContainer extends PhaserBase {
     constructor(_scene: unknown, _x?: number, _y?: number) { super(); }
     add(_children: unknown) { return this; }
+    bringToTop(_child: unknown) { return this; }
 }
 
 class MockSprite extends PhaserBase {

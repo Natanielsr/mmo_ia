@@ -20,7 +20,11 @@ export class PreloadScene extends Phaser.Scene {
         });
 
         for (const cfg of Object.values(WEAPON_OVERLAY_REGISTRY)) {
-            this.load.spritesheet(cfg.textureKey, cfg.assetPath, {
+            this.load.spritesheet(cfg.walkTextureKey, cfg.walkAssetPath, {
+                frameWidth: cfg.frameWidth,
+                frameHeight: cfg.frameHeight
+            });
+            this.load.spritesheet(cfg.slashTextureKey, cfg.slashAssetPath, {
                 frameWidth: cfg.frameWidth,
                 frameHeight: cfg.frameHeight
             });
@@ -140,11 +144,18 @@ export class PreloadScene extends Phaser.Scene {
         const dirs = ['north', 'west', 'south', 'east'] as const;
         for (const cfg of Object.values(WEAPON_OVERLAY_REGISTRY)) {
             for (const dir of dirs) {
-                const [start, end] = cfg.directionFrames[dir];
+                const [ws, we] = cfg.walkDirectionFrames[dir];
                 this.anims.create({
-                    key: `${cfg.textureKey}-${dir}`,
-                    frames: this.anims.generateFrameNumbers(cfg.textureKey, { start, end }),
-                    frameRate: cfg.frameRate,
+                    key: `${cfg.walkTextureKey}-${dir}`,
+                    frames: this.anims.generateFrameNumbers(cfg.walkTextureKey, { start: ws, end: we }),
+                    frameRate: cfg.walkFrameRate,
+                    repeat: -1
+                });
+                const [ss, se] = cfg.slashDirectionFrames[dir];
+                this.anims.create({
+                    key: `${cfg.slashTextureKey}-${dir}`,
+                    frames: this.anims.generateFrameNumbers(cfg.slashTextureKey, { start: ss, end: se }),
+                    frameRate: cfg.slashFrameRate,
                     repeat: 0
                 });
             }

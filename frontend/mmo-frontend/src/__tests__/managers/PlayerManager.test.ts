@@ -9,6 +9,7 @@ vi.mock('phaser', () => ({
                 scene: unknown;
                 constructor(scene: unknown, x = 0, y = 0) { this.scene = scene; this.x = x; this.y = y; }
                 add(_c: unknown) { return this; }
+                bringToTop(_c: unknown) { return this; }
                 setDepth(_d: number) { return this; }
                 destroy(_f?: boolean) {}
             },
@@ -134,13 +135,13 @@ describe('PlayerManager.getMyPlayer — edge cases', () => {
 });
 
 describe('PlayerManager — weapon overlay ao spawnar', () => {
-    it('equippedItems Weapon Dagger → cria weaponSprite com weapon_dagger', () => {
+    it('equippedItems Weapon Dagger → cria weaponSprite com weapon_dagger_walk', () => {
         const scene = makeScene();
         const pm = new PlayerManager(scene as never);
 
         pm.updatePlayerPosition({ ...PLAYER_DATA, equippedItems: { Weapon: 'Dagger' } }, false);
 
-        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger_walk', expect.any(Number));
     });
 
     it('EquippedItems PascalCase também aplica overlay', () => {
@@ -149,7 +150,7 @@ describe('PlayerManager — weapon overlay ao spawnar', () => {
 
         pm.updatePlayerPosition({ ...PLAYER_DATA, EquippedItems: { Weapon: 'Dagger' } }, false);
 
-        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger', 0);
+        expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger_walk', expect.any(Number));
     });
 
     it('sem equippedItems não cria sprite extra', () => {

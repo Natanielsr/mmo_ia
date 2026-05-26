@@ -59,7 +59,7 @@ export class PlayerManager {
             if (!itemName) continue;
             if (slot === 'Weapon') {
                 const cfg = getWeaponOverlayConfig(itemName);
-                newPlayer.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+                newPlayer.setEquippedWeaponOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
             } else {
                 const cfg = getBodyOverlayConfig(slot, itemName);
                 newPlayer.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);

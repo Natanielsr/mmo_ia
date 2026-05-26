@@ -168,7 +168,7 @@ export class MainScene extends Phaser.Scene {
 
         const weaponItem = slots['Weapon'];
         const weaponCfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
-        this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(weaponCfg?.textureKey ?? null);
+        this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(weaponCfg?.walkTextureKey ?? null, weaponCfg?.slashTextureKey ?? null);
 
         for (const slot of BODY_SLOTS) {
             const item = slots[slot as EquipmentSlot];
@@ -181,7 +181,7 @@ export class MainScene extends Phaser.Scene {
         const player = this.playerManager.getPlayer(playerId);
         if (!player) return;
         const cfg = weaponName ? getWeaponOverlayConfig(weaponName) : null;
-        player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+        player.setEquippedWeaponOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
     }
 
     public playerItemEquipped(playerId: string, slot: string, itemName: string | null): void {
@@ -189,7 +189,7 @@ export class MainScene extends Phaser.Scene {
         if (!player) return;
         if (slot === 'Weapon') {
             const cfg = itemName ? getWeaponOverlayConfig(itemName) : null;
-            player.setEquippedWeaponOverlay(cfg?.textureKey ?? null);
+            player.setEquippedWeaponOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
         } else {
             const cfg = itemName ? getBodyOverlayConfig(slot, itemName) : null;
             player.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);

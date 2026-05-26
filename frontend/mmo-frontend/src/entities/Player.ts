@@ -126,8 +126,8 @@ export class Player extends Phaser.GameObjects.Container {
         this.animator.setEquippedBodyOverlay(slot, walkKey, slashKey);
     }
 
-    public setEquippedWeaponOverlay(textureKey: string | null): void {
-        this.animator.setEquippedWeaponOverlay(textureKey);
+    public setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null): void {
+        this.animator.setEquippedWeaponOverlay(walkKey, slashKey);
     }
 
     public playAttackAnimation(targetX: number, targetY: number): void {
