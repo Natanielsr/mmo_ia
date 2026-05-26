@@ -45,7 +45,7 @@ const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 const draggingItemId = ref('')
 
 const ICON_SRC: Record<string, string> = {
-  Potion:  '/assets/potion.png',
+  Potion:  '/assets/items_icon/potion.png',
   Weapon:  '/assets/items_icon/dagger.png',
   Armor:   '/assets/items_icon/leather-vest.png',
   Helmet:  '/assets/items_icon/iron-helmet.png',
