@@ -131,8 +131,8 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
 
 
 .item-icon-img {
-  width: 100%;
-  height: 100%;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
