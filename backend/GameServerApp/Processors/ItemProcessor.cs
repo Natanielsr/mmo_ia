@@ -56,13 +56,15 @@ namespace GameServerApp.Processors
             bool used = inv.UseItem(itemId, player);
             if (!used) return;
 
-            _worldEvents.OnPlayerHpChanged(new PlayerHpData
+            var hpData = new PlayerHpData
             {
                 Id     = player.Id.ToString(),
                 Hp     = player.Hp,
                 MaxHp  = player.MaxHp,
                 IsDead = false
-            });
+            };
+            _worldEvents.OnPlayerHpChanged(hpData);
+            _worldEvents.OnPlayerHealed(hpData);
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
         }
 

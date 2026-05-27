@@ -45,6 +45,11 @@ export class PlayerEventHandler {
             }
         });
 
+        this.connection.on("PlayerHealed", (hpData: any) => {
+            const id = String(hpData.id ?? hpData.Id);
+            this.scene.getPlayer(id)?.playHealEffect();
+        });
+
         this.connection.on("PlayerStatusUpdated", (statusData: any) => {
             this.scene.updatePlayerStatus(statusData);
             const myPlayer = this.scene.getMyPlayer();

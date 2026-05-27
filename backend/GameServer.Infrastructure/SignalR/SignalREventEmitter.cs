@@ -29,6 +29,11 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerHpChanged", playerHpData);
         }
 
+        public void OnPlayerHealed(PlayerHpData playerHpData)
+        {
+            _hubContext.Clients.All.SendAsync("PlayerHealed", playerHpData);
+        }
+
         public void OnPlayerStatusUpdated(PlayerStatusData playerStatusData)
         {
             _hubContext.Clients.All.SendAsync("PlayerStatusUpdated", playerStatusData);

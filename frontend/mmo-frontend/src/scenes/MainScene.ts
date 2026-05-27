@@ -70,7 +70,6 @@ export class MainScene extends Phaser.Scene {
         this.combatSystem    = new CombatSystem(this, this.playerManager, this.monsterManager);
 
         this.inventoryManager.onUseItem    = (itemId: string) => {
-            this.playerManager.getMyPlayer()?.playHealEffect();
             this.onRequestUseItem?.(itemId);
         };
         this.inventoryManager.onDropItem   = (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y);
@@ -81,7 +80,6 @@ export class MainScene extends Phaser.Scene {
             onUnequip:         (slot: string)   => this.onRequestUnequipItem?.(slot),
             onMoveInInventory: (itemId: string, toIndex: number) => this.onRequestMoveItemInInventory?.(itemId, toIndex),
             onUseItem:         (itemId: string) => {
-                this.playerManager.getMyPlayer()?.playHealEffect();
                 this.onRequestUseItem?.(itemId);
             },
             onDropItem:        (itemId: string, x: number, y: number) => this.onRequestDropItem?.(itemId, x, y),

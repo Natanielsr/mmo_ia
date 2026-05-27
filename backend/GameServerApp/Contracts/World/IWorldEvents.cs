@@ -18,6 +18,11 @@ namespace GameServerApp.Contracts.World
         void OnPlayerHpChanged(PlayerHpData playerHpData);
 
         /// <summary>
+        /// Triggered when a player heals (e.g., uses a potion). Broadcast to all for visual effect.
+        /// </summary>
+        void OnPlayerHealed(PlayerHpData playerHpData);
+
+        /// <summary>
         /// Triggered when player status changes due to level-up or equipment change.
         /// </summary>
         void OnPlayerStatusUpdated(PlayerStatusData playerStatusData);
