@@ -1,0 +1,8 @@
+{
+  "monsters": [
+    { "id": 1, "tagName": "rat",    "name": "Rat",    "hp": 30, "attack": 4,  "xp": 20  },
+    { "id": 2, "tagName": "wolf",   "name": "Wolf",   "hp": 60, "attack": 10, "xp": 60  },
+    { "id": 3, "tagName": "orc",    "name": "Orc",    "hp": 90, "attack": 14, "xp": 100 },
+    { "id": 4, "tagName": "spider", "name": "Spider", "hp": 45, "attack": 7,  "xp": 35  }
+  ]
+}

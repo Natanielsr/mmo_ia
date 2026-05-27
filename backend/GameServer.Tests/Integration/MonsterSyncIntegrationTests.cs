@@ -13,13 +13,25 @@ public class MonsterSyncIntegrationTests
 {
     private readonly Mock<ICollisionManager> _collisionManagerMock;
     private readonly Mock<IIdGeneratorService> _idGeneratorServiceMock;
+    private readonly Mock<IMonsterDefinitionRepository> _monsterRepoMock;
     private readonly MonsterManager _monsterManager;
 
     public MonsterSyncIntegrationTests()
     {
         _collisionManagerMock = new Mock<ICollisionManager>();
         _idGeneratorServiceMock = new Mock<IIdGeneratorService>();
-        _monsterManager = new MonsterManager(_collisionManagerMock.Object, _idGeneratorServiceMock.Object);
+        _monsterRepoMock = BuildMonsterRepoMock();
+        _monsterManager = new MonsterManager(_collisionManagerMock.Object, _idGeneratorServiceMock.Object, _monsterRepoMock.Object);
+    }
+
+    private static Mock<IMonsterDefinitionRepository> BuildMonsterRepoMock()
+    {
+        var mock = new Mock<IMonsterDefinitionRepository>();
+        mock.Setup(r => r.GetAll()).Returns(new List<MonsterDefinition>
+        {
+            new(1, "rat", "Rat", 30, 4, 20)
+        });
+        return mock;
     }
 
     [Fact]

@@ -2,6 +2,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 using Moq;
 using GameServerApp.Managers;
 using GameServerApp.World;
@@ -53,7 +54,7 @@ namespace GameServer.Tests.Managers
             // Usa o CollisionManager compartilhado do builder principal para que
             // o novo WorldManager e o MonsterManager operem sobre o mesmo estado.
             var mockIdGen        = new Mock<IIdGeneratorService>();
-            var realMonsterManager = new MonsterManager(_b.BuiltCollision!, mockIdGen.Object);
+            var realMonsterManager = new MonsterManager(_b.BuiltCollision!, mockIdGen.Object, BuildMonsterRepo());
 
             var wm = new WorldManagerBuilder()
                 .WithCollision(_b.BuiltCollision!)
@@ -84,7 +85,7 @@ namespace GameServer.Tests.Managers
             // Teste de unidade puro — usa objetos locais, sem WorldManager
             var mockIdGen      = new Mock<IIdGeneratorService>();
             var localCollision = new CollisionManager(_b.StaticWorld.Object);
-            var monsterManager = new MonsterManager(localCollision, mockIdGen.Object);
+            var monsterManager = new MonsterManager(localCollision, mockIdGen.Object, BuildMonsterRepo());
 
             var pos     = new Position(5, 5);
             var monster = new Monster(100, "Wolf", "wolf", pos, 50, 10);
@@ -102,7 +103,7 @@ namespace GameServer.Tests.Managers
         {
             var mockIdGen      = new Mock<IIdGeneratorService>();
             var localCollision = new CollisionManager(_b.StaticWorld.Object);
-            var monsterManager = new MonsterManager(localCollision, mockIdGen.Object);
+            var monsterManager = new MonsterManager(localCollision, mockIdGen.Object, BuildMonsterRepo());
 
             _b.StaticWorld.Setup(s => s.IsBlocked(It.IsAny<Position>())).Returns(false);
             mockIdGen.Setup(s => s.GenerateId()).Returns(1);
@@ -123,7 +124,7 @@ namespace GameServer.Tests.Managers
         public void When_Monster_Dies_It_Should_Respawn_After_Delay()
         {
             var mockIdGen          = new Mock<IIdGeneratorService>();
-            var realMonsterManager = new MonsterManager(_b.BuiltCollision!, mockIdGen.Object);
+            var realMonsterManager = new MonsterManager(_b.BuiltCollision!, mockIdGen.Object, BuildMonsterRepo());
 
             var wm = new WorldManagerBuilder()
                 .WithCollision(_b.BuiltCollision!)
@@ -177,6 +178,17 @@ namespace GameServer.Tests.Managers
 
             Assert.True(dropped, "Item deve ter dropado conforme retorno do LootTableService");
             _b.Events.Verify(e => e.OnItemDropped(It.IsAny<IItem>()), Times.Once);
+        }
+
+        private static IMonsterDefinitionRepository BuildMonsterRepo()
+        {
+            var mock = new Mock<IMonsterDefinitionRepository>();
+            var defs = new List<MonsterDefinition>
+            {
+                new(1, "rat", "Rat", 30, 4, 20)
+            };
+            mock.Setup(r => r.GetAll()).Returns(defs);
+            return mock.Object;
         }
     }
 }

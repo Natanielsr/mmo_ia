@@ -2,29 +2,26 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
-using GameServerApp.World;
 using GameServerApp.Dtos;
+using GameServerApp.World;
 
 namespace GameServerApp.Managers;
 
 public class MonsterManager : IMonsterManager
 {
-    private static readonly (string Name, string ObjectCode, int Hp, int Attack, int Xp)[] MonsterTemplates =
-    [
-        ("Rat", "rat", 30, 4, 20),
-        ("Wolf", "wolf", 60, 10, 60),
-        ("Orc", "orc", 90, 14, 100),
-        ("Spider", "spider", 45, 7, 35)
-    ];
-
     private readonly Dictionary<long, IMonster> _monsters = new();
     private readonly ICollisionManager _collisionManager;
     private readonly IIdGeneratorService _idGeneratorService;
+    private readonly IMonsterDefinitionRepository _monsterRepo;
 
-    public MonsterManager(ICollisionManager collisionManager, IIdGeneratorService idGeneratorService)
+    public MonsterManager(
+        ICollisionManager collisionManager,
+        IIdGeneratorService idGeneratorService,
+        IMonsterDefinitionRepository monsterRepo)
     {
         _collisionManager = collisionManager;
         _idGeneratorService = idGeneratorService;
+        _monsterRepo = monsterRepo;
     }
 
     public IReadOnlyCollection<IMonster> SpawnRandomMonsters(
@@ -66,7 +63,8 @@ public class MonsterManager : IMonsterManager
 
             if (_collisionManager.IsPositionBlocked(position)) continue;
 
-            var template = MonsterTemplates[rng.Next(MonsterTemplates.Length)];
+            var all = _monsterRepo.GetAll();
+            var template = all[rng.Next(all.Count)];
 
             // Gera ID e verifica duplicação
             var monsterId = _idGeneratorService.GenerateId();
@@ -80,7 +78,7 @@ public class MonsterManager : IMonsterManager
             var monster = new Monster(
                 id: monsterId,
                 name: template.Name,
-                objectCode: template.ObjectCode,
+                objectCode: template.TagName,
                 spawnPosition: position,
                 maxHp: template.Hp,
                 attackPower: template.Attack,
@@ -127,13 +125,14 @@ public class MonsterManager : IMonsterManager
             if (usedPositions.Contains(position)) continue;
             if (_collisionManager.IsPositionBlocked(position)) continue;
 
-            var template = MonsterTemplates[rng.Next(MonsterTemplates.Length)];
+            var all = _monsterRepo.GetAll();
+            var template = all[rng.Next(all.Count)];
             var monsterId = _idGeneratorService.GenerateId();
 
             var monster = new Monster(
                 id: monsterId,
                 name: template.Name,
-                objectCode: template.ObjectCode,
+                objectCode: template.TagName,
                 spawnPosition: position,
                 maxHp: template.Hp,
                 attackPower: template.Attack,

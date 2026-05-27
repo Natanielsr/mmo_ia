@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { WEAPON_OVERLAY_REGISTRY, getAllBodyConfigs } from '../config/overlays';
 import { ITEM_ICON_REGISTRY } from '../config/itemIconRegistry';
+import { MONSTER_SPRITE_REGISTRY } from '../config/monsterSpriteRegistry';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -43,10 +44,9 @@ export class PreloadScene extends Phaser.Scene {
 
 
         // Futuro: outros assets podem ser carregados aqui
-        this.load.image('rat', 'assets/rat.png');
-        this.load.image('wolf', 'assets/wolf.png');
-        this.load.image('orc', 'assets/orc.png');
-        this.load.image('spider', 'assets/spider.png');
+        for (const [key, path] of Object.entries(MONSTER_SPRITE_REGISTRY)) {
+            this.load.image(key, path);
+        }
 
         this.load.image('tree', 'assets/tree.png');
         this.load.image('rock', 'assets/rock.png');

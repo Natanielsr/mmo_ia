@@ -55,6 +55,11 @@ builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
     var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "items.json");
     return new ItemDefinitionRepository(File.ReadAllText(path));
 });
+builder.Services.AddSingleton<IMonsterDefinitionRepository>(_ =>
+{
+    var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "monsters.json");
+    return new MonsterDefinitionRepository(File.ReadAllText(path));
+});
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
 
 // Register Processors
