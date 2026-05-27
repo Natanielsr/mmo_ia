@@ -58,6 +58,7 @@ namespace GameServerApp.Processors
 
         public bool ProcessUnequipItem(IPlayer player, EquipmentSlot slot)
         {
+            if (player.State == PlayerState.Dead) return false;
             var eq = _equipmentManager.GetEquipment(player.Id);
             if (eq == null) return false;
 
@@ -88,6 +89,7 @@ namespace GameServerApp.Processors
 
         public bool ProcessMoveItemInInventory(IPlayer player, string itemId, int toIndex)
         {
+            if (player.State == PlayerState.Dead) return false;
             var inv = _inventoryManager.GetInventory(player.Id);
             if (inv == null) return false;
             if (!inv.MoveItem(itemId, toIndex)) return false;

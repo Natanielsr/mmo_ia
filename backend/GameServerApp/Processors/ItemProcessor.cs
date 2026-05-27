@@ -25,6 +25,7 @@ namespace GameServerApp.Processors
 
         public void ProcessItemPickup(IPlayer player)
         {
+            if (player.State == PlayerState.Dead) return;
             var items = _itemManager.GetItemsAt(player.Position).ToList();
             if (items.Count == 0) return;
 
@@ -48,6 +49,7 @@ namespace GameServerApp.Processors
 
         public void ProcessUseItem(IPlayer player, string itemId)
         {
+            if (player.State == PlayerState.Dead) return;
             var inv = _inventoryManager.GetInventory(player.Id);
             if (inv == null) return;
 
@@ -66,6 +68,7 @@ namespace GameServerApp.Processors
 
         public void ProcessDropItem(IPlayer player, string itemId, Position targetPos)
         {
+            if (player.State == PlayerState.Dead) return;
             var inv = _inventoryManager.GetInventory(player.Id);
             if (inv == null) return;
 
