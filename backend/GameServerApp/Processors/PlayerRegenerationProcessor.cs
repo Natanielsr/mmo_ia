@@ -29,7 +29,7 @@ namespace GameServerApp.Processors
             {
                 if (player.State != PlayerState.Dead && player.Hp < player.MaxHp)
                 {
-                    player.Heal(2);
+                    player.Heal(0);
                     _worldEvents.OnPlayerHpChanged(new PlayerHpData
                     {
                         Id     = player.Id.ToString(),
