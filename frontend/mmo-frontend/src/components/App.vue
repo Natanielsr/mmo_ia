@@ -4,6 +4,7 @@
   <GearPanel />
   <GameLogPanel />
   <AttributesModal />
+  <GameOverModal />
 </template>
 
 <script setup lang="ts">
@@ -12,4 +13,5 @@ import PanelToggleBar from './PanelToggleBar.vue'
 import GearPanel from './GearPanel.vue'
 import GameLogPanel from './GameLogPanel.vue'
 import AttributesModal from './AttributesModal.vue'
+import GameOverModal from './GameOverModal.vue'
 </script>
