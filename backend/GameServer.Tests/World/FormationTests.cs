@@ -1,3 +1,4 @@
+using GameServerApp.Contracts;
 using GameServerApp.Services.WorldFormations;
 using Xunit;
 using System;
@@ -21,7 +22,7 @@ namespace GameServer.Tests.World
                 bool spawnedInRun = false;
                 formation.Generate(0, 0, 16, new Random(i), (x, y, type) => 
                 {
-                    if (type == "item:healing_potion") spawnedInRun = true;
+                    if (type == ItemTags.SpawnCode.Potion) spawnedInRun = true;
                 });
                 if (spawnedInRun) potionCount++;
             }
@@ -42,7 +43,7 @@ namespace GameServer.Tests.World
                 bool spawnedInRun = false;
                 formation.Generate(0, 0, 16, new Random(i), (x, y, type) => 
                 {
-                    if (type == "item:healing_potion") spawnedInRun = true;
+                    if (type == ItemTags.SpawnCode.Potion) spawnedInRun = true;
                 });
                 if (spawnedInRun) potionCount++;
             }
@@ -65,7 +66,7 @@ namespace GameServer.Tests.World
                 formation.Generate(0, 0, size, new Random(i), (x, y, type) => 
                 {
                     // Verifica se a poção está no final (1, 1) - Canto oposto à convergência
-                    if (type == "item:healing_potion" && x == 1 && y == 1) 
+                    if (type == ItemTags.SpawnCode.Potion && x == 1 && y == 1) 
                         spawnedAtEnd = true;
                 });
                 if (spawnedAtEnd) potionCount++;
@@ -89,7 +90,7 @@ namespace GameServer.Tests.World
                 formation.Generate(0, 0, size, new Random(i), (x, y, type) => 
                 {
                     // Verifica se a poção está no centro deslocado (size/2 + 1)
-                    if (type == "item:healing_potion" && x == size/2 + 1 && y == size/2 + 1) 
+                    if (type == ItemTags.SpawnCode.Potion && x == size/2 + 1 && y == size/2 + 1) 
                         spawnedInOffset = true;
                 });
                 if (spawnedInOffset) potionCount++;
@@ -117,7 +118,7 @@ namespace GameServer.Tests.World
             var walls = new HashSet<(int, int)>();
             formation.Generate(0, 0, size, new Random(123), (x, y, type) => 
             {
-                if (type != "item:healing_potion") walls.Add((x, y));
+                if (type != ItemTags.SpawnCode.Potion) walls.Add((x, y));
             });
 
             // Find all path cells (odd, odd)

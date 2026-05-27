@@ -1,3 +1,4 @@
+using GameServerApp.Contracts;
 using GameServerApp.Contracts.Services;
 using System;
 
@@ -20,7 +21,7 @@ namespace GameServerApp.Services.WorldFormations
             if (rng.NextDouble() < 0.2)
             {
                 // Desloca levemente do centro para não cair em cima de uma árvore/pilar da grade
-                spawnAction(startX + size / 2 + 1, startY + size / 2 + 1, "item:healing_potion");
+                spawnAction(startX + size / 2 + 1, startY + size / 2 + 1, ItemTags.SpawnCode.Potion);
             }
         }
     }

@@ -1,3 +1,4 @@
+using GameServerApp.Contracts;
 using GameServerApp.Contracts.Services;
 using System;
 
@@ -91,7 +92,7 @@ namespace GameServerApp.Services.WorldFormations
             }
 
             // Sempre spawna uma Poção de Cura no final do labirinto (canto inferior esquerdo oposto à raiz)
-            spawnAction(startX + 1, startY + 1, "item:healing_potion");
+            spawnAction(startX + 1, startY + 1, ItemTags.SpawnCode.Potion);
         }
     }
 }

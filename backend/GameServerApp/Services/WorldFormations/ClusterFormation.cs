@@ -1,3 +1,4 @@
+using GameServerApp.Contracts;
 using GameServerApp.Contracts.Services;
 using System;
 
@@ -19,7 +20,7 @@ namespace GameServerApp.Services.WorldFormations
 
             if (rng.NextDouble() < 0.2)
             {
-                spawnAction(clX, clY, "item:healing_potion");
+                spawnAction(clX, clY, ItemTags.SpawnCode.Potion);
             }
         }
     }

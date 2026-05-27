@@ -18,6 +18,8 @@ namespace GameServerApp.Services
         private readonly IItemManager _itemManager;
         private readonly IWorldEvents _worldEvents;
         private readonly WorldConfig _config;
+        private readonly IItemDefinitionRepository _itemRepo;
+        private readonly IItemFactory _itemFactory;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public WorldGenerator(
@@ -25,13 +27,17 @@ namespace GameServerApp.Services
             IIdGeneratorService idGeneratorService,
             IItemManager itemManager,
             IWorldEvents worldEvents,
-            IOptions<WorldConfig> config)
+            IOptions<WorldConfig> config,
+            IItemDefinitionRepository itemRepo,
+            IItemFactory itemFactory)
         {
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;
             _itemManager = itemManager;
             _worldEvents = worldEvents;
             _config = config.Value;
+            _itemRepo = itemRepo;
+            _itemFactory = itemFactory;
 
             // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
             _formations = new List<(IWorldFormation, double)>
@@ -89,13 +95,13 @@ namespace GameServerApp.Services
             // Se for um item
             if (forcedType != null && forcedType.StartsWith("item:"))
             {
-                string itemCode = forcedType.Substring(5);
-                if (itemCode == "healing_potion")
+                string tagName = forcedType.Substring(5);
+                var def = _itemRepo.GetByTagName(tagName);
+                if (def != null)
                 {
-                    var potion = new HealingPotion(_idGeneratorService.GenerateId().ToString(),
-                        "Healing Potion", 0.5f, "healing-potion", pos);
-                    _itemManager.DropItem(potion);
-                    _worldEvents.OnItemDropped(potion);
+                    var item = _itemFactory.Create(def, _idGeneratorService.GenerateId().ToString(), pos);
+                    _itemManager.DropItem(item);
+                    _worldEvents.OnItemDropped(item);
                 }
                 return;
             }
