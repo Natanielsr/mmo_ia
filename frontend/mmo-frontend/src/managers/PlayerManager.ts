@@ -67,7 +67,7 @@ export class PlayerManager {
 
         if (isMe) {
             this.myId = id;
-            this.scene.cameras.main.startFollow(newPlayer, true, 0.1, 0.1);
+            this.scene.cameras.main.startFollow(newPlayer, true, 1, 1);
         }
     }
 

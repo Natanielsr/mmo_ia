@@ -145,8 +145,8 @@ export class WorldMapScene extends Phaser.Scene {
 
         if (Math.abs(relX) > viewHalfW || Math.abs(relY) > viewHalfH) return;
 
-        const px = this.cameras.main.centerX + relX * this.tileSize;
-        const py = this.cameras.main.centerY + relY * this.tileSize;
+        const px = Math.round(this.cameras.main.centerX + relX * this.tileSize);
+        const py = Math.round(this.cameras.main.centerY + relY * this.tileSize);
 
         this.graphics.fillStyle(color, 1);
         this.graphics.fillRect(px - this.tileSize / 2, py - this.tileSize / 2, this.tileSize, this.tileSize);
@@ -161,10 +161,10 @@ export class WorldMapScene extends Phaser.Scene {
         const relXEnd = relXStart + gw;
         const relYEnd = relYStart - gh;
 
-        const pxStart = this.cameras.main.centerX + relXStart * this.tileSize;
-        const pyStart = this.cameras.main.centerY + relYStart * this.tileSize;
-        const pxEnd = this.cameras.main.centerX + relXEnd * this.tileSize;
-        const pyEnd = this.cameras.main.centerY + relYEnd * this.tileSize;
+        const pxStart = Math.round(this.cameras.main.centerX + relXStart * this.tileSize);
+        const pyStart = Math.round(this.cameras.main.centerY + relYStart * this.tileSize);
+        const pxEnd = Math.round(this.cameras.main.centerX + relXEnd * this.tileSize);
+        const pyEnd = Math.round(this.cameras.main.centerY + relYEnd * this.tileSize);
 
         // Limita ao backgroundRect (aproximado)
         const left = this.cameras.main.centerX - this.backgroundRect.width / 2;
