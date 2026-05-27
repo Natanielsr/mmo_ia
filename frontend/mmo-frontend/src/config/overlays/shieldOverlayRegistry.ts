@@ -1,6 +1,6 @@
-import { type ArmorOverlayConfig } from './armorOverlayRegistry'
+import type { OverlayConfig } from './types'
 
-export const SHIELD_OVERLAY_REGISTRY: Record<string, ArmorOverlayConfig> = {
+export const SHIELD_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
     'wooden-shield': {
         walkTextureKey: 'shield_wooden_walk',
         walkAssetPath: 'assets/walkcycle/WEAPON_shield_cutout_body.png',

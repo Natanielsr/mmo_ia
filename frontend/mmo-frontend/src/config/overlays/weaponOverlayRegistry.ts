@@ -1,27 +1,6 @@
-export interface WeaponOverlayConfig {
-    walkTextureKey: string
-    walkAssetPath: string
-    slashTextureKey: string
-    slashAssetPath: string
-    frameWidth: number
-    frameHeight: number
-    walkDirectionFrames: {
-        north: [number, number]
-        west: [number, number]
-        south: [number, number]
-        east: [number, number]
-    }
-    slashDirectionFrames: {
-        north: [number, number]
-        west: [number, number]
-        south: [number, number]
-        east: [number, number]
-    }
-    walkFrameRate: number
-    slashFrameRate: number
-}
+import type { OverlayConfig } from './types'
 
-export const WEAPON_OVERLAY_REGISTRY: Record<string, WeaponOverlayConfig> = {
+export const WEAPON_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
     'dagger': {
         walkTextureKey: 'weapon_dagger_walk',
         walkAssetPath: 'assets/walkcycle/WEAPON_dagger.png',
@@ -36,6 +15,6 @@ export const WEAPON_OVERLAY_REGISTRY: Record<string, WeaponOverlayConfig> = {
     }
 }
 
-export function getWeaponOverlayConfig(itemName: string): WeaponOverlayConfig | null {
+export function getWeaponOverlayConfig(itemName: string): OverlayConfig | null {
     return WEAPON_OVERLAY_REGISTRY[itemName] ?? null
 }
