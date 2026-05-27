@@ -12,5 +12,8 @@ export const HEAD_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
         walkFrameRate: 16,
         slashFrameRate: 24,
+        hurtTextureKey: 'head_iron_helmet_hurt',
+        hurtAssetPath:  'assets/hurt/HEAD_plate_armor_helmet.png',
+        hurtFrameRate:  12,
     }
 }

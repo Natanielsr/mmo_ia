@@ -170,7 +170,7 @@ export class MainScene extends Phaser.Scene {
         for (const slot of BODY_SLOTS) {
             const item = slots[slot as EquipmentSlot];
             const cfg = item ? getBodyOverlayConfig(slot, item.tagName) : null;
-            this.playerManager.getMyPlayer()?.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+            this.playerManager.getMyPlayer()?.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null, cfg?.hurtTextureKey ?? null);
         }
     }
 
@@ -189,7 +189,7 @@ export class MainScene extends Phaser.Scene {
             player.setEquippedWeaponOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
         } else {
             const cfg = itemName ? getBodyOverlayConfig(slot, itemName) : null;
-            player.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+            player.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null, cfg?.hurtTextureKey ?? null);
         }
     }
 

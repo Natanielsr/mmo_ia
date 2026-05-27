@@ -16,4 +16,7 @@ export interface OverlayConfig {
     slashDirectionFrames: DirectionFrames
     walkFrameRate: number
     slashFrameRate: number
+    hurtTextureKey?: string
+    hurtAssetPath?:  string
+    hurtFrameRate?:  number
 }

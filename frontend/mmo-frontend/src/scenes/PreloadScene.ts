@@ -20,6 +20,20 @@ export class PreloadScene extends Phaser.Scene {
             frameHeight: 64
         });
 
+        this.load.spritesheet('hero_hurt', 'assets/hurt/BODY_male.png', {
+            frameWidth: 64,
+            frameHeight: 64
+        });
+
+        for (const cfg of getAllBodyConfigs()) {
+            if (cfg.hurtTextureKey && cfg.hurtAssetPath) {
+                this.load.spritesheet(cfg.hurtTextureKey, cfg.hurtAssetPath, {
+                    frameWidth: cfg.frameWidth,
+                    frameHeight: cfg.frameHeight
+                });
+            }
+        }
+
         for (const cfg of Object.values(WEAPON_OVERLAY_REGISTRY)) {
             this.load.spritesheet(cfg.walkTextureKey, cfg.walkAssetPath, {
                 frameWidth: cfg.frameWidth,
@@ -172,6 +186,26 @@ export class PreloadScene extends Phaser.Scene {
                     key: `${cfg.slashTextureKey}-${dir}`,
                     frames: this.anims.generateFrameNumbers(cfg.slashTextureKey, { start: ss, end: se }),
                     frameRate: cfg.slashFrameRate,
+                    repeat: 0
+                });
+            }
+        }
+
+        // Animação de hurt/morte do herói
+        this.anims.create({
+            key: 'hero_hurt',
+            frames: this.anims.generateFrameNumbers('hero_hurt', { start: 0, end: 5 }),
+            frameRate: 12,
+            repeat: 0
+        });
+
+        // Animações de hurt dos overlays de body
+        for (const cfg of getAllBodyConfigs()) {
+            if (cfg.hurtTextureKey) {
+                this.anims.create({
+                    key: cfg.hurtTextureKey,
+                    frames: this.anims.generateFrameNumbers(cfg.hurtTextureKey, { start: 0, end: 5 }),
+                    frameRate: cfg.hurtFrameRate ?? 12,
                     repeat: 0
                 });
             }

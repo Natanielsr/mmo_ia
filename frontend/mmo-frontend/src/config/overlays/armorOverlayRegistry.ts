@@ -12,5 +12,8 @@ export const ARMOR_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
         walkFrameRate: 16,
         slashFrameRate: 24,
+        hurtTextureKey: 'armor_leather_torso_hurt',
+        hurtAssetPath:  'assets/hurt/TORSO_leather_armor_torso.png',
+        hurtFrameRate:  12,
     }
 }

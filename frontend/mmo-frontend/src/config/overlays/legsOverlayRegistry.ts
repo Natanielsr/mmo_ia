@@ -12,5 +12,8 @@ export const LEGS_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
         walkFrameRate: 16,
         slashFrameRate: 24,
+        hurtTextureKey: 'legs_leather_pants_hurt',
+        hurtAssetPath:  'assets/hurt/LEGS_pants_greenish.png',
+        hurtFrameRate:  12,
     }
 }

@@ -146,29 +146,58 @@ describe('PlayerAnimator.playTakeDamageFlash — overlays', () => {
 });
 
 describe('PlayerAnimator.playDieEffect — overlays', () => {
-    it('aplica angle e tint cinza no overlay de corpo', () => {
+    it('hero sprite reproduz animação hero_hurt', () => {
+        const { animator, scene } = makeAnimator();
+        const baseSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results[0]!.value;
+
+        animator.playDieEffect();
+
+        expect(baseSprite.play).toHaveBeenCalledWith('hero_hurt', true);
+    });
+
+    it('oculta overlay de corpo sem hurtKey (sem angle+tint)', () => {
         const { animator, scene } = makeAnimator();
         animator.setEquippedBodyOverlay('Chest', 'chest-walk', null);
         const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
-        vi.spyOn(overlaySprite, 'setAngle');
-        vi.spyOn(overlaySprite, 'setTint');
 
         animator.playDieEffect();
 
-        expect(overlaySprite.setAngle).toHaveBeenCalledWith(90);
-        expect(overlaySprite.setTint).toHaveBeenCalledWith(0x666666);
+        expect(overlaySprite.setVisible).toHaveBeenCalledWith(false);
+        expect(overlaySprite.setAngle).not.toHaveBeenCalled();
     });
 
-    it('aplica angle e tint cinza na arma quando equipada', () => {
+    it('oculta arma sem hurtKey (sem angle+tint)', () => {
         const { animator, scene } = makeAnimator();
         animator.setEquippedWeaponOverlay('sword-walk', null);
         const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
-        vi.spyOn(weaponSprite, 'setAngle');
-        vi.spyOn(weaponSprite, 'setTint');
 
         animator.playDieEffect();
 
-        expect(weaponSprite.setAngle).toHaveBeenCalledWith(90);
-        expect(weaponSprite.setTint).toHaveBeenCalledWith(0x666666);
+        expect(weaponSprite.setVisible).toHaveBeenCalledWith(false);
+        expect(weaponSprite.setAngle).not.toHaveBeenCalled();
+    });
+
+    it('overlay com hurtKey reproduz animação de hurt', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', null, 'chest-hurt');
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        animator.playDieEffect();
+
+        expect(overlaySprite.play).toHaveBeenCalledWith('chest-hurt', true);
+        expect(overlaySprite.setVisible).not.toHaveBeenCalled();
+    });
+
+    it('overlay com hurtKey aplica tint ao completar animação', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', null, 'chest-hurt');
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        animator.playDieEffect();
+
+        const onceCallback = (overlaySprite.once as ReturnType<typeof vi.fn>).mock.calls[0][1] as () => void;
+        onceCallback();
+
+        expect(overlaySprite.setTint).toHaveBeenCalledWith(0x666666);
     });
 });

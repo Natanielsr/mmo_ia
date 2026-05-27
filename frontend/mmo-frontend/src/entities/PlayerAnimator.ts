@@ -13,6 +13,8 @@ export class PlayerAnimator {
     private overlaySprites   = new Map<string, Phaser.GameObjects.Sprite>();
     private overlayWalkKeys  = new Map<string, string>();
     private overlaySlashKeys = new Map<string, string | null>();
+    private overlayHurtKeys  = new Map<string, string | null>();
+    private equippedWeaponHurtKey: string | null = null;
 
     private stopWalkingTimer?: Phaser.Time.TimerEvent;
     public isAttacking: boolean = false;
@@ -129,16 +131,18 @@ export class PlayerAnimator {
         });
     }
 
-    setEquippedBodyOverlay(slot: string, walkKey: string | null, slashKey: string | null): void {
+    setEquippedBodyOverlay(slot: string, walkKey: string | null, slashKey: string | null, hurtKey: string | null = null): void {
         if (!walkKey) {
             this.overlaySprites.get(slot)?.destroy();
             this.overlaySprites.delete(slot);
             this.overlayWalkKeys.delete(slot);
             this.overlaySlashKeys.delete(slot);
+            this.overlayHurtKeys.delete(slot);
             return;
         }
         this.overlayWalkKeys.set(slot, walkKey);
         this.overlaySlashKeys.set(slot, slashKey);
+        this.overlayHurtKeys.set(slot, hurtKey);
         if (!this.overlaySprites.has(slot)) {
             const sprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
             sprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
@@ -150,16 +154,18 @@ export class PlayerAnimator {
         if (shieldSprite) this.container.bringToTop(shieldSprite);
     }
 
-    setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null): void {
+    setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null, hurtKey: string | null = null): void {
         if (!walkKey) {
             this.weaponSprite?.destroy();
             this.weaponSprite = null;
             this.equippedWeaponWalkKey = null;
             this.equippedWeaponSlashKey = null;
+            this.equippedWeaponHurtKey = null;
             return;
         }
         this.equippedWeaponWalkKey = walkKey;
         this.equippedWeaponSlashKey = slashKey;
+        this.equippedWeaponHurtKey = hurtKey;
         if (!this.weaponSprite) {
             this.weaponSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
             this.weaponSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
@@ -184,11 +190,32 @@ export class PlayerAnimator {
     }
 
     playDieEffect(): void {
-        const allSprites = [this.sprite, ...this.overlaySprites.values(), this.weaponSprite].filter(Boolean) as Phaser.GameObjects.Sprite[];
-        allSprites.forEach(s => {
-            s.setAngle(90);
-            s.setTint(0x666666);
+        this.sprite.setTexture('hero_hurt');
+        this.sprite.play('hero_hurt', true);
+        this.sprite.once('animationcomplete', () => {
+            this.sprite.setTint(0x666666);
         });
+
+        for (const [slot, sprite] of this.overlaySprites) {
+            const hurtKey = this.overlayHurtKeys.get(slot) ?? null;
+            if (hurtKey) {
+                sprite.setTexture(hurtKey);
+                sprite.play(hurtKey, true);
+                sprite.once('animationcomplete', () => sprite.setTint(0x666666));
+            } else {
+                sprite.setVisible(false);
+            }
+        }
+
+        if (this.weaponSprite) {
+            if (this.equippedWeaponHurtKey) {
+                this.weaponSprite.setTexture(this.equippedWeaponHurtKey);
+                this.weaponSprite.play(this.equippedWeaponHurtKey, true);
+                this.weaponSprite.once('animationcomplete', () => this.weaponSprite!.setTint(0x666666));
+            } else {
+                this.weaponSprite.setVisible(false);
+            }
+        }
     }
 
     playHealEffect(x: number, y: number, nameTextOffsetY: number): void {

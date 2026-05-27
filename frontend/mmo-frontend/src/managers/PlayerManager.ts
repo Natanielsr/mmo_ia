@@ -39,7 +39,12 @@ export class PlayerManager {
         if (player) {
             player.hp = statusData.hp ?? statusData.Hp ?? player.hp;
             player.maxHp = statusData.maxHp ?? statusData.MaxHp ?? player.maxHp;
-            player.isDead = statusData.isDead ?? statusData.IsDead ?? player.isDead;
+            const newIsDead = statusData.isDead ?? statusData.IsDead ?? player.isDead;
+            if (!player.isDead && newIsDead) {
+                player.die();
+            } else {
+                player.isDead = newIsDead;
+            }
             
             const newLevel = statusData.level ?? statusData.Level ?? player.level;
             const newXP = statusData.experience ?? statusData.Experience ?? player.experience;
@@ -61,7 +66,7 @@ export class PlayerManager {
                 newPlayer.setEquippedWeaponOverlay(cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
             } else {
                 const cfg = getBodyOverlayConfig(slot, itemName);
-                newPlayer.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
+                newPlayer.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null, cfg?.hurtTextureKey ?? null);
             }
         }
 

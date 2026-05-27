@@ -12,5 +12,8 @@ export const FEET_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
         walkFrameRate: 16,
         slashFrameRate: 24,
+        hurtTextureKey: 'feet_iron_boots_hurt',
+        hurtAssetPath:  'assets/hurt/FEET_plate_armor_shoes.png',
+        hurtFrameRate:  12,
     }
 }

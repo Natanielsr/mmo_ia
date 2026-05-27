@@ -122,12 +122,12 @@ export class Player extends Phaser.GameObjects.Container {
         });
     }
 
-    public setEquippedBodyOverlay(slot: string, walkKey: string | null, slashKey: string | null): void {
-        this.animator.setEquippedBodyOverlay(slot, walkKey, slashKey);
+    public setEquippedBodyOverlay(slot: string, walkKey: string | null, slashKey: string | null, hurtKey: string | null = null): void {
+        this.animator.setEquippedBodyOverlay(slot, walkKey, slashKey, hurtKey);
     }
 
-    public setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null): void {
-        this.animator.setEquippedWeaponOverlay(walkKey, slashKey);
+    public setEquippedWeaponOverlay(walkKey: string | null, slashKey: string | null, hurtKey: string | null = null): void {
+        this.animator.setEquippedWeaponOverlay(walkKey, slashKey, hurtKey);
     }
 
     public playAttackAnimation(targetX: number, targetY: number): void {
