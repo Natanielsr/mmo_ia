@@ -23,7 +23,7 @@
       @click.right.prevent="item && (isEquippable(item.type) ? store.requestEquip(item.id) : store.requestUseItem(item.id))"
     >
       <div v-if="item" class="item-icon-wrap">
-        <img v-if="iconSrc(item.type)" :src="iconSrc(item.type)" class="item-icon-img" />
+        <img v-if="getItemIconSrc(item.tagName)" :src="getItemIconSrc(item.tagName)" class="item-icon-img" />
         <span v-else class="item-icon" :class="iconClass(item.type)" />
         <span v-if="item.quantity && item.quantity > 1" class="item-qty">{{ item.quantity }}</span>
       </div>
@@ -37,6 +37,7 @@ import { useGameStore } from '../stores/gameStore'
 import { dragState } from '../utils/dragState'
 import { isEquippable } from '../utils/dragDropRules'
 import { useTouchDrag } from '../composables/useTouchDrag'
+import { getItemIconSrc } from '../config/itemIconRegistry'
 import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
@@ -44,21 +45,7 @@ const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const draggingItemId = ref('')
 
-const ICON_SRC: Record<string, string> = {
-  Potion:  '/assets/items_icon/potion.png',
-  Weapon:  '/assets/items_icon/dagger.png',
-  Armor:   '/assets/items_icon/leather-vest.png',
-  Helmet:  '/assets/items_icon/iron-helmet.png',
-  Shield:  '/assets/items_icon/wooden-shield.png',
-  Legs:    '/assets/items_icon/leather-pants.png',
-  Boots:   '/assets/items_icon/iron-boots.png',
-}
-
 function iconClass(_type: string) { return '' }
-
-function iconSrc(type: string): string {
-  return ICON_SRC[type] ?? ''
-}
 
 function onDragStart(e: DragEvent, item: ItemData) {
   draggingItemId.value = item.id

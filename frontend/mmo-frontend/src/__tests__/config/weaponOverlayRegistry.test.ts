@@ -6,8 +6,8 @@ describe('getWeaponOverlayConfig', () => {
         expect(getWeaponOverlayConfig('Unknown')).toBeNull()
     })
 
-    describe('Dagger', () => {
-        const cfg = getWeaponOverlayConfig('Dagger')
+    describe('dagger', () => {
+        const cfg = getWeaponOverlayConfig('dagger')
 
         it('exists', () => {
             expect(cfg).not.toBeNull()

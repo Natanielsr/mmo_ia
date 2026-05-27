@@ -3,8 +3,8 @@ export type EquipmentSlot = 'Weapon' | 'Helmet' | 'Chest' | 'Legs' | 'Boots' | '
 export interface ItemData {
     id: string;
     name: string;
-    description: string;
-    value: number;
+    description?: string;
+    value?: number;
     tagName: string;
     position: import('./position').Position;
     type: string;

@@ -3,11 +3,11 @@ import { EquipmentManager } from '../../managers/EquipmentManager';
 import type { ItemData, EquipmentSlot } from '../../types';
 
 function makeWeapon(id = 'w1'): ItemData {
-    return { id, name: 'Sword', position: { x: 0, y: 0 }, type: 'Weapon', attackBonus: 5 };
+    return { id, name: 'Sword', tagName: 'sword', position: { x: 0, y: 0 }, type: 'Weapon', attackBonus: 5 };
 }
 
 function makeArmor(id = 'a1'): ItemData {
-    return { id, name: 'Vest', position: { x: 0, y: 0 }, type: 'Armor', defenseBonus: 3 };
+    return { id, name: 'Vest', tagName: 'leather-vest', position: { x: 0, y: 0 }, type: 'Armor', defenseBonus: 3 };
 }
 
 describe('EquipmentManager', () => {

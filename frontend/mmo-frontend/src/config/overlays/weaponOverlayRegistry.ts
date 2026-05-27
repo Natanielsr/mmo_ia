@@ -22,7 +22,7 @@ export interface WeaponOverlayConfig {
 }
 
 export const WEAPON_OVERLAY_REGISTRY: Record<string, WeaponOverlayConfig> = {
-    'Dagger': {
+    'dagger': {
         walkTextureKey: 'weapon_dagger_walk',
         walkAssetPath: 'assets/walkcycle/WEAPON_dagger.png',
         slashTextureKey: 'weapon_dagger_slash',

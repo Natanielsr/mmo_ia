@@ -1,7 +1,7 @@
 import { type ArmorOverlayConfig } from './armorOverlayRegistry'
 
 export const SHIELD_OVERLAY_REGISTRY: Record<string, ArmorOverlayConfig> = {
-    'Wooden Shield': {
+    'wooden-shield': {
         walkTextureKey: 'shield_wooden_walk',
         walkAssetPath: 'assets/walkcycle/WEAPON_shield_cutout_body.png',
         slashTextureKey: 'shield_wooden_slash',

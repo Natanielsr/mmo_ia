@@ -3,8 +3,11 @@ import { LEGS_OVERLAY_REGISTRY } from './legsOverlayRegistry'
 import { HEAD_OVERLAY_REGISTRY } from './headOverlayRegistry'
 import { FEET_OVERLAY_REGISTRY } from './feetOverlayRegistry'
 import { SHIELD_OVERLAY_REGISTRY } from './shieldOverlayRegistry'
+import { WEAPON_OVERLAY_REGISTRY, getWeaponOverlayConfig, type WeaponOverlayConfig } from './weaponOverlayRegistry'
 
 export type BodyOverlayConfig = ArmorOverlayConfig
+export type { WeaponOverlayConfig }
+export { getWeaponOverlayConfig, WEAPON_OVERLAY_REGISTRY }
 
 const BODY_SLOT_REGISTRIES: Record<string, Record<string, BodyOverlayConfig>> = {
     'Chest':  ARMOR_OVERLAY_REGISTRY,

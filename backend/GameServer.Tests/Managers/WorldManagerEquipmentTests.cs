@@ -135,34 +135,34 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Weapon_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
             var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
 
             _b.Build().ProcessEquipItem(player, "d1");
 
-            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "dagger"), Times.Once);
         }
 
         [Fact]
         public void ProcessEquipItem_Legs_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1, tagName: "leather-pants");
             var (player, _, _) = Setup(addToInv: i => i.AddItem(pants));
 
             _b.Build().ProcessEquipItem(player, "l1");
 
-            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Legs", "Leather Pants"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Legs", "leather-pants"), Times.Once);
         }
 
         [Fact]
         public void ProcessEquipItem_Helmet_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4, tagName: "iron-helmet");
             var (player, _, _) = Setup(addToInv: i => i.AddItem(helmet));
 
             _b.Build().ProcessEquipItem(player, "h1");
 
-            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Helmet", "Iron Helmet"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Helmet", "iron-helmet"), Times.Once);
         }
 
         [Fact]
@@ -201,13 +201,13 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Chest_Still_Fires_Weapon_Slot_With_Current_Weapon()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
             var vest   = new Armor ("a1", "Leather Vest", 2f, P, defenseBonus: 3);
             var (player, _, _) = Setup(addToEq: e => { e.Equip(dagger); e.Equip(vest); });
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Chest);
 
-            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "dagger"), Times.Once);
         }
 
         [Fact]
@@ -226,14 +226,14 @@ namespace GameServer.Tests.Managers
         public void ProcessEquipItem_Displaces_OldWeapon_Fires_ItemEquipped_With_NewWeaponName()
         {
             var sword  = new Weapon("w1", "Sword",  1f, P, attackBonus: 5);
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
             var (player, _, _) = Setup(
                 addToInv: i => i.AddItem(dagger),
                 addToEq:  e => e.Equip(sword));
 
             _b.Build().ProcessEquipItem(player, "d1");
 
-            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "Dagger"), Times.Once);
+            _b.Events.Verify(e => e.OnPlayerItemEquipped("1", "Weapon", "dagger"), Times.Once);
         }
     }
 }

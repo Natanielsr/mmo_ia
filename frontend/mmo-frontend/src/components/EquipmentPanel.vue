@@ -21,7 +21,7 @@
       @touchend="endTouchDrag($event)"
       @click="store.equipmentSlots[slotName] && store.requestUnequip(slotName)"
     >
-      <img v-if="store.equipmentSlots[slotName] && iconSrc(store.equipmentSlots[slotName]!.type)" :src="iconSrc(store.equipmentSlots[slotName]!.type)" class="item-icon-img" />
+      <img v-if="store.equipmentSlots[slotName] && getItemIconSrc(store.equipmentSlots[slotName]!.tagName)" :src="getItemIconSrc(store.equipmentSlots[slotName]!.tagName)" class="item-icon-img" />
     </div>
 
     <div class="eq-stats">
@@ -36,25 +36,13 @@ import { useGameStore } from '../stores/gameStore'
 import { canDropOnSlot } from '../utils/dragDropRules'
 import { dragState } from '../utils/dragState'
 import { useTouchDrag } from '../composables/useTouchDrag'
+import { getItemIconSrc } from '../config/itemIconRegistry'
 import type { EquipmentSlot, ItemData } from '../types'
 
 const store = useGameStore()
 const { startTouchDrag, moveTouchDrag, endTouchDrag } = useTouchDrag()
 
 const ALL_SLOTS: EquipmentSlot[] = ['Weapon', 'Helmet', 'Chest', 'Legs', 'Boots', 'Shield']
-
-const ICON_SRC: Record<string, string> = {
-  Weapon: '/assets/items_icon/dagger.png',
-  Armor: '/assets/items_icon/leather-vest.png',
-  Helmet: '/assets/items_icon/iron-helmet.png',
-  Shield: '/assets/items_icon/wooden-shield.png',
-  Legs: '/assets/items_icon/leather-pants.png',
-  Boots: '/assets/items_icon/iron-boots.png',
-}
-
-function iconSrc(type: string): string {
-  return ICON_SRC[type] ?? ''
-}
 
 function onDragStart(e: DragEvent, slotName: EquipmentSlot) {
   const item = store.equipmentSlots[slotName]
@@ -76,7 +64,7 @@ function onDragEnd(_e: DragEvent) {
 
 function onDragOver(e: DragEvent, slotName: EquipmentSlot) {
   if (!dragState.itemId) return
-  const fakeItem: ItemData = { id: dragState.itemId, name: '', position: { x: 0, y: 0 }, type: dragState.itemType }
+  const fakeItem: ItemData = { id: dragState.itemId, name: '', description: '', value: 0, tagName: '', position: { x: 0, y: 0 }, type: dragState.itemType }
   if (canDropOnSlot(fakeItem, slotName)) {
     e.preventDefault()
     ;(e.currentTarget as HTMLElement).classList.add('drag-over')
@@ -93,7 +81,7 @@ function onDrop(e: DragEvent, slotName: EquipmentSlot) {
   const el = e.currentTarget as HTMLElement
   el.classList.remove('drag-over')
   if (!dragState.itemId) return
-  const fakeItem: ItemData = { id: dragState.itemId, name: '', position: { x: 0, y: 0 }, type: dragState.itemType }
+  const fakeItem: ItemData = { id: dragState.itemId, name: '', description: '', value: 0, tagName: '', position: { x: 0, y: 0 }, type: dragState.itemType }
   if (canDropOnSlot(fakeItem, slotName)) {
     store.requestEquip(dragState.itemId)
   }

@@ -43,6 +43,7 @@ export class ItemEventHandler {
             const normalized = items.map(item => ({
                 id: String(item.id ?? item.Id),
                 name: String(item.name ?? item.Name),
+                tagName: String(item.tagName ?? item.TagName ?? ''),
                 position: item.position ?? item.Position ?? { x: 0, y: 0 },
                 type: String(item.type ?? item.Type),
                 attackBonus: item.attackBonus ?? item.AttackBonus,
@@ -60,6 +61,7 @@ export class ItemEventHandler {
                 slots[key] = item == null ? null : {
                     id: String(item.id ?? item.Id),
                     name: String(item.name ?? item.Name),
+                    tagName: String(item.tagName ?? item.TagName ?? ''),
                     position: item.position ?? item.Position ?? { x: 0, y: 0 },
                     type: String(item.type ?? item.Type),
                     attackBonus: item.attackBonus ?? item.AttackBonus,

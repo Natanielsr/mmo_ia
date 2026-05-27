@@ -6,6 +6,7 @@ function makeItem(overrides: Partial<ItemData> = {}): ItemData {
     return {
         id: 'item-1',
         name: 'Health Potion',
+        tagName: 'potion',
         position: { x: 0, y: 0 },
         type: 'Potion',
         ...overrides,

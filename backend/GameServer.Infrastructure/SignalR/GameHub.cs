@@ -83,7 +83,7 @@ namespace GameServer.Infrastructure.SignalR
                 {
                     var eq = _equipmentManager.GetEquipment(p.Id);
                     var equippedItems = eq?.GetAllSlots()
-                        .ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value?.Name)
+                        .ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value?.TagName)
                         ?? new Dictionary<string, string?>();
                     return new PlayerData { Id = p.Id.ToString(), Name = p.Name, Position = p.Position, EquippedItems = equippedItems };
                 });

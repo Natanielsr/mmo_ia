@@ -8,7 +8,7 @@ beforeEach(() => {
 })
 
 function makeItem(id: string, type: string, slotIndex?: number): ItemData {
-  return { id, name: `Item ${id}`, position: { x: 0, y: 0 }, type, slotIndex }
+  return { id, name: `Item ${id}`, tagName: '', position: { x: 0, y: 0 }, type, slotIndex }
 }
 
 describe('setLoggedIn', () => {

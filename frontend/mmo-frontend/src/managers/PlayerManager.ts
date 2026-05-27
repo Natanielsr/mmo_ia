@@ -4,8 +4,7 @@ import { Player } from '../entities/Player';
 import { GRID_SIZE, PLAYER_POSITION_OFFSET_X, PLAYER_POSITION_OFFSET_Y } from '../config/constants';
 import { gridToWorld } from '../utils/coords';
 import type { PlayerData, Position } from '../types';
-import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
-import { getBodyOverlayConfig } from '../config/overlays';
+import { getWeaponOverlayConfig, getBodyOverlayConfig } from '../config/overlays';
 
 export class PlayerManager {
     private scene: Phaser.Scene;

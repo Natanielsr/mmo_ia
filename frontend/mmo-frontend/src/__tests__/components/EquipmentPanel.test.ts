@@ -6,7 +6,7 @@ import { useGameStore } from '../../stores/gameStore'
 import type { ItemData, EquipmentSlot } from '../../types'
 
 function makeItem(id: string, type: string): ItemData {
-  return { id, name: `Item ${id}`, position: { x: 0, y: 0 }, type }
+  return { id, name: `Item ${id}`, tagName: '', position: { x: 0, y: 0 }, type }
 }
 
 function allEmpty(): Record<EquipmentSlot, ItemData | null> {

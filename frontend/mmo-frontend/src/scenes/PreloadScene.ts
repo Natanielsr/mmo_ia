@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import { WEAPON_OVERLAY_REGISTRY } from '../config/overlays/weaponOverlayRegistry';
-import { getAllBodyConfigs } from '../config/overlays';
+import { WEAPON_OVERLAY_REGISTRY, getAllBodyConfigs } from '../config/overlays';
+import { ITEM_ICON_REGISTRY } from '../config/itemIconRegistry';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -52,13 +52,9 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('rock', 'assets/rock.png');
         this.load.image('bush', 'assets/bush.png');
         this.load.image('pillar', 'assets/pillar.png');
-        this.load.image('potion', 'assets/items_icon/potion.png');
-        this.load.image('dagger', 'assets/items_icon/dagger.png');
-        this.load.image('iron-boots', 'assets/items_icon/iron-boots.png');
-        this.load.image('iron-helmet', 'assets/items_icon/iron-helmet.png');
-        this.load.image('leather-pants', 'assets/items_icon/leather-pants.png');
-        this.load.image('leather-vest', 'assets/items_icon/leather-vest.png');
-        this.load.image('wooden-shield', 'assets/items_icon/wooden-shield.png');
+        for (const [tagName, path] of Object.entries(ITEM_ICON_REGISTRY)) {
+            this.load.image(tagName, path.replace(/^\//, ''));
+        }
 
         for (let i = 1; i <= 12; i++) {
             this.load.image(`grass${i}`, `assets/grass${i}.png`);

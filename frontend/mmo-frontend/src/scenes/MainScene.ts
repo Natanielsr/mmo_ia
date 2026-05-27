@@ -14,8 +14,7 @@ import type { Player } from '../entities/Player';
 import type { Monster } from '../entities/Monster';
 import { useGameStore } from '../stores/gameStore';
 import { isMobileDevice } from '../utils/device';
-import { getWeaponOverlayConfig } from '../config/overlays/weaponOverlayRegistry';
-import { getBodyOverlayConfig, BODY_SLOTS } from '../config/overlays';
+import { getWeaponOverlayConfig, getBodyOverlayConfig, BODY_SLOTS } from '../config/overlays';
 import { DevConsole } from './DevConsole';
 
 
@@ -167,12 +166,12 @@ export class MainScene extends Phaser.Scene {
         );
 
         const weaponItem = slots['Weapon'];
-        const weaponCfg = weaponItem ? getWeaponOverlayConfig(weaponItem.name) : null;
+        const weaponCfg = weaponItem ? getWeaponOverlayConfig(weaponItem.tagName) : null;
         this.playerManager.getMyPlayer()?.setEquippedWeaponOverlay(weaponCfg?.walkTextureKey ?? null, weaponCfg?.slashTextureKey ?? null);
 
         for (const slot of BODY_SLOTS) {
             const item = slots[slot as EquipmentSlot];
-            const cfg = item ? getBodyOverlayConfig(slot, item.name) : null;
+            const cfg = item ? getBodyOverlayConfig(slot, item.tagName) : null;
             this.playerManager.getMyPlayer()?.setEquippedBodyOverlay(slot, cfg?.walkTextureKey ?? null, cfg?.slashTextureKey ?? null);
         }
     }

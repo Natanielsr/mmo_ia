@@ -22,7 +22,7 @@ export interface LegsOverlayConfig {
 }
 
 export const LEGS_OVERLAY_REGISTRY: Record<string, LegsOverlayConfig> = {
-    'Leather Pants': {
+    'leather-pants': {
         walkTextureKey: 'legs_leather_pants_walk',
         walkAssetPath: 'assets/walkcycle/LEGS_pants_greenish.png',
         slashTextureKey: 'legs_leather_pants_slash',

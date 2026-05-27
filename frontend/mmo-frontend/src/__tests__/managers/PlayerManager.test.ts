@@ -139,7 +139,7 @@ describe('PlayerManager — weapon overlay ao spawnar', () => {
         const scene = makeScene();
         const pm = new PlayerManager(scene as never);
 
-        pm.updatePlayerPosition({ ...PLAYER_DATA, equippedItems: { Weapon: 'Dagger' } }, false);
+        pm.updatePlayerPosition({ ...PLAYER_DATA, equippedItems: { Weapon: 'dagger' } }, false);
 
         expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger_walk', expect.any(Number));
     });
@@ -148,7 +148,7 @@ describe('PlayerManager — weapon overlay ao spawnar', () => {
         const scene = makeScene();
         const pm = new PlayerManager(scene as never);
 
-        pm.updatePlayerPosition({ ...PLAYER_DATA, EquippedItems: { Weapon: 'Dagger' } }, false);
+        pm.updatePlayerPosition({ ...PLAYER_DATA, EquippedItems: { Weapon: 'dagger' } }, false);
 
         expect(scene.add.sprite).toHaveBeenCalledWith(0, 0, 'weapon_dagger_walk', expect.any(Number));
     });

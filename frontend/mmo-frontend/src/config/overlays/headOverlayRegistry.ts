@@ -22,7 +22,7 @@ export interface HeadOverlayConfig {
 }
 
 export const HEAD_OVERLAY_REGISTRY: Record<string, HeadOverlayConfig> = {
-    'Iron Helmet': {
+    'iron-helmet': {
         walkTextureKey: 'head_iron_helmet_walk',
         walkAssetPath: 'assets/walkcycle/HEAD_plate_armor_helmet.png',
         slashTextureKey: 'head_iron_helmet_slash',

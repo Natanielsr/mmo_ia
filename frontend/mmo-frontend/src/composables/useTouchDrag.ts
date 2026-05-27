@@ -68,6 +68,7 @@ export function useTouchDrag() {
       const fakeItem: ItemData = {
         id: dragState.itemId,
         name: '',
+        tagName: '',
         position: { x: 0, y: 0 },
         type: dragState.itemType,
       }

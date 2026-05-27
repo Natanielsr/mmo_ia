@@ -34,35 +34,35 @@ describe('BODY_SLOTS — nomes de slot vs backend EquipmentSlot enum', () => {
 
 describe('getBodyOverlayConfig — lookup por slot + item', () => {
     it('retorna null para slot inexistente', () => {
-        expect(getBodyOverlayConfig('Feet', 'Iron Boots')).toBeNull();
+        expect(getBodyOverlayConfig('Feet', 'iron-boots')).toBeNull();
     });
 
     it('retorna null para item inexistente no slot correto', () => {
-        expect(getBodyOverlayConfig('Boots', 'Item Inexistente')).toBeNull();
+        expect(getBodyOverlayConfig('Boots', 'item-inexistente')).toBeNull();
     });
 
-    it('retorna config para Iron Boots no slot Boots', () => {
-        const cfg = getBodyOverlayConfig('Boots', 'Iron Boots');
+    it('retorna config para iron-boots no slot Boots', () => {
+        const cfg = getBodyOverlayConfig('Boots', 'iron-boots');
         expect(cfg).not.toBeNull();
     });
 
-    it('retorna config para Leather Vest no slot Chest', () => {
-        const cfg = getBodyOverlayConfig('Chest', 'Leather Vest');
+    it('retorna config para leather-vest no slot Chest', () => {
+        const cfg = getBodyOverlayConfig('Chest', 'leather-vest');
         expect(cfg).not.toBeNull();
     });
 
-    it('retorna config para Leather Pants no slot Legs', () => {
-        const cfg = getBodyOverlayConfig('Legs', 'Leather Pants');
+    it('retorna config para leather-pants no slot Legs', () => {
+        const cfg = getBodyOverlayConfig('Legs', 'leather-pants');
         expect(cfg).not.toBeNull();
     });
 
-    it('retorna config para Iron Helmet no slot Helmet', () => {
-        const cfg = getBodyOverlayConfig('Helmet', 'Iron Helmet');
+    it('retorna config para iron-helmet no slot Helmet', () => {
+        const cfg = getBodyOverlayConfig('Helmet', 'iron-helmet');
         expect(cfg).not.toBeNull();
     });
 
-    it('retorna config para Wooden Shield no slot Shield', () => {
-        const cfg = getBodyOverlayConfig('Shield', 'Wooden Shield');
+    it('retorna config para wooden-shield no slot Shield', () => {
+        const cfg = getBodyOverlayConfig('Shield', 'wooden-shield');
         expect(cfg).not.toBeNull();
     });
 });

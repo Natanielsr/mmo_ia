@@ -25,6 +25,7 @@ function makeItem(overrides: Partial<ItemData> = {}): ItemData {
     return {
         id: 'item-1',
         name: 'Test Item',
+        tagName: 'potion',
         position: { x: 3, y: 4 },
         type: 'Potion',
         ...overrides,

@@ -19,14 +19,14 @@ namespace GameServer.Infrastructure.SignalR
 
             IItem item = itemType.ToLower() switch
             {
-                "weapon" => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5),
-                "helmet" => new Helmet(_idGeneratorService.GenerateId().ToString(), "Iron Helmet", 1.2f, player.Position, defenseBonus: 1),
-                "chest" => new Armor(_idGeneratorService.GenerateId().ToString(), "Leather Vest", 2.0f, player.Position, defenseBonus: 1, EquipmentSlot.Chest),
-                "legs" => new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1),
-                "boots" => new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1),
-                "shield" => new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1),
-                "potion" => new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position),
-                _ => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5)
+                "weapon" => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5, tagName: "dagger"),
+                "helmet" => new Helmet(_idGeneratorService.GenerateId().ToString(), "Iron Helmet", 1.2f, player.Position, defenseBonus: 1, tagName: "iron-helmet"),
+                "chest" => new Armor(_idGeneratorService.GenerateId().ToString(), "Leather Vest", 2.0f, player.Position, defenseBonus: 1, EquipmentSlot.Chest, tagName: "leather-vest"),
+                "legs" => new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1, tagName: "leather-pants"),
+                "boots" => new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1, tagName: "iron-boots"),
+                "shield" => new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1, tagName: "wooden-shield"),
+                "potion" => new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position, tagName: "potion"),
+                _ => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5, tagName: "dagger")
             };
 
             _inventoryManager.AddItem(player.Id, item);
@@ -109,13 +109,13 @@ namespace GameServer.Infrastructure.SignalR
 
             var items = new IItem[]
             {
-                new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5),
-                new Helmet(_idGeneratorService.GenerateId().ToString(), "Iron Helmet", 1.2f, player.Position, defenseBonus: 1),
-                new Armor(_idGeneratorService.GenerateId().ToString(), "Leather Vest", 2.0f, player.Position, defenseBonus: 1, EquipmentSlot.Chest),
-                new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1),
-                new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1),
-                new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1),
-                new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position)
+                new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5, tagName: "dagger"),
+                new Helmet(_idGeneratorService.GenerateId().ToString(), "Iron Helmet", 1.2f, player.Position, defenseBonus: 1, tagName: "iron-helmet"),
+                new Armor(_idGeneratorService.GenerateId().ToString(), "Leather Vest", 2.0f, player.Position, defenseBonus: 1, EquipmentSlot.Chest, tagName: "leather-vest"),
+                new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1, tagName: "leather-pants"),
+                new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1, tagName: "iron-boots"),
+                new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1, tagName: "wooden-shield"),
+                new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position, tagName: "potion")
             };
 
             foreach (var item in items)

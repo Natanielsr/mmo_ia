@@ -52,7 +52,7 @@ namespace GameServerApp.Processors
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             foreach (var kvp in eq.GetAllSlots())
-                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.Name);
+                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.TagName);
             return true;
         }
 
@@ -82,7 +82,7 @@ namespace GameServerApp.Processors
             _worldEvents.OnEquipmentUpdated(player.Id, eq.GetAllSlots());
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
             foreach (var kvp in eq.GetAllSlots())
-                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.Name);
+                _worldEvents.OnPlayerItemEquipped(player.Id.ToString(), kvp.Key.ToString(), kvp.Value?.TagName);
             return true;
         }
 

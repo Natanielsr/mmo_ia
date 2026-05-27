@@ -22,7 +22,7 @@ export interface ArmorOverlayConfig {
 }
 
 export const ARMOR_OVERLAY_REGISTRY: Record<string, ArmorOverlayConfig> = {
-    'Leather Vest': {
+    'leather-vest': {
         walkTextureKey: 'armor_leather_torso_walk',
         walkAssetPath: 'assets/walkcycle/TORSO_leather_armor_torso.png',
         slashTextureKey: 'armor_leather_torso_slash',

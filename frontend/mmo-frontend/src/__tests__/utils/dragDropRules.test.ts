@@ -3,7 +3,7 @@ import { canDropOnSlot, isEquippable } from '../../utils/dragDropRules'
 import type { ItemData, EquipmentSlot } from '../../types'
 
 function makeItem(type: string): ItemData {
-  return { id: '1', name: 'test', position: { x: 0, y: 0 }, type }
+  return { id: '1', name: 'test', tagName: '', position: { x: 0, y: 0 }, type }
 }
 
 describe('canDropOnSlot', () => {

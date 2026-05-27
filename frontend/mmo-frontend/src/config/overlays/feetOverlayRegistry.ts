@@ -22,7 +22,7 @@ export interface FeetOverlayConfig {
 }
 
 export const FEET_OVERLAY_REGISTRY: Record<string, FeetOverlayConfig> = {
-    'Iron Boots': {
+    'iron-boots': {
         walkTextureKey: 'feet_iron_boots_walk',
         walkAssetPath: 'assets/walkcycle/FEET_plate_armor_shoes.png',
         slashTextureKey: 'feet_iron_boots_slash',
