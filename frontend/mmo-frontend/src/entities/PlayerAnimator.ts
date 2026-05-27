@@ -40,7 +40,7 @@ export class PlayerAnimator {
         const animKey = getDirectionAnimation(dx, dy);
         if (!animKey) return;
         this.facingDirection = animKey.replace('walk-', '');
-        if (this.isAttacking) return;
+        if (this.isAttacking || this.getIsDead()) return;
         if (this.sprite.texture.key !== 'hero') this.sprite.setTexture('hero');
         this.sprite.play(animKey, true);
         if (this.weaponSprite && this.equippedWeaponWalkKey) {
@@ -65,7 +65,7 @@ export class PlayerAnimator {
     }
 
     private stopWalking(): void {
-        if (this.isAttacking) return;
+        if (this.isAttacking || this.getIsDead()) return;
         this.sprite.stop();
         const idleFrame = getIdleFrame(this.facingDirection);
         this.sprite.setFrame(idleFrame);
@@ -190,6 +190,8 @@ export class PlayerAnimator {
     }
 
     playDieEffect(): void {
+        this.cancelStopWalkingTimer();
+        this.isAttacking = false;
         this.sprite.setTexture('hero_hurt');
         this.sprite.play('hero_hurt', true);
         this.sprite.once('animationcomplete', () => {
