@@ -66,7 +66,6 @@ namespace GameServerApp.Managers
             _combatProcessor.ProcessMonsterCombat();
             _monsterLifecycleProcessor.ProcessMonsterDespawn();
             _monsterLifecycleProcessor.ProcessMonsterRespawn();
-            _regenerationProcessor.ProcessPlayerRegeneration();
         }
 
         public void InstantiateObject(IWorldObject worldObject)

@@ -26,7 +26,7 @@ namespace GameServer.Tests.Managers
             _b.Events.Verify(e => e.OnPlayerStatusUpdated(It.IsAny<PlayerStatusData>()), Times.Never);
         }
 
-        [Fact]
+        [Fact(Skip = "Regeneração passiva desabilitada")]
         public void Tick_Regen_Fires_HpChanged_When_Player_Below_MaxHp()
         {
             var player = new Player(1, "Hero", new Position(0, 0), maxHp: 100);

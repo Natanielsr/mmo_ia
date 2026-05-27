@@ -19,7 +19,7 @@ namespace GameServer.Tests.Processors
             _sut = new PlayerRegenerationProcessor(_playerManager.Object, _worldEvents.Object);
         }
 
-        [Fact]
+        [Fact(Skip = "Regeneração passiva desabilitada")]
         public void Should_Heal_Alive_Player_With_Low_Hp_After_2s()
         {
             var player = new Player(1, "Hero", new Position(0, 0));
