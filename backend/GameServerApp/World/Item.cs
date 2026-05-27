@@ -16,18 +16,22 @@ namespace GameServerApp.World
         public virtual EquipmentSlot? Slot => null;
         public int Quantity { get; set; } = 1;
 
-        public Item(string id, string name, float weight, Position position = null!,
+        public Item(string id, string name, float weight, string tagName,
+                    Position position = null!,
                     ItemType type = ItemType.Generic,
-                    string description = "", int value = 0, string tagName = "")
+                    string description = "", int value = 0)
         {
+            if (string.IsNullOrWhiteSpace(tagName))
+                throw new ArgumentException("TagName is required and cannot be empty.", nameof(tagName));
+
             Id = id;
             Name = name;
             Weight = weight;
+            TagName = tagName;
             Position = position ?? new Position(0, 0);
             Type = type;
             Description = description;
             Value = value;
-            TagName = tagName;
         }
     }
 }

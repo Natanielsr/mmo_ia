@@ -17,7 +17,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var itemManager = new ItemManager(_options);
-            var item = new Item("1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
+            var item = new Item("1", "Potion", 0.1f, "potion", new Position(5, 5), ItemType.Potion);
 
             // Act
             itemManager.DropItem(item);
@@ -46,7 +46,7 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var itemManager = new ItemManager(_options);
-            var item = new Item("1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
+            var item = new Item("1", "Potion", 0.1f, "potion", new Position(5, 5), ItemType.Potion);
             itemManager.DropItem(item);
 
             // Act
@@ -62,8 +62,8 @@ namespace GameServer.Tests.Managers
         {
             // Arrange
             var itemManager = new ItemManager(_options);
-            itemManager.DropItem(new Item("1", "P1", 0.1f, new Position(1, 1)));
-            itemManager.DropItem(new Item("2", "P2", 0.1f, new Position(2, 2)));
+            itemManager.DropItem(new Item("1", "P1", 0.1f, "item-p1", new Position(1, 1)));
+            itemManager.DropItem(new Item("2", "P2", 0.1f, "item-p2", new Position(2, 2)));
 
             // Act
             var allItems = itemManager.GetAllItems();
@@ -76,9 +76,9 @@ namespace GameServer.Tests.Managers
         public void GetItemsAt_ShouldReturnAllItems_AtSamePosition()
         {
             var itemManager = new ItemManager(_options);
-            itemManager.DropItem(new Item("1", "P1", 0.1f, new Position(5, 5)));
-            itemManager.DropItem(new Item("2", "P2", 0.1f, new Position(5, 5)));
-            itemManager.DropItem(new Item("3", "P3", 0.1f, new Position(9, 9)));
+            itemManager.DropItem(new Item("1", "P1", 0.1f, "item-p1", new Position(5, 5)));
+            itemManager.DropItem(new Item("2", "P2", 0.1f, "item-p2", new Position(5, 5)));
+            itemManager.DropItem(new Item("3", "P3", 0.1f, "item-p3", new Position(9, 9)));
 
             var result = itemManager.GetItemsAt(new Position(5, 5)).ToList();
 

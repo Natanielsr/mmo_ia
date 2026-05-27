@@ -36,7 +36,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void EquipItem_Delegates_To_PlayerEquipment()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var eq    = _mgr.GetOrCreate(1L);
             eq.Equip(sword);
             Assert.Same(sword, eq.GetItem(EquipmentSlot.Weapon));
@@ -45,7 +45,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void UnequipItem_Delegates_To_PlayerEquipment()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var eq    = _mgr.GetOrCreate(1L);
             eq.Equip(sword);
 

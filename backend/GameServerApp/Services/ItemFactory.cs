@@ -13,39 +13,39 @@ public class ItemFactory : IItemFactory
         return def.Type switch
         {
             "Potion" => new HealingPotion(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 healAmount: def.HealAmount ?? 20,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Weapon" => new Weapon(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 attackBonus: def.AttackBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Armor" => new Armor(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 defenseBonus: def.DefenseBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Helmet" => new Helmet(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 defenseBonus: def.DefenseBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Shield" => new Shield(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 defenseBonus: def.DefenseBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Legs" => new Legs(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 defenseBonus: def.DefenseBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             "Boots" => new Boots(
-                instanceId, def.Name, def.Weight, position,
+                instanceId, def.Name, def.Weight, def.TagName, position,
                 defenseBonus: def.DefenseBonus ?? 0,
-                description: def.Description, value: def.Value, tagName: def.TagName),
+                description: def.Description, value: def.Value),
 
             _ => throw new InvalidOperationException($"Unknown item type: {def.Type}")
         };

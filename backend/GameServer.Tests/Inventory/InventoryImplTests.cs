@@ -10,7 +10,7 @@ public class InventoryImplTests
     private readonly InventoryService _inventory = new();
 
     private Item CreateItem(string id = "potion_001", string name = "Health Potion", float weight = 1.0f)
-        => new Item(id, name, weight);
+        => new Item(id, name, weight, "health-potion");
 
     [Fact]
     public void InventoryService_Should_Add_Item()
@@ -70,7 +70,7 @@ public class InventoryImplTests
     public void Item_Should_Have_Id_Name_Weight_And_Position()
     {
         var pos = new Position(2, 3);
-        var item = new Item("sword", "Iron Sword", 5f, pos);
+        var item = new Item("sword", "Iron Sword", 5f, "iron-sword", pos);
 
         Assert.Equal("sword", item.Id);
         Assert.Equal("Iron Sword", item.Name);

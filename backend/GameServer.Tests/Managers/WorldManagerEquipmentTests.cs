@@ -31,7 +31,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Equips_From_Inventory_And_Fires_Events()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var (player, inv, eq) = Setup(addToInv: i => i.AddItem(sword));
 
             var result = _b.Build().ProcessEquipItem(player, "w1");
@@ -57,7 +57,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Returns_False_When_Item_Not_Equippable()
         {
-            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, P); // Slot == null
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, "healing-potion", P); // Slot == null
             var (player, _, _) = Setup(addToInv: i => i.AddItem(potion));
 
             var result = _b.Build().ProcessEquipItem(player, "p1");
@@ -68,7 +68,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Returns_False_When_Player_Is_Dead()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(sword));
             player.Die();
 
@@ -80,8 +80,8 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Displaced_Item_Returns_To_Inventory()
         {
-            var sword1 = new Weapon("w1", "Sword",   1f, P, attackBonus: 5);
-            var sword2 = new Weapon("w2", "GreatAxe", 2f, P, attackBonus: 10);
+            var sword1 = new Weapon("w1", "Sword",   1f, "sword", P, attackBonus: 5);
+            var sword2 = new Weapon("w2", "GreatAxe", 2f, "great-axe", P, attackBonus: 10);
             var (player, inv, eq) = Setup(
                 addToInv: i => i.AddItem(sword2),
                 addToEq:  e => e.Equip(sword1));
@@ -95,7 +95,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Returns_Item_To_Inventory()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var (player, inv, eq) = Setup(addToEq: e => e.Equip(sword));
 
             var result = _b.Build().ProcessUnequipItem(player, EquipmentSlot.Weapon);
@@ -120,7 +120,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void EquipWeapon_Updates_Player_TotalAttackPower()
         {
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(sword));
 
             _b.Build().ProcessEquipItem(player, "w1");
@@ -135,7 +135,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Weapon_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
+            var dagger = new Weapon("d1", "Dagger", 1f, "dagger", P, attackBonus: 3);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
 
             _b.Build().ProcessEquipItem(player, "d1");
@@ -146,7 +146,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Legs_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1, tagName: "leather-pants");
+            var pants = new Legs("l1", "Leather Pants", 1f, "leather-pants", P, defenseBonus: 1);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(pants));
 
             _b.Build().ProcessEquipItem(player, "l1");
@@ -157,7 +157,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Helmet_Fires_ItemEquipped_With_Slot_And_Name()
         {
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4, tagName: "iron-helmet");
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, "iron-helmet", P, defenseBonus: 4);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(helmet));
 
             _b.Build().ProcessEquipItem(player, "h1");
@@ -168,7 +168,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Weapon_Fires_ItemEquipped_With_Null()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, "dagger", P, attackBonus: 3);
             var (player, _, _) = Setup(addToEq: e => e.Equip(dagger));
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Weapon);
@@ -179,7 +179,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Legs_Fires_ItemEquipped_With_Null()
         {
-            var pants = new Legs("l1", "Leather Pants", 1f, P, defenseBonus: 1);
+            var pants = new Legs("l1", "Leather Pants", 1f, "leather-pants", P, defenseBonus: 1);
             var (player, _, _) = Setup(addToEq: e => e.Equip(pants));
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Legs);
@@ -190,7 +190,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Helmet_Fires_ItemEquipped_With_Null()
         {
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, "iron-helmet", P, defenseBonus: 4);
             var (player, _, _) = Setup(addToEq: e => e.Equip(helmet));
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Helmet);
@@ -201,8 +201,8 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessUnequipItem_Chest_Still_Fires_Weapon_Slot_With_Current_Weapon()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
-            var vest   = new Armor ("a1", "Leather Vest", 2f, P, defenseBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, "dagger", P, attackBonus: 3);
+            var vest   = new Armor ("a1", "Leather Vest", 2f, "leather-vest", P, defenseBonus: 3);
             var (player, _, _) = Setup(addToEq: e => { e.Equip(dagger); e.Equip(vest); });
 
             _b.Build().ProcessUnequipItem(player, EquipmentSlot.Chest);
@@ -213,7 +213,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_DeadPlayer_Does_Not_Fire_ItemEquipped()
         {
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3);
+            var dagger = new Weapon("d1", "Dagger", 1f, "dagger", P, attackBonus: 3);
             var (player, _, _) = Setup(addToInv: i => i.AddItem(dagger));
             player.Die();
 
@@ -225,8 +225,8 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Displaces_OldWeapon_Fires_ItemEquipped_With_NewWeaponName()
         {
-            var sword  = new Weapon("w1", "Sword",  1f, P, attackBonus: 5);
-            var dagger = new Weapon("d1", "Dagger", 1f, P, attackBonus: 3, tagName: "dagger");
+            var sword  = new Weapon("w1", "Sword",  1f, "sword",  P, attackBonus: 5);
+            var dagger = new Weapon("d1", "Dagger", 1f, "dagger", P, attackBonus: 3);
             var (player, _, _) = Setup(
                 addToInv: i => i.AddItem(dagger),
                 addToEq:  e => e.Equip(sword));

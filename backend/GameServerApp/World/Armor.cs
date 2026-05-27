@@ -9,10 +9,10 @@ namespace GameServerApp.World
         private readonly EquipmentSlot _slot;
         public override EquipmentSlot? Slot => _slot;
 
-        public Armor(string id, string name, float weight, Position position, int defenseBonus,
+        public Armor(string id, string name, float weight, string tagName, Position position, int defenseBonus,
                      EquipmentSlot slot = EquipmentSlot.Chest,
-                     string description = "", int value = 0, string tagName = "")
-            : base(id, name, weight, position, ItemType.Armor, description, value, tagName)
+                     string description = "", int value = 0)
+            : base(id, name, weight, tagName, position, ItemType.Armor, description, value)
         {
             DefenseBonus = defenseBonus;
             _slot = slot;

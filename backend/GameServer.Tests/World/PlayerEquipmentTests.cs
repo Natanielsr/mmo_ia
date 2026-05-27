@@ -52,7 +52,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P, attackPoints: 10);
             var eq     = new PlayerEquipment();
-            var sword  = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword  = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
 
             eq.Equip(sword);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -64,8 +64,8 @@ namespace GameServer.Tests.World
         public void EquipWeapon_When_SlotOccupied_Replaces_And_Returns_Old_Item()
         {
             var eq    = new PlayerEquipment();
-            var sw1   = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
-            var sw2   = new Weapon("w2", "Axe",   2f, P, attackBonus: 10);
+            var sw1   = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
+            var sw2   = new Weapon("w2", "Axe",   2f, "axe", P, attackBonus: 10);
 
             eq.Equip(sw1);
             var displaced = eq.Equip(sw2);
@@ -79,7 +79,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P, attackPoints: 10);
             var eq     = new PlayerEquipment();
-            var sword  = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword  = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
 
             eq.Equip(sword);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -96,7 +96,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var vest   = new Armor("a1", "Leather Vest", 2f, P, defenseBonus: 3);
+            var vest   = new Armor("a1", "Leather Vest", 2f, "leather-vest", P, defenseBonus: 3);
 
             eq.Equip(vest);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -109,7 +109,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var vest   = new Armor("a1", "Leather Vest", 2f, P, defenseBonus: 3);
+            var vest   = new Armor("a1", "Leather Vest", 2f, "leather-vest", P, defenseBonus: 3);
 
             eq.Equip(vest);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -132,7 +132,7 @@ namespace GameServer.Tests.World
         public void GetEquippedItem_Returns_Item_After_Equip()
         {
             var eq    = new PlayerEquipment();
-            var sword = new Weapon("w1", "Sword", 1f, P, attackBonus: 5);
+            var sword = new Weapon("w1", "Sword", 1f, "sword", P, attackBonus: 5);
             eq.Equip(sword);
             Assert.Same(sword, eq.GetItem(EquipmentSlot.Weapon));
         }
@@ -141,7 +141,7 @@ namespace GameServer.Tests.World
         public void Equip_Non_Equippable_Item_Returns_Null_And_Does_Nothing()
         {
             var eq     = new PlayerEquipment();
-            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, P); // Slot == null
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, "healing-potion", P); // Slot == null
             var result = eq.Equip(potion);
             Assert.Null(result);
             Assert.Null(eq.GetItem(EquipmentSlot.Weapon));
@@ -154,7 +154,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, "iron-helmet", P, defenseBonus: 4);
 
             eq.Equip(helmet);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -167,7 +167,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, P, defenseBonus: 4);
+            var helmet = new Helmet("h1", "Iron Helmet", 1.2f, "iron-helmet", P, defenseBonus: 4);
 
             eq.Equip(helmet);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -184,7 +184,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var shield = new Shield("s1", "Wooden Shield", 2.5f, P, defenseBonus: 3);
+            var shield = new Shield("s1", "Wooden Shield", 2.5f, "wooden-shield", P, defenseBonus: 3);
 
             eq.Equip(shield);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -197,7 +197,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var shield = new Shield("s1", "Wooden Shield", 2.5f, P, defenseBonus: 3);
+            var shield = new Shield("s1", "Wooden Shield", 2.5f, "wooden-shield", P, defenseBonus: 3);
 
             eq.Equip(shield);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -214,7 +214,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var legs   = new Legs("l1", "Leather Pants", 1.0f, P, defenseBonus: 2);
+            var legs   = new Legs("l1", "Leather Pants", 1.0f, "leather-pants", P, defenseBonus: 2);
 
             eq.Equip(legs);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -227,7 +227,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var legs   = new Legs("l1", "Leather Pants", 1.0f, P, defenseBonus: 2);
+            var legs   = new Legs("l1", "Leather Pants", 1.0f, "leather-pants", P, defenseBonus: 2);
 
             eq.Equip(legs);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -244,7 +244,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var boots  = new Boots("b1", "Iron Boots", 1.5f, P, defenseBonus: 2);
+            var boots  = new Boots("b1", "Iron Boots", 1.5f, "iron-boots", P, defenseBonus: 2);
 
             eq.Equip(boots);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -257,7 +257,7 @@ namespace GameServer.Tests.World
         {
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
-            var boots  = new Boots("b1", "Iron Boots", 1.5f, P, defenseBonus: 2);
+            var boots  = new Boots("b1", "Iron Boots", 1.5f, "iron-boots", P, defenseBonus: 2);
 
             eq.Equip(boots);
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
@@ -275,11 +275,11 @@ namespace GameServer.Tests.World
             var player = new Player(1, "Hero", P);
             var eq     = new PlayerEquipment();
 
-            eq.Equip(new Armor ("a1", "Leather Vest",   2.0f, P, defenseBonus: 3));
-            eq.Equip(new Helmet("h1", "Iron Helmet",    1.2f, P, defenseBonus: 4));
-            eq.Equip(new Shield("s1", "Wooden Shield",  2.5f, P, defenseBonus: 3));
-            eq.Equip(new Legs  ("l1", "Leather Pants",  1.0f, P, defenseBonus: 2));
-            eq.Equip(new Boots ("b1", "Iron Boots",     1.5f, P, defenseBonus: 2));
+            eq.Equip(new Armor ("a1", "Leather Vest",   2.0f, "leather-vest",  P, defenseBonus: 3));
+            eq.Equip(new Helmet("h1", "Iron Helmet",    1.2f, "iron-helmet",   P, defenseBonus: 4));
+            eq.Equip(new Shield("s1", "Wooden Shield",  2.5f, "wooden-shield", P, defenseBonus: 3));
+            eq.Equip(new Legs  ("l1", "Leather Pants",  1.0f, "leather-pants", P, defenseBonus: 2));
+            eq.Equip(new Boots ("b1", "Iron Boots",     1.5f, "iron-boots",    P, defenseBonus: 2));
 
             player.ApplyEquipmentBonuses(eq.GetAttackBonus(), eq.GetDefenseBonus());
 

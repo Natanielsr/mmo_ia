@@ -36,7 +36,7 @@ namespace GameServer.Tests.Items
             var pos     = new Position(1, 0);
             var player  = new Player(1, "Hero", new Position(0, 0), 100);
             var monster = new Monster(2, "Rat", "rat", pos, 10, 5);
-            var weapon  = new Weapon("w1", "Iron Sword", 1.5f, pos, attackBonus: 5);
+            var weapon  = new Weapon("w1", "Iron Sword", 1.5f, "iron-sword", pos, attackBonus: 5);
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
@@ -54,7 +54,7 @@ namespace GameServer.Tests.Items
             var pos     = new Position(1, 0);
             var player  = new Player(1, "Hero", new Position(0, 0), 100);
             var monster = new Monster(2, "Rat", "rat", pos, 10, 5);
-            var armor   = new Armor("a1", "Leather Vest", 2.0f, pos, defenseBonus: 3);
+            var armor   = new Armor("a1", "Leather Vest", 2.0f, "leather-vest", pos, defenseBonus: 3);
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
@@ -89,7 +89,7 @@ namespace GameServer.Tests.Items
             var pos     = new Position(1, 0);
             var player  = new Player(1, "Hero", new Position(0, 0), 100);
             var monster = new Monster(2, "Rat", "rat", pos, 10, 5);
-            var weapon  = new Weapon("w1", "Sword", 1f, pos, attackBonus: 10);
+            var weapon  = new Weapon("w1", "Sword", 1f, "sword", pos, attackBonus: 10);
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);

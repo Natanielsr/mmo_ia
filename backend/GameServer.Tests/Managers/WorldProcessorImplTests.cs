@@ -153,7 +153,7 @@ namespace GameServer.Tests.Managers
         {
             var player       = new Player(1, "Hero", new Position(0, 0));
             var connectionId = "test-conn";
-            var item         = new Item("item1", "Potion", 0.1f, new Position(5, 5), ItemType.Potion);
+            var item         = new Item("item1", "Potion", 0.1f, "potion", new Position(5, 5), ItemType.Potion);
 
             _b.ItemManager.Setup(m => m.GetItemsInChunk(It.IsAny<ChunkCoord>()))
                           .Returns(new List<IItem> { item });
