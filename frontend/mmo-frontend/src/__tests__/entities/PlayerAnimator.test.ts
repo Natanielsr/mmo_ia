@@ -66,3 +66,109 @@ describe('PlayerAnimator — shield render order', () => {
         expect(bringToTopSpy).not.toHaveBeenCalled();
     });
 });
+
+describe('PlayerAnimator.playTakeDamageFlash — overlays', () => {
+    it('inclui apenas o sprite base quando não há overlays', () => {
+        const { animator, scene } = makeAnimator();
+
+        animator.playTakeDamageFlash();
+
+        const { targets } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(targets).toHaveLength(1);
+    });
+
+    it('inclui overlay de corpo no tween quando equipado', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', 'chest-slash');
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        animator.playTakeDamageFlash();
+
+        const { targets } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(targets).toContain(overlaySprite);
+    });
+
+    it('inclui weaponSprite no tween quando equipado', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedWeaponOverlay('sword-walk', 'sword-slash');
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+
+        animator.playTakeDamageFlash();
+
+        const { targets } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(targets).toContain(weaponSprite);
+    });
+
+    it('inclui todos sprites com múltiplos overlays e arma', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', null);
+        animator.setEquippedBodyOverlay('Legs', 'legs-walk', null);
+        animator.setEquippedWeaponOverlay('sword-walk', null);
+
+        animator.playTakeDamageFlash();
+
+        const { targets } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        // base sprite + 2 body overlays + 1 weapon = 4
+        expect(targets).toHaveLength(4);
+    });
+
+    it('onComplete limpa tint em todos os sprites quando vivo', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', null);
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        vi.spyOn(overlaySprite, 'clearTint');
+
+        animator.playTakeDamageFlash();
+
+        const { onComplete } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        onComplete();
+
+        expect(overlaySprite.clearTint).toHaveBeenCalled();
+    });
+
+    it('onComplete não limpa tint quando morto', () => {
+        const scene = makeScene() as unknown as Phaser.Scene & MockScene;
+        const sprite = (scene as any).add.sprite(0, 0, 'hero', 0);
+        const container = new Phaser.GameObjects.Container(scene, 0, 0);
+        const deadAnimator = new PlayerAnimator(scene, sprite, container, () => true);
+
+        deadAnimator.setEquippedBodyOverlay('Chest', 'chest-walk', null);
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        vi.spyOn(overlaySprite, 'clearTint');
+
+        deadAnimator.playTakeDamageFlash();
+
+        const { onComplete } = (scene.tweens.add as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        onComplete();
+
+        expect(overlaySprite.clearTint).not.toHaveBeenCalled();
+    });
+});
+
+describe('PlayerAnimator.playDieEffect — overlays', () => {
+    it('aplica angle e tint cinza no overlay de corpo', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedBodyOverlay('Chest', 'chest-walk', null);
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        vi.spyOn(overlaySprite, 'setAngle');
+        vi.spyOn(overlaySprite, 'setTint');
+
+        animator.playDieEffect();
+
+        expect(overlaySprite.setAngle).toHaveBeenCalledWith(90);
+        expect(overlaySprite.setTint).toHaveBeenCalledWith(0x666666);
+    });
+
+    it('aplica angle e tint cinza na arma quando equipada', () => {
+        const { animator, scene } = makeAnimator();
+        animator.setEquippedWeaponOverlay('sword-walk', null);
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        vi.spyOn(weaponSprite, 'setAngle');
+        vi.spyOn(weaponSprite, 'setTint');
+
+        animator.playDieEffect();
+
+        expect(weaponSprite.setAngle).toHaveBeenCalledWith(90);
+        expect(weaponSprite.setTint).toHaveBeenCalledWith(0x666666);
+    });
+});

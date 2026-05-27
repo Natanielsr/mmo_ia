@@ -171,20 +171,24 @@ export class PlayerAnimator {
     }
 
     playTakeDamageFlash(): void {
+        const allSprites = [this.sprite, ...this.overlaySprites.values(), this.weaponSprite].filter(Boolean) as Phaser.GameObjects.Sprite[];
         this.scene.tweens.add({
-            targets: this.sprite,
+            targets: allSprites,
             tint: 0xff0000,
             duration: 100,
             yoyo: true,
             onComplete: () => {
-                if (!this.getIsDead()) this.sprite.clearTint();
+                if (!this.getIsDead()) allSprites.forEach(s => s.clearTint());
             }
         });
     }
 
     playDieEffect(): void {
-        this.sprite.setAngle(90);
-        this.sprite.setTint(0x666666);
+        const allSprites = [this.sprite, ...this.overlaySprites.values(), this.weaponSprite].filter(Boolean) as Phaser.GameObjects.Sprite[];
+        allSprites.forEach(s => {
+            s.setAngle(90);
+            s.setTint(0x666666);
+        });
     }
 
     playHealEffect(x: number, y: number, nameTextOffsetY: number): void {
