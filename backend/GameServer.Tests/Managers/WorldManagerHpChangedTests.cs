@@ -15,7 +15,7 @@ namespace GameServer.Tests.Managers
         {
             var player = new Player(1, "Hero", new Position(0, 0), maxHp: 100);
             player.TakeDamage(40);
-            var potion = new HealingPotion("p1", new Position(0, 0));
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(0, 0));
             var inv = new PlayerInventory();
             inv.AddItem(potion);
             _b.InventoryManager.Setup(m => m.GetInventory(1L)).Returns(inv);

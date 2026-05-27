@@ -102,10 +102,16 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("ItemDropped", new
             {
-                Id = item.Id,
-                Name = item.Name,
-                Position = item.Position,
-                Type = item.Type.ToString()
+                Id          = item.Id,
+                Name        = item.Name,
+                Description = item.Description,
+                Value       = item.Value,
+                TagName     = item.TagName,
+                Position    = item.Position,
+                Type        = item.Type.ToString(),
+                AttackBonus  = (item as Weapon)?.AttackBonus,
+                DefenseBonus = (item as IDefensiveItem)?.DefenseBonus,
+                Quantity    = item.Quantity,
             });
         }
 
@@ -127,10 +133,13 @@ namespace GameServer.Infrastructure.SignalR
             {
                 Id           = s.Item.Id,
                 Name         = s.Item.Name,
+                Description  = s.Item.Description,
+                Value        = s.Item.Value,
+                TagName      = s.Item.TagName,
                 Position     = s.Item.Position,
                 Type         = s.Item.Type,
                 AttackBonus  = (s.Item as Weapon)?.AttackBonus,
-                DefenseBonus = (s.Item as Armor)?.DefenseBonus,
+                DefenseBonus = (s.Item as IDefensiveItem)?.DefenseBonus,
                 SlotIndex    = s.SlotIndex,
                 Quantity     = s.Item.Quantity,
             });
@@ -149,9 +158,12 @@ namespace GameServer.Infrastructure.SignalR
                 {
                     Id           = kv.Value.Id,
                     Name         = kv.Value.Name,
+                    Description  = kv.Value.Description,
+                    Value        = kv.Value.Value,
+                    TagName      = kv.Value.TagName,
                     Type         = kv.Value.Type.ToString(),
                     AttackBonus  = (kv.Value as Weapon)?.AttackBonus,
-                    DefenseBonus = (kv.Value as Armor)?.DefenseBonus,
+                    DefenseBonus = (kv.Value as IDefensiveItem)?.DefenseBonus,
                 });
 
             _hubContext.Clients.Client(connId).SendAsync("EquipmentUpdated", payload);

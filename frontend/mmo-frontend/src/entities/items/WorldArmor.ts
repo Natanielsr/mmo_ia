@@ -5,7 +5,7 @@ export class WorldArmor extends BaseWorldItem {
     public defenseBonus: number;
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
-        super(itemData, scene, 'leather-vest');
+        super(itemData, scene, itemData.tagName || 'leather-vest');
         this.defenseBonus = itemData.defenseBonus ?? 0;
     }
 }

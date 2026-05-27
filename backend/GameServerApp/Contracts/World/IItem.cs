@@ -18,6 +18,9 @@ namespace GameServerApp.Contracts.World
     {
         string Id { get; }
         string Name { get; }
+        string Description { get; }
+        int Value { get; }
+        string TagName { get; }
         Position Position { get; set; }
         float Weight { get; }
         ItemType Type { get; }

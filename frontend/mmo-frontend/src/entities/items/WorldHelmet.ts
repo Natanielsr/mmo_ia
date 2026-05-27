@@ -5,7 +5,7 @@ export class WorldHelmet extends BaseWorldItem {
     public defenseBonus: number;
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
-        super(itemData, scene, 'iron-helmet');
+        super(itemData, scene, itemData.tagName || 'iron-helmet');
         this.defenseBonus = itemData.defenseBonus ?? 0;
     }
 }

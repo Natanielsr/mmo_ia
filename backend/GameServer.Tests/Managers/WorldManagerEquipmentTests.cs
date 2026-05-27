@@ -57,7 +57,7 @@ namespace GameServer.Tests.Managers
         [Fact]
         public void ProcessEquipItem_Returns_False_When_Item_Not_Equippable()
         {
-            var potion = new HealingPotion("p1", P); // Slot == null
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, P); // Slot == null
             var (player, _, _) = Setup(addToInv: i => i.AddItem(potion));
 
             var result = _b.Build().ProcessEquipItem(player, "p1");

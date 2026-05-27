@@ -25,7 +25,7 @@ namespace GameServer.Infrastructure.SignalR
                 "legs" => new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1),
                 "boots" => new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1),
                 "shield" => new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1),
-                "potion" => new HealingPotion(_idGeneratorService.GenerateId().ToString(), player.Position),
+                "potion" => new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position),
                 _ => new Weapon(_idGeneratorService.GenerateId().ToString(), "Dagger", 1.5f, player.Position, attackBonus: 5)
             };
 
@@ -115,7 +115,7 @@ namespace GameServer.Infrastructure.SignalR
                 new Legs(_idGeneratorService.GenerateId().ToString(), "Leather Pants", 1.0f, player.Position, defenseBonus: 1),
                 new Boots(_idGeneratorService.GenerateId().ToString(), "Iron Boots", 1.5f, player.Position, defenseBonus: 1),
                 new Shield(_idGeneratorService.GenerateId().ToString(), "Wooden Shield", 2.5f, player.Position, defenseBonus: 1),
-                new HealingPotion(_idGeneratorService.GenerateId().ToString(), player.Position)
+                new HealingPotion(_idGeneratorService.GenerateId().ToString(), "Healing Potion", 0.5f, player.Position)
             };
 
             foreach (var item in items)

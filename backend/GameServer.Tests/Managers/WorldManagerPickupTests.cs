@@ -17,7 +17,7 @@ namespace GameServer.Tests.Managers
         public void Pickup_Does_Not_Auto_Heal_Player()
         {
             var player = new Player(1, "Hero", new Position(0, 0), maxHp: 50);
-            var potion = new HealingPotion("p1", new Position(1, 0));
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(1, 0));
 
             _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
@@ -32,7 +32,7 @@ namespace GameServer.Tests.Managers
         public void Pickup_Adds_Item_To_Player_Inventory()
         {
             var player = new Player(1, "Hero", new Position(0, 0));
-            var potion = new HealingPotion("p1", new Position(1, 0));
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(1, 0));
 
             _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
@@ -47,7 +47,7 @@ namespace GameServer.Tests.Managers
         public void Pickup_Fails_Silently_When_Inventory_Full()
         {
             var player = new Player(1, "Hero", new Position(0, 0));
-            var potion = new HealingPotion("p1", new Position(1, 0));
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(1, 0));
 
             _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(false);
@@ -61,7 +61,7 @@ namespace GameServer.Tests.Managers
         public void Pickup_Fires_InventoryUpdated_Event()
         {
             var player = new Player(1, "Hero", new Position(0, 0));
-            var potion = new HealingPotion("p1", new Position(1, 0));
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(1, 0));
 
             _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion)).Returns(true);
@@ -77,8 +77,8 @@ namespace GameServer.Tests.Managers
         public void Pickup_PicksUp_AllItems_AtSamePosition()
         {
             var player  = new Player(1, "Hero", new Position(0, 0));
-            var potion1 = new HealingPotion("p1", new Position(1, 0));
-            var potion2 = new HealingPotion("p2", new Position(1, 0));
+            var potion1 = new HealingPotion("p1", "Healing Potion", 0.1f, new Position(1, 0));
+            var potion2 = new HealingPotion("p2", "Healing Potion", 0.1f, new Position(1, 0));
 
             _b.ItemManager.Setup(m => m.GetItemsAt(new Position(1, 0))).Returns([potion1, potion2]);
             _b.InventoryManager.Setup(m => m.AddItem(1L, potion1)).Returns(true);
@@ -103,7 +103,7 @@ namespace GameServer.Tests.Managers
             var pos    = new Position(0, 0);
             var player = new Player(1, "Hero", pos, maxHp: 100);
             player.TakeDamage(40); // garante espaço para cura
-            var potion = new HealingPotion("p1", pos);
+            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, pos);
 
             var inv = new GameServerApp.World.PlayerInventory();
             inv.AddItem(potion);

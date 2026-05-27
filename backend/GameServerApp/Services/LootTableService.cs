@@ -1,7 +1,6 @@
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
-using GameServerApp.World;
 
 namespace GameServerApp.Services
 {
@@ -16,30 +15,38 @@ namespace GameServerApp.Services
     //   0.93–1.00 → nenhum drop   (7%)
     public class LootTableService : ILootTableService
     {
+        private static readonly (string TagName, double MaxRoll)[] LootTable =
+        [
+            ("potion",         0.25),
+            ("dagger",         0.35),
+            ("leather-vest",   0.45),
+            ("iron-helmet",    0.57),
+            ("wooden-shield",  0.69),
+            ("leather-pants",  0.81),
+            ("iron-boots",     0.93),
+        ];
+
+        private readonly IItemDefinitionRepository _repo;
+        private readonly IItemFactory _factory;
+
+        public LootTableService(IItemDefinitionRepository repo, IItemFactory factory)
+        {
+            _repo = repo;
+            _factory = factory;
+        }
+
         public IItem? RollLoot(Position position, string itemId, Func<double>? rng = null)
         {
             var roll = (rng ?? Random.Shared.NextDouble)();
 
-            if (roll < 0.25)
-                return new HealingPotion(itemId, position);
-
-            if (roll < 0.35)
-                return new Weapon(itemId, "Dagger", 1.5f, position, attackBonus: 5);
-
-            if (roll < 0.45)
-                return new Armor(itemId, "Leather Vest", 2.0f, position, defenseBonus: 1);
-
-            if (roll < 0.57)
-                return new Helmet(itemId, "Iron Helmet", 1.2f, position, defenseBonus: 1);
-
-            if (roll < 0.69)
-                return new Shield(itemId, "Wooden Shield", 2.5f, position, defenseBonus: 1);
-
-            if (roll < 0.81)
-                return new Legs(itemId, "Leather Pants", 1.0f, position, defenseBonus: 1);
-
-            if (roll < 0.93)
-                return new Boots(itemId, "Iron Boots", 1.5f, position, defenseBonus: 1);
+            foreach (var (tagName, maxRoll) in LootTable)
+            {
+                if (roll < maxRoll)
+                {
+                    var def = _repo.GetByTagName(tagName);
+                    return def is null ? null : _factory.Create(def, itemId, position);
+                }
+            }
 
             return null;
         }

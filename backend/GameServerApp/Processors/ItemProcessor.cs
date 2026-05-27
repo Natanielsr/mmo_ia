@@ -76,7 +76,10 @@ namespace GameServerApp.Processors
             if (item.Type == ItemType.Potion && item.Quantity > 1)
             {
                 item.Quantity--;
-                worldItem = new HealingPotion(Guid.NewGuid().ToString(), targetPos);
+                worldItem = new HealingPotion(
+                    Guid.NewGuid().ToString(), item.Name, item.Weight, targetPos,
+                    healAmount: (item as HealingPotion)?.HealAmount ?? 20,
+                    description: item.Description, value: item.Value, tagName: item.TagName);
             }
             else
             {

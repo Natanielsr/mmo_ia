@@ -63,10 +63,16 @@ namespace GameServerApp.Processors
                         }).ToList(),
                         Items = chunkItems.Select(item => new ItemData
                         {
-                            Id       = item.Id,
-                            Name     = item.Name,
-                            Position = item.Position,
-                            Type     = item.Type
+                            Id          = item.Id,
+                            Name        = item.Name,
+                            Description = item.Description,
+                            Value       = item.Value,
+                            TagName     = item.TagName,
+                            Position    = item.Position,
+                            Type        = item.Type,
+                            AttackBonus  = (item as GameServerApp.World.Weapon)?.AttackBonus,
+                            DefenseBonus = (item as GameServerApp.Contracts.World.IDefensiveItem)?.DefenseBonus,
+                            Quantity    = item.Quantity,
                         }).ToList()
                     };
 

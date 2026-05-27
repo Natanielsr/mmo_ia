@@ -5,11 +5,14 @@ namespace GameServerApp.World
 {
     public class HealingPotion : Item
     {
-        public int HealAmount { get; } = 20;
+        public int HealAmount { get; }
 
-        public HealingPotion(string id, Position position) 
-            : base(id, "Healing Potion", 0.1f, position, ItemType.Potion)
+        public HealingPotion(string id, string name, float weight, Position position,
+                             int healAmount = 20,
+                             string description = "", int value = 0, string tagName = "")
+            : base(id, name, weight, position, ItemType.Potion, description, value, tagName)
         {
+            HealAmount = healAmount;
         }
     }
 }

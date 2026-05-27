@@ -8,8 +8,9 @@ namespace GameServerApp.World
         public int AttackBonus { get; }
         public override EquipmentSlot? Slot => EquipmentSlot.Weapon;
 
-        public Weapon(string id, string name, float weight, Position position, int attackBonus)
-            : base(id, name, weight, position, ItemType.Weapon)
+        public Weapon(string id, string name, float weight, Position position, int attackBonus,
+                      string description = "", int value = 0, string tagName = "")
+            : base(id, name, weight, position, ItemType.Weapon, description, value, tagName)
         {
             AttackBonus = attackBonus;
         }

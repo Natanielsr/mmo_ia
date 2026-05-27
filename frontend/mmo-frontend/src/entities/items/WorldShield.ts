@@ -5,7 +5,7 @@ export class WorldShield extends BaseWorldItem {
     public defenseBonus: number;
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
-        super(itemData, scene, 'wooden-shield');
+        super(itemData, scene, itemData.tagName || 'wooden-shield');
         this.defenseBonus = itemData.defenseBonus ?? 0;
     }
 }

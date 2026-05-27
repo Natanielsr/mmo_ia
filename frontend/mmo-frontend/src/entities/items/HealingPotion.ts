@@ -5,7 +5,7 @@ import { BaseWorldItem } from './BaseWorldItem';
 
 export class HealingPotion extends BaseWorldItem {
     constructor(itemData: ItemData, scene: Phaser.Scene) {
-        super(itemData, scene, 'potion', { offsetY: -5, duration: 800 });
+        super(itemData, scene, itemData.tagName || 'potion', { offsetY: -5, duration: 800 });
 
         scene.tweens.add({
             targets: this,

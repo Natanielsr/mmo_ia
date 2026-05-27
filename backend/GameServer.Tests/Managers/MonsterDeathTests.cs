@@ -162,7 +162,7 @@ namespace GameServer.Tests.Managers
         public void Monster_Death_Should_Potentially_Drop_Item()
         {
             var pos     = new Position(1, 0);
-            var potion  = new HealingPotion("999", pos);
+            var potion  = new HealingPotion("999", "Healing Potion", 0.1f, pos);
             var player  = new Player(1, "Hero", new Position(0, 0), 100);
             var monster = new Monster(2, "Rat", "rat", pos, 10, 5);
 

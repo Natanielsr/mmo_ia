@@ -49,6 +49,12 @@ builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>()
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 builder.Services.AddSingleton<IWorldGenerator, WorldGenerator>();
+builder.Services.AddSingleton<IItemFactory, ItemFactory>();
+builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
+{
+    var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "items.json");
+    return new ItemDefinitionRepository(File.ReadAllText(path));
+});
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
 
 // Register Processors

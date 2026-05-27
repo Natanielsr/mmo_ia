@@ -92,7 +92,8 @@ namespace GameServerApp.Services
                 string itemCode = forcedType.Substring(5);
                 if (itemCode == "healing_potion")
                 {
-                    var potion = new HealingPotion(_idGeneratorService.GenerateId().ToString(), pos);
+                    var potion = new HealingPotion(_idGeneratorService.GenerateId().ToString(),
+                        "Healing Potion", 0.5f, pos);
                     _itemManager.DropItem(potion);
                     _worldEvents.OnItemDropped(potion);
                 }

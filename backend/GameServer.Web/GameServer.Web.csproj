@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Data\items.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GameServerApp\GameServerApp.csproj" />
     <ProjectReference Include="..\GameServer.Infrastructure\GameServer.Infrastructure.csproj" />
   </ItemGroup>

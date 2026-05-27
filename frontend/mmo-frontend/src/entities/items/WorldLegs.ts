@@ -5,7 +5,7 @@ export class WorldLegs extends BaseWorldItem {
     public defenseBonus: number;
 
     constructor(itemData: ItemData, scene: Phaser.Scene) {
-        super(itemData, scene, 'leather-pants');
+        super(itemData, scene, itemData.tagName || 'leather-pants');
         this.defenseBonus = itemData.defenseBonus ?? 0;
     }
 }

@@ -1,0 +1,74 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "tagName": "potion",
+      "name": "Healing Potion",
+      "description": "Restaura 20 de HP",
+      "value": 10,
+      "type": "Potion",
+      "weight": 0.5,
+      "healAmount": 20
+    },
+    {
+      "id": 2,
+      "tagName": "dagger",
+      "name": "Dagger",
+      "description": "Uma lâmina afiada",
+      "value": 25,
+      "type": "Weapon",
+      "weight": 1.5,
+      "attackBonus": 5
+    },
+    {
+      "id": 3,
+      "tagName": "leather-vest",
+      "name": "Leather Vest",
+      "description": "Proteção básica de couro",
+      "value": 20,
+      "type": "Armor",
+      "weight": 2.0,
+      "defenseBonus": 1
+    },
+    {
+      "id": 4,
+      "tagName": "iron-helmet",
+      "name": "Iron Helmet",
+      "description": "Elmo de ferro resistente",
+      "value": 18,
+      "type": "Helmet",
+      "weight": 1.2,
+      "defenseBonus": 1
+    },
+    {
+      "id": 5,
+      "tagName": "wooden-shield",
+      "name": "Wooden Shield",
+      "description": "Escudo de madeira simples",
+      "value": 15,
+      "type": "Shield",
+      "weight": 2.5,
+      "defenseBonus": 1
+    },
+    {
+      "id": 6,
+      "tagName": "leather-pants",
+      "name": "Leather Pants",
+      "description": "Calças de couro leves",
+      "value": 12,
+      "type": "Legs",
+      "weight": 1.0,
+      "defenseBonus": 1
+    },
+    {
+      "id": 7,
+      "tagName": "iron-boots",
+      "name": "Iron Boots",
+      "description": "Botas de ferro pesadas",
+      "value": 14,
+      "type": "Boots",
+      "weight": 1.5,
+      "defenseBonus": 1
+    }
+  ]
+}
