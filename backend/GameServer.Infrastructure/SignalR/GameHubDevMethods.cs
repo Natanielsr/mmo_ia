@@ -101,6 +101,23 @@ namespace GameServer.Infrastructure.SignalR
             }
         }
 
+        public void DevSpawnItemByTag(string tagName)
+        {
+            if (!IsDev) return;
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player == null) return;
+
+            var def = _itemRepo.GetByTagName(tagName);
+            if (def == null)
+            {
+                return;
+            }
+
+            var item = _itemFactory.Create(def, _idGeneratorService.GenerateId().ToString(), player.Position);
+            _itemManager.DropItem(item);
+            _worldEvents.OnItemDropped(item);
+        }
+
         public void DevGiveAllItems()
         {
             if (!IsDev) return;

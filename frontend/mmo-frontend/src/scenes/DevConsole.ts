@@ -73,9 +73,9 @@ export class DevConsole {
             } else if (cmd === '/exit') {
                 this.toggle();
             } else if (cmd === '/spawn' && parts[1]) {
-                const itemType = parts[1].charAt(0).toUpperCase() + parts[1].slice(1);
-                await this.signalRService.invoke('DevSpawnItem', itemType);
-                this.log(`✓ Item spawned: ${itemType}`);
+                const tagName = parts[1].toLowerCase();
+                await this.signalRService.invoke('DevSpawnItemByTag', tagName);
+                this.log(`✓ Item spawned: ${tagName}`);
             } else if (cmd === '/level' && parts[1]) {
                 const level = parseInt(parts[1], 10);
                 if (isNaN(level) || level < 1) {
@@ -110,7 +110,7 @@ export class DevConsole {
     private showHelp(): void {
         const help = [
             '─ COMANDOS DE CHEAT ─',
-            '/spawn <tipo>     → Spawna item (weapon, helmet, chest, legs, boots, shield, potion)',
+            '/spawn <tagName>  → Spawna item no chão (ex: plate-armor, dagger, potion)',
             '/level <n>        → Define nível (1-999)',
             '/god              → Ativa modo deus (invencível)',
             '/mortal           → Desativa modo deus',
@@ -123,7 +123,7 @@ export class DevConsole {
             '─ Teclas ─',
             'ESC               → Fecha o console',
             '─ Exemplos ─',
-            '/spawn weapon',
+            '/spawn plate-armor',
             '/level 10',
             '/god'
         ];
