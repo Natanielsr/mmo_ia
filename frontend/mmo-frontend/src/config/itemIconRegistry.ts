@@ -6,6 +6,7 @@ export const ITEM_ICON_REGISTRY: Record<string, string> = {
   'wooden-shield': '/assets/items_icon/wooden-shield.png',
   'leather-pants': '/assets/items_icon/leather-pants.png',
   'iron-boots':    '/assets/items_icon/iron-boots.png',
+  'plate-armor':   '/assets/items_icon/plate-armor.png',
 }
 
 export function getItemIconSrc(tagName: string): string {
