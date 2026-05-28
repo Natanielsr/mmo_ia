@@ -9,6 +9,7 @@ public static class ItemTags
     public const string WoodenShield = "wooden-shield";
     public const string LeatherPants = "leather-pants";
     public const string IronBoots    = "iron-boots";
+    public const string PlateArmor   = "plate-armor";
 
     public static class SpawnCode
     {

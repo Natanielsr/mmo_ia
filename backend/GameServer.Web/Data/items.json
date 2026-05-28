@@ -69,6 +69,16 @@
       "type": "Boots",
       "weight": 1.5,
       "defenseBonus": 1
+    },
+    {
+      "id": 8,
+      "tagName": "plate-armor",
+      "name": "Plate Armor",
+      "description": "Uma armadura de placas de aço resistente",
+      "value": 80,
+      "type": "Armor",
+      "weight": 5.0,
+      "defenseBonus": 8
     }
   ]
 }
