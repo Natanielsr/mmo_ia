@@ -145,6 +145,58 @@ describe('PlayerAnimator.playTakeDamageFlash — overlays', () => {
     });
 });
 
+describe('PlayerAnimator — troca de item no mesmo slot', () => {
+    it('atualiza texture do overlay ao trocar armadura no slot Chest', () => {
+        const { animator, scene } = makeAnimator();
+
+        animator.setEquippedBodyOverlay('Chest', 'armor_leather_torso_walk', 'armor_leather_torso_slash');
+        animator.setEquippedBodyOverlay('Chest', 'armor_plate_torso_walk', 'armor_plate_torso_slash');
+
+        // Sprite criado apenas uma vez
+        expect(scene.add.sprite).toHaveBeenCalledTimes(2); // 1 hero + 1 overlay
+
+        const overlaySprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        expect(overlaySprite.texture.key).toBe('armor_plate_torso_walk');
+    });
+
+    it('não cria novo sprite ao trocar item no mesmo slot', () => {
+        const { animator, scene } = makeAnimator();
+
+        animator.setEquippedBodyOverlay('Chest', 'armor_leather_torso_walk', 'armor_leather_torso_slash');
+        const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        animator.setEquippedBodyOverlay('Chest', 'armor_plate_torso_walk', 'armor_plate_torso_slash');
+        const callsAfter = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        expect(callsAfter).toBe(callsBefore);
+    });
+
+    it('atualiza texture da arma ao trocar weapon', () => {
+        const { animator, scene } = makeAnimator();
+
+        animator.setEquippedWeaponOverlay('sword_walk', 'sword_slash');
+        animator.setEquippedWeaponOverlay('axe_walk', 'axe_slash');
+
+        // Sprite criado apenas uma vez para a arma
+        expect(scene.add.sprite).toHaveBeenCalledTimes(2); // 1 hero + 1 weapon
+
+        const weaponSprite = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.results.at(-1)!.value;
+        expect(weaponSprite.texture.key).toBe('axe_walk');
+    });
+
+    it('não cria novo sprite ao trocar arma', () => {
+        const { animator, scene } = makeAnimator();
+
+        animator.setEquippedWeaponOverlay('sword_walk', 'sword_slash');
+        const callsBefore = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        animator.setEquippedWeaponOverlay('axe_walk', 'axe_slash');
+        const callsAfter = (scene.add.sprite as ReturnType<typeof vi.fn>).mock.calls.length;
+
+        expect(callsAfter).toBe(callsBefore);
+    });
+});
+
 describe('PlayerAnimator.playDieEffect — overlays', () => {
     it('hero sprite reproduz animação hero_hurt', () => {
         const { animator, scene } = makeAnimator();

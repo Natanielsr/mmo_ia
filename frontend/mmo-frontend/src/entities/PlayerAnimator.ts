@@ -148,6 +148,8 @@ export class PlayerAnimator {
             sprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
             this.container.add(sprite);
             this.overlaySprites.set(slot, sprite);
+        } else {
+            this.overlaySprites.get(slot)!.setTexture(walkKey, getIdleFrame(this.facingDirection));
         }
         if (this.weaponSprite) this.container.bringToTop(this.weaponSprite);
         const shieldSprite = this.overlaySprites.get('Shield');
@@ -170,6 +172,8 @@ export class PlayerAnimator {
             this.weaponSprite = this.scene.add.sprite(0, 0, walkKey, getIdleFrame(this.facingDirection));
             this.weaponSprite.setDisplaySize(this.sprite.displayWidth, this.sprite.displayHeight);
             this.container.add(this.weaponSprite);
+        } else {
+            this.weaponSprite.setTexture(walkKey, getIdleFrame(this.facingDirection));
         }
         this.container.bringToTop(this.weaponSprite);
         const shieldSprite = this.overlaySprites.get('Shield');
