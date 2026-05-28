@@ -1,6 +1,7 @@
 import type { HubConnection } from '@microsoft/signalr';
 import type { MainScene } from '../../scenes/MainScene';
 import type { useGameStore } from '../../stores/gameStore';
+import type { ItemData } from '../../types';
 
 type Store = ReturnType<typeof useGameStore>;
 
@@ -72,12 +73,16 @@ export class ItemEventHandler {
         });
     }
 
-    private normalizeItem(itemData: any) {
+    private normalizeItem(itemData: any): ItemData {
         return {
-            id: String(itemData.id ?? itemData.Id),
-            name: String(itemData.name ?? itemData.Name),
-            position: itemData.position ?? itemData.Position,
-            type: String(itemData.type ?? itemData.Type)
+            id:           String(itemData.id          ?? itemData.Id),
+            name:         String(itemData.name        ?? itemData.Name),
+            tagName:      String(itemData.tagName     ?? itemData.TagName ?? ''),
+            position:     itemData.position ?? itemData.Position,
+            type:         String(itemData.type        ?? itemData.Type),
+            attackBonus:  itemData.attackBonus  ?? itemData.AttackBonus,
+            defenseBonus: itemData.defenseBonus ?? itemData.DefenseBonus,
+            quantity:     itemData.quantity     ?? itemData.Quantity ?? 1,
         };
     }
 }

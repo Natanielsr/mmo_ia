@@ -23,6 +23,8 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IInventoryManager _inventoryManager;
         private readonly IEquipmentManager _equipmentManager;
         private readonly IHostEnvironment _env;
+        private readonly IItemFactory _itemFactory;
+        private readonly IItemDefinitionRepository _itemRepo;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -34,7 +36,9 @@ namespace GameServer.Infrastructure.SignalR
             IItemManager itemManager,
             IInventoryManager inventoryManager,
             IEquipmentManager equipmentManager,
-            IHostEnvironment env)
+            IHostEnvironment env,
+            IItemFactory itemFactory,
+            IItemDefinitionRepository itemRepo)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
@@ -46,6 +50,8 @@ namespace GameServer.Infrastructure.SignalR
             _inventoryManager = inventoryManager;
             _equipmentManager = equipmentManager;
             _env = env;
+            _itemFactory = itemFactory;
+            _itemRepo = itemRepo;
         }
 
         public async Task JoinGame(string playerName)
@@ -116,10 +122,14 @@ namespace GameServer.Infrastructure.SignalR
             var allItems = _itemManager.GetAllItems();
             var itemDataList = allItems.Select(item => new
             {
-                Id = item.Id,
-                Name = item.Name,
-                Position = item.Position,
-                Type = item.Type.ToString()
+                Id           = item.Id,
+                Name         = item.Name,
+                TagName      = item.TagName,
+                Position     = item.Position,
+                Type         = item.Type.ToString(),
+                AttackBonus  = (item as Weapon)?.AttackBonus,
+                DefenseBonus = (item as IDefensiveItem)?.DefenseBonus,
+                Quantity     = item.Quantity,
             }).ToList();
 
             await Clients.Caller.SendAsync("SyncItems", itemDataList);
