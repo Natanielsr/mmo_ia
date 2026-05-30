@@ -1,8 +1,9 @@
 {
   "lootTables": {
     "rat": [
-      { "itemTag": "potion", "weight": 60 },
-      { "itemTag": "dagger", "weight": 10 }
+      { "itemTag": "potion",  "weight": 60 },
+      { "itemTag": "dagger",  "weight": 10 },
+      { "itemTag": "cheese",  "weight": 40 }
     ],
     "wolf": [
       { "itemTag": "potion",        "weight": 30 },

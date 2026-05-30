@@ -79,6 +79,16 @@
       "type": "Armor",
       "weight": 5.0,
       "defenseBonus": 8
+    },
+    {
+      "id": 9,
+      "tagName": "cheese",
+      "name": "Cheese",
+      "description": "Recupera 10 HP ao longo de 10 segundos",
+      "value": 5,
+      "type": "Food",
+      "weight": 0.3,
+      "healAmount": 10
     }
   ]
 }
