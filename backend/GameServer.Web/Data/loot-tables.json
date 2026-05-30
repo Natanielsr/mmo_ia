@@ -9,6 +9,7 @@
       { "itemTag": "leather-pants", "weight": 10 }
     ],
     "spider": [
+      { "itemTag": "monster-meat",  "weight": 30 },
       { "itemTag": "leather-vest",  "weight": 10 },
       { "itemTag": "leather-pants", "weight": 10 }
     ],

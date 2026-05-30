@@ -9,6 +9,7 @@ export const ITEM_ICON_REGISTRY: Record<string, string> = {
   'plate-armor':   '/assets/items_icon/plate-armor.png',
   'cheese':        '/assets/items_icon/cheese.png',
   'raw-meat':      '/assets/items_icon/raw-meat.png',
+  'monster-meat':  '/assets/items_icon/monster-meat.png',
 }
 
 export function getItemIconSrc(tagName: string): string {

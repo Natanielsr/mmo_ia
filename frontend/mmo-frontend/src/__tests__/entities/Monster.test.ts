@@ -96,10 +96,10 @@ describe('Monster.die', () => {
         expect(m.nameText.visible).toBe(false);
     });
 
-    it('reduz alpha do sprite para 0.5', () => {
+    it('aplica tint azul no sprite', () => {
         const m = new Monster(BASE, makeScene() as never);
         m.die();
-        expect((m.sprite as unknown as { alpha: number }).alpha).toBe(0.5);
+        expect((m.sprite as unknown as { setTint: ReturnType<typeof vi.fn> }).setTint).toHaveBeenCalledWith(0xaaaaff);
     });
 });
 

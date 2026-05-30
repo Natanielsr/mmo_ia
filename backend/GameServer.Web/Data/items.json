@@ -99,6 +99,16 @@
       "type": "Food",
       "weight": 0.8,
       "healAmount": 20
+    },
+    {
+      "id": 11,
+      "tagName": "monster-meat",
+      "name": "Monster Meat",
+      "description": "Recupera 5 HP ao longo do tempo",
+      "value": 4,
+      "type": "Food",
+      "weight": 0.6,
+      "healAmount": 5
     }
   ]
 }
