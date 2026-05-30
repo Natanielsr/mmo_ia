@@ -149,5 +149,16 @@ namespace GameServer.Tests.Items
             Assert.Equal(1, cheese.HealPerTick);
             Assert.Equal(10, cheese.TotalTicks);
         }
+
+        [Fact]
+        public void Create_Food_RawMeat_HealPerTick_Is_1_And_TotalTicks_Is_HealAmount()
+        {
+            var def = MakeDef("Food", "raw-meat", healAmount: 20);
+            var item = _sut.Create(def, "id1", Pos);
+            var meat = Assert.IsType<Cheese>(item);
+
+            Assert.Equal(1, meat.HealPerTick);
+            Assert.Equal(20, meat.TotalTicks);
+        }
     }
 }

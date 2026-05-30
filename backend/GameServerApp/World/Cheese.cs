@@ -12,8 +12,8 @@ namespace GameServerApp.World
                       int healAmount = 10, string description = "", int value = 0)
             : base(id, name, weight, tagName, position, ItemType.Food, description, value)
         {
-            HealPerTick = Math.Max(1, healAmount / 10);
-            TotalTicks = 10;
+            HealPerTick = 1;
+            TotalTicks = healAmount;
         }
     }
 }

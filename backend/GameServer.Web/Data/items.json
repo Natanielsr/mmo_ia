@@ -89,6 +89,16 @@
       "type": "Food",
       "weight": 0.3,
       "healAmount": 10
+    },
+    {
+      "id": 10,
+      "tagName": "raw-meat",
+      "name": "Raw Meat",
+      "description": "Recupera 20 HP ao longo de 10 segundos",
+      "value": 8,
+      "type": "Food",
+      "weight": 0.8,
+      "healAmount": 20
     }
   ]
 }

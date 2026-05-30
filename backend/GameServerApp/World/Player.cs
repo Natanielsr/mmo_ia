@@ -186,6 +186,15 @@ namespace GameServerApp.World
             _activeHoTs.Add(new HoTEffect(source, healPerTick, totalTicks));
         }
 
+        public void AccumulateHoT(string source, int healPerTick, int additionalTicks)
+        {
+            var idx = _activeHoTs.FindIndex(h => h.Source == source);
+            if (idx >= 0)
+                _activeHoTs[idx] = _activeHoTs[idx] with { TicksRemaining = _activeHoTs[idx].TicksRemaining + additionalTicks };
+            else
+                _activeHoTs.Add(new HoTEffect(source, healPerTick, additionalTicks));
+        }
+
         public bool TickHoT()
         {
             if (_activeHoTs.Count == 0 || State == PlayerState.Dead) return false;

@@ -119,4 +119,44 @@ public class CheeseTests
         Assert.False(result);
         Assert.Equal(0, player.Hp);
     }
+
+    // --- AccumulateHoT (food stacking) ---
+
+    [Fact]
+    public void Player_AccumulateHoT_Creates_New_Effect_When_Source_Not_Active()
+    {
+        var player = MakePlayer(damage: 30); // Hp = 70
+        player.AccumulateHoT("food", 1, 10);
+
+        for (int i = 0; i < 10; i++) player.TickHoT();
+
+        Assert.Equal(80, player.Hp);
+    }
+
+    [Fact]
+    public void Player_AccumulateHoT_Adds_Ticks_To_Existing_Effect()
+    {
+        var player = MakePlayer(damage: 30, maxHp: 100); // Hp = 70
+        player.AccumulateHoT("food", 1, 20); // raw-meat: 20 ticks
+        player.AccumulateHoT("food", 1, 10); // cheese: +10 ticks → 30 total
+
+        for (int i = 0; i < 30; i++) player.TickHoT();
+
+        Assert.Equal(100, player.Hp);
+        Assert.False(player.TickHoT()); // exhausted
+    }
+
+    [Fact]
+    public void Player_AccumulateHoT_Partial_Consumption_Then_Stack()
+    {
+        var player = MakePlayer(damage: 50, maxHp: 100); // Hp = 50
+        player.AccumulateHoT("food", 1, 20); // raw-meat
+        for (int i = 0; i < 5; i++) player.TickHoT(); // 5 ticks consumed, Hp=55, 15 left
+
+        player.AccumulateHoT("food", 1, 10); // cheese: 15 + 10 = 25 ticks remaining
+        for (int i = 0; i < 25; i++) player.TickHoT();
+
+        Assert.Equal(80, player.Hp); // 55 + 25 = 80
+        Assert.False(player.TickHoT());
+    }
 }

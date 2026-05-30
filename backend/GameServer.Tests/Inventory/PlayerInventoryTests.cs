@@ -147,7 +147,7 @@ namespace GameServer.Tests.Inventory
             bool result = _inv.UseItem("c1", player.Object);
 
             Assert.True(result);
-            player.Verify(p => p.ApplyHoT("cheese", 1, 10), Times.Once);
+            player.Verify(p => p.AccumulateHoT("food", 1, 10), Times.Once);
         }
 
         [Fact]

@@ -51,7 +51,7 @@ namespace GameServerApp.World
                 if (_slots[i]!.Type == ItemType.Food)
                 {
                     var food = _slots[i] as Cheese;
-                    player.ApplyHoT(_slots[i]!.TagName, food?.HealPerTick ?? 1, food?.TotalTicks ?? 10);
+                    player.AccumulateHoT("food", food?.HealPerTick ?? 1, food?.TotalTicks ?? 10);
                     _slots[i]!.Quantity--;
                     if (_slots[i]!.Quantity <= 0) _slots[i] = null;
                     return true;

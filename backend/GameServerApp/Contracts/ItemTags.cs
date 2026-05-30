@@ -11,6 +11,7 @@ public static class ItemTags
     public const string IronBoots    = "iron-boots";
     public const string PlateArmor   = "plate-armor";
     public const string Cheese        = "cheese";
+    public const string RawMeat       = "raw-meat";
 
     public static class SpawnCode
     {
