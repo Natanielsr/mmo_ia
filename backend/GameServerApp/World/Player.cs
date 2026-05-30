@@ -176,5 +176,27 @@ namespace GameServerApp.World
             MaxHp = 100 + (10 * (targetLevel - 1));
             Hp = MaxHp;
         }
+
+        private record HoTEffect(string Source, int HealPerTick, int TicksRemaining);
+        private readonly List<HoTEffect> _activeHoTs = [];
+
+        public void ApplyHoT(string source, int healPerTick, int totalTicks)
+        {
+            _activeHoTs.RemoveAll(h => h.Source == source);
+            _activeHoTs.Add(new HoTEffect(source, healPerTick, totalTicks));
+        }
+
+        public bool TickHoT()
+        {
+            if (_activeHoTs.Count == 0 || State == PlayerState.Dead) return false;
+            for (int i = _activeHoTs.Count - 1; i >= 0; i--)
+            {
+                var h = _activeHoTs[i];
+                Heal(h.HealPerTick);
+                _activeHoTs[i] = h with { TicksRemaining = h.TicksRemaining - 1 };
+                if (_activeHoTs[i].TicksRemaining <= 0) _activeHoTs.RemoveAt(i);
+            }
+            return true;
+        }
     }
 }
