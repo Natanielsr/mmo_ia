@@ -53,6 +53,7 @@ namespace GameServerApp.Processors
             var inv = _inventoryManager.GetInventory(player.Id);
             if (inv == null) return;
 
+            var item = inv.GetItems().FirstOrDefault(i => i.Id == itemId);
             bool used = inv.UseItem(itemId, player);
             if (!used) return;
 
@@ -63,6 +64,14 @@ namespace GameServerApp.Processors
                 MaxHp  = player.MaxHp,
                 IsDead = false
             };
+
+            if (item?.Type == ItemType.Food)
+            {
+                _worldEvents.OnFoodConsumed(player.Id, item.TagName);
+                _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
+                return;
+            }
+
             _worldEvents.OnPlayerHpChanged(hpData);
             _worldEvents.OnPlayerHealed(hpData);
             _worldEvents.OnInventoryUpdated(player.Id, inv.GetSlottedItems());
@@ -84,6 +93,14 @@ namespace GameServerApp.Processors
                 worldItem = new HealingPotion(
                     Guid.NewGuid().ToString(), item.Name, item.Weight, item.TagName, targetPos,
                     healAmount: (item as HealingPotion)?.HealAmount ?? 20,
+                    description: item.Description, value: item.Value);
+            }
+            else if (item.Type == ItemType.Food && item.Quantity > 1)
+            {
+                item.Quantity--;
+                worldItem = new Cheese(
+                    Guid.NewGuid().ToString(), item.Name, item.Weight, item.TagName, targetPos,
+                    healAmount: (item as Cheese)?.HealPerTick * (item as Cheese)?.TotalTicks ?? 10,
                     description: item.Description, value: item.Value);
             }
             else

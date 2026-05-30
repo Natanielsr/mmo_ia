@@ -16,6 +16,11 @@ namespace GameServerApp.World
                 var existing = _slots.FirstOrDefault(s => s?.Type == ItemType.Potion);
                 if (existing != null) { existing.Quantity++; return true; }
             }
+            if (item.Type == ItemType.Food)
+            {
+                var existing = _slots.FirstOrDefault(s => s?.TagName == item.TagName);
+                if (existing != null) { existing.Quantity++; return true; }
+            }
             var freeIdx = Array.IndexOf(_slots, null);
             if (freeIdx < 0) return false;
             _slots[freeIdx] = item;
@@ -34,11 +39,25 @@ namespace GameServerApp.World
             for (int i = 0; i < _maxSlots; i++)
             {
                 if (_slots[i]?.Id != itemId) continue;
-                if (_slots[i]!.Type != ItemType.Potion) return false;
-                player.Heal(20);
-                _slots[i]!.Quantity--;
-                if (_slots[i]!.Quantity <= 0) _slots[i] = null;
-                return true;
+
+                if (_slots[i]!.Type == ItemType.Potion)
+                {
+                    player.Heal(20);
+                    _slots[i]!.Quantity--;
+                    if (_slots[i]!.Quantity <= 0) _slots[i] = null;
+                    return true;
+                }
+
+                if (_slots[i]!.Type == ItemType.Food)
+                {
+                    var food = _slots[i] as Cheese;
+                    player.ApplyHoT(_slots[i]!.TagName, food?.HealPerTick ?? 1, food?.TotalTicks ?? 10);
+                    _slots[i]!.Quantity--;
+                    if (_slots[i]!.Quantity <= 0) _slots[i] = null;
+                    return true;
+                }
+
+                return false;
             }
             return false;
         }

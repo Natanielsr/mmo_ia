@@ -17,6 +17,11 @@ public class ItemFactory : IItemFactory
                 healAmount: def.HealAmount ?? 20,
                 description: def.Description, value: def.Value),
 
+            "Food" => new Cheese(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                healAmount: def.HealAmount ?? 10,
+                description: def.Description, value: def.Value),
+
             "Weapon" => new Weapon(
                 instanceId, def.Name, def.Weight, def.TagName, position,
                 attackBonus: def.AttackBonus ?? 0,

@@ -184,5 +184,10 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("PlayerItemEquipped", new { PlayerId = playerId, Slot = slot, ItemName = itemName });
         }
+
+        public void OnFoodConsumed(long playerId, string tagName)
+        {
+            _hubContext.Clients.All.SendAsync("FoodConsumed", new { PlayerId = playerId.ToString(), TagName = tagName });
+        }
     }
 }
