@@ -138,6 +138,10 @@ export class Player extends Phaser.GameObjects.Container {
         this.animator.playHealEffect(this.x, this.y, this.nameTextOffsetY);
     }
 
+    public playCrunchEffect(): void {
+        this.animator.playCrunchEffect(this.x, this.y, this.nameTextOffsetY);
+    }
+
     public updateLevelAndXP(newLevel: number, newExperience: number): void {
         if (newLevel > this.level) {
             this.animator.playLevelUpEffect(this.x, this.y, this.nameTextOffsetY);

@@ -224,6 +224,21 @@ export class PlayerAnimator {
         }
     }
 
+    playCrunchEffect(x: number, y: number, nameTextOffsetY: number): void {
+        const text = this.scene.add.text(x, y - nameTextOffsetY - 25, 'Crunch!', {
+            fontSize: '18px', color: '#FFA500', fontFamily: 'Inter',
+            stroke: '#7A3E00', strokeThickness: 3, fontStyle: 'bold'
+        }).setOrigin(0.5).setDepth(10001);
+        this.scene.tweens.add({
+            targets: text,
+            y: text.y - 50,
+            alpha: 0,
+            duration: 1000,
+            ease: 'Cubic.easeOut',
+            onComplete: () => text.destroy(),
+        });
+    }
+
     playHealEffect(x: number, y: number, nameTextOffsetY: number): void {
         const healText = this.scene.add.text(x, y - nameTextOffsetY - 25, '+HP', {
             fontSize: '18px', color: '#00ff88', fontFamily: 'Inter', stroke: '#004422', strokeThickness: 3, fontStyle: 'bold'

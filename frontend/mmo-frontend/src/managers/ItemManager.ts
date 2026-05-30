@@ -1,4 +1,5 @@
 import { HealingPotion } from '../entities/items/HealingPotion';
+import { WorldCheese } from '../entities/items/WorldCheese';
 import { WorldWeapon } from '../entities/items/WorldWeapon';
 import { WorldArmor } from '../entities/items/WorldArmor';
 import { WorldHelmet } from '../entities/items/WorldHelmet';
@@ -23,6 +24,8 @@ export class ItemManager {
 
         if (itemData.type === 'Potion') {
             item = new HealingPotion(itemData, this.scene);
+        } else if (itemData.type === 'Food') {
+            item = new WorldCheese(itemData, this.scene);
         } else if (itemData.type === 'Weapon') {
             item = new WorldWeapon(itemData, this.scene);
         } else if (itemData.type === 'Armor') {
