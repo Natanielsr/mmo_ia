@@ -116,5 +116,63 @@ namespace GameServer.Tests.Inventory
         [Fact]
         public void DropItem_Returns_False_When_Item_Not_Found()
             => Assert.False(_inv.DropItem("ghost", new Position(0, 0)));
+
+        // --- Food (Cheese) ---
+
+        private static GameServerApp.World.Cheese MakeCheese(string id = "c1", int quantity = 1)
+        {
+            var cheese = new GameServerApp.World.Cheese(id, "Cheese", 0.3f, "cheese", new Position(0, 0), healAmount: 10);
+            cheese.Quantity = quantity;
+            return cheese;
+        }
+
+        [Fact]
+        public void AddItem_Food_Same_TagName_Stacks()
+        {
+            var c1 = MakeCheese("c1");
+            var c2 = MakeCheese("c2");
+            _inv.AddItem(c1);
+            Assert.True(_inv.AddItem(c2));
+            Assert.Single(_inv.GetItems());
+            Assert.Equal(2, _inv.GetItems()[0].Quantity);
+        }
+
+        [Fact]
+        public void UseItem_Food_Calls_ApplyHoT_On_Player_And_Returns_True()
+        {
+            var cheese = MakeCheese();
+            _inv.AddItem(cheese);
+            var player = new Mock<IPlayer>();
+
+            bool result = _inv.UseItem("c1", player.Object);
+
+            Assert.True(result);
+            player.Verify(p => p.ApplyHoT("cheese", 1, 10), Times.Once);
+        }
+
+        [Fact]
+        public void UseItem_Food_Decrements_Quantity_And_Removes_When_Zero()
+        {
+            var cheese = MakeCheese(quantity: 1);
+            _inv.AddItem(cheese);
+            var player = new Mock<IPlayer>();
+
+            _inv.UseItem("c1", player.Object);
+
+            Assert.Empty(_inv.GetItems());
+        }
+
+        [Fact]
+        public void UseItem_Food_Stacked_Decrements_Without_Removing()
+        {
+            var cheese = MakeCheese(quantity: 3);
+            _inv.AddItem(cheese);
+            var player = new Mock<IPlayer>();
+
+            _inv.UseItem("c1", player.Object);
+
+            Assert.Single(_inv.GetItems());
+            Assert.Equal(2, _inv.GetItems()[0].Quantity);
+        }
     }
 }

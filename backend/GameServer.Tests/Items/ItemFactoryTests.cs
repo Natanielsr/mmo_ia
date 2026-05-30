@@ -128,5 +128,26 @@ namespace GameServer.Tests.Items
             var def = MakeDef("UnknownType");
             Assert.Throws<InvalidOperationException>(() => _sut.Create(def, "id1", Pos));
         }
+
+        [Fact]
+        public void Create_Food_Returns_Cheese_Instance()
+        {
+            var def = MakeDef("Food", "cheese", healAmount: 10);
+            var item = _sut.Create(def, "id1", Pos);
+
+            Assert.IsType<Cheese>(item);
+            Assert.Equal(ItemType.Food, item.Type);
+        }
+
+        [Fact]
+        public void Create_Food_Sets_HealPerTick_And_TotalTicks()
+        {
+            var def = MakeDef("Food", "cheese", healAmount: 10);
+            var item = _sut.Create(def, "id1", Pos);
+            var cheese = Assert.IsType<Cheese>(item);
+
+            Assert.Equal(1, cheese.HealPerTick);
+            Assert.Equal(10, cheese.TotalTicks);
+        }
     }
 }

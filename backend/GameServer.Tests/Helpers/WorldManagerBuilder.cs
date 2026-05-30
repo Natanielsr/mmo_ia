@@ -158,6 +158,10 @@ namespace GameServer.Tests.Helpers
                 Events.Object);
             var regenerationProcessor = BuiltRegeneration;
 
+            var hotProcessor = new PlayerHoTProcessor(
+                PlayerManager.Object,
+                Events.Object);
+
             return new WorldManager(
                 movementProcessor,
                 combatProcessor,
@@ -166,6 +170,7 @@ namespace GameServer.Tests.Helpers
                 equipmentProcessor,
                 chunkProcessor,
                 regenerationProcessor,
+                hotProcessor,
                 PlayerManager.Object,
                 BuiltCollision,
                 staticWorld);
