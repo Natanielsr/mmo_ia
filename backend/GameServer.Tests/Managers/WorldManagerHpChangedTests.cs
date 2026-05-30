@@ -68,7 +68,7 @@ namespace GameServer.Tests.Managers
             var player = new Player(1, "Hero", new Position(0, 0), attackPoints: 10);
             var monster = new Monster(99, "Goblin", "goblin", new Position(1, 0), maxHp: 1, attackPower: 5);
             b.MonsterManager.Setup(m => m.GetMonsterById(99L)).Returns(monster);
-            b.LootTable.Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>())).Returns((GameServerApp.Contracts.World.IItem?)null);
+            b.LootTable.Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), It.IsAny<string>(), null)).Returns((GameServerApp.Contracts.World.IItem?)null);
 
             b.Build().ProcessPlayerAttackMonster(player, "99");
 

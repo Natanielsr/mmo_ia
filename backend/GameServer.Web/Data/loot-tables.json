@@ -1,0 +1,28 @@
+{
+  "lootTables": {
+    "rat": [
+      { "itemTag": "potion", "weight": 60 },
+      { "itemTag": "dagger", "weight": 10 }
+    ],
+    "wolf": [
+      { "itemTag": "potion",        "weight": 30 },
+      { "itemTag": "leather-vest",  "weight": 20 },
+      { "itemTag": "leather-pants", "weight": 15 },
+      { "itemTag": "iron-boots",    "weight": 10 }
+    ],
+    "spider": [
+      { "itemTag": "potion",        "weight": 40 },
+      { "itemTag": "iron-helmet",   "weight": 15 },
+      { "itemTag": "wooden-shield", "weight": 10 }
+    ],
+    "orc": [
+      { "itemTag": "potion",        "weight": 20 },
+      { "itemTag": "dagger",        "weight": 15 },
+      { "itemTag": "iron-helmet",   "weight": 12 },
+      { "itemTag": "wooden-shield", "weight": 12 },
+      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "iron-boots",    "weight": 10 },
+      { "itemTag": "plate-armor",   "weight": 5 }
+    ]
+  }
+}

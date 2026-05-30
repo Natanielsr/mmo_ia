@@ -137,7 +137,8 @@ namespace GameServerApp.Processors
 
                 var dropped = _lootTableService.RollLoot(
                     monster.Position,
-                    _idGeneratorService.GenerateId().ToString());
+                    _idGeneratorService.GenerateId().ToString(),
+                    monster.ObjectCode);
                 if (dropped != null)
                 {
                     _itemManager.DropItem(dropped);

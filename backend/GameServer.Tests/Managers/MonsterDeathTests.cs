@@ -169,7 +169,7 @@ namespace GameServer.Tests.Managers
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(999);
-            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), null)).Returns(potion);
+            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), "rat", null)).Returns(potion);
 
             bool dropped = false;
             _b.ItemManager.Setup(m => m.DropItem(It.IsAny<IItem>())).Callback(() => dropped = true);

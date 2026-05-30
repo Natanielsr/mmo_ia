@@ -77,7 +77,27 @@ public static class SpawnCode
 
 ---
 
-### 3. Backend — Novo tipo (apenas se necessário)
+### 3. Backend — Loot table (se o item deve dropar de monstros)
+
+**Arquivo:** `backend/GameServer.Web/Data/loot-tables.json`
+
+Adicionar o `tagName` do item na lista de drops do monstro desejado com um `weight` relativo:
+
+```json
+"orc": [
+  { "itemTag": "meu-item", "weight": 10 }
+]
+```
+
+> **Regras de peso:**
+> - Pesos são **relativos** entre as entradas do mesmo monstro
+> - A soma dos pesos define a chance total de drop; o restante até `totalWeight` é "no drop"
+> - Ex.: pesos `[60, 10]` → totalWeight = 70 → potion 60/70 ≈ 85.7 %, dagger 10/70 ≈ 14.3 %, no-drop ≈ 30 % (se o rng escalar além de 70)
+> - Para item raro, use peso baixo (ex: `5`); para item comum, use peso alto (ex: `60`)
+
+---
+
+### 4. Backend — Novo tipo (apenas se necessário)
 
 > Pule esta etapa se o tipo já existe (ver tabela acima).
 
@@ -176,6 +196,7 @@ Copie e use ao adicionar qualquer item:
 Backend
 [ ] items.json — nova entrada com id único
 [ ] ItemTags.cs — nova constante (+ SpawnCode se for spawnar no mundo)
+[ ] loot-tables.json — adicionar entry no(s) monstro(s) que devem dropar o item
 [ ] (se novo tipo) World/<Tipo>.cs + ItemFactory + enum ItemType
 
 Frontend
@@ -213,20 +234,29 @@ public const string Dagger = "dagger";
 public const string Sword  = "sword";   // ← adicionar
 ```
 
-### 3. `frontend/mmo-frontend/src/config/itemIconRegistry.ts`
+### 3. `backend/GameServer.Web/Data/loot-tables.json`
+
+```json
+"orc": [
+  { "itemTag": "potion", "weight": 20 },
+  { "itemTag": "sword",  "weight": 8 }   // ← adicionar
+]
+```
+
+### 5. `frontend/mmo-frontend/src/config/itemIconRegistry.ts`
 
 ```typescript
 'dagger': '/assets/items_icon/dagger.png',
 'sword':  '/assets/items_icon/sword.png',  // ← adicionar
 ```
 
-### 4. Asset de ícone
+### 6. Asset de ícone
 
 ```
 frontend/mmo-frontend/public/assets/items_icon/sword.png
 ```
 
-### 5. `frontend/mmo-frontend/src/config/overlays/weaponOverlayRegistry.ts`
+### 7. `frontend/mmo-frontend/src/config/overlays/weaponOverlayRegistry.ts`
 
 ```typescript
 export const WEAPON_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
@@ -246,7 +276,7 @@ export const WEAPON_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
 }
 ```
 
-### 6. Assets de animação
+### 8. Assets de animação
 
 ```
 frontend/mmo-frontend/public/assets/walkcycle/WEAPON_sword.png

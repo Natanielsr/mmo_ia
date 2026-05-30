@@ -8,7 +8,6 @@ namespace GameServer.Tests.Items
 {
     public class MonsterDeathDropTests
     {
-        // Um único builder — mocks acessíveis via _b.*
         private readonly WorldManagerBuilder _b = new();
 
         [Fact]
@@ -19,13 +18,13 @@ namespace GameServer.Tests.Items
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(999);
-            _b.LootTable     .Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), null))
+            _b.LootTable     .Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), "rat", null))
                              .Returns((IItem?)null);
 
             _b.Build().ProcessPlayerAttackMonster(player, "2");
 
             _b.LootTable.Verify(
-                l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), null),
+                l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), "rat", null),
                 Times.Once
             );
         }
@@ -40,7 +39,7 @@ namespace GameServer.Tests.Items
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
-            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), null)).Returns(weapon);
+            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), "rat", null)).Returns(weapon);
 
             _b.Build().ProcessPlayerAttackMonster(player, "2");
 
@@ -58,7 +57,7 @@ namespace GameServer.Tests.Items
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
-            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), null)).Returns(armor);
+            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), "rat", null)).Returns(armor);
 
             _b.Build().ProcessPlayerAttackMonster(player, "2");
 
@@ -74,7 +73,7 @@ namespace GameServer.Tests.Items
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
-            _b.LootTable     .Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), null))
+            _b.LootTable     .Setup(l => l.RollLoot(It.IsAny<Position>(), It.IsAny<string>(), "rat", null))
                              .Returns((IItem?)null);
 
             _b.Build().ProcessPlayerAttackMonster(player, "2");
@@ -93,7 +92,7 @@ namespace GameServer.Tests.Items
 
             _b.MonsterManager.Setup(m => m.GetMonsterById(2)).Returns(monster);
             _b.IdGenerator   .Setup(s => s.GenerateId()).Returns(1);
-            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), null)).Returns(weapon);
+            _b.LootTable     .Setup(l => l.RollLoot(pos, It.IsAny<string>(), "rat", null)).Returns(weapon);
 
             IItem? captured = null;
             _b.Events.Setup(e => e.OnItemDropped(It.IsAny<IItem>()))

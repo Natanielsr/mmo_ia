@@ -4,46 +4,39 @@ using GameServerApp.Contracts.World;
 
 namespace GameServerApp.Services
 {
-    // Ranges de drop (cumulativos):
-    //   0.00–0.25 → HealingPotion (25%)
-    //   0.25–0.35 → Weapon        (10%)
-    //   0.35–0.45 → Armor         (10%)
-    //   0.45–0.57 → Helmet        (12%)
-    //   0.57–0.69 → Shield        (12%)
-    //   0.69–0.81 → Legs          (12%)
-    //   0.81–0.93 → Boots         (12%)
-    //   0.93–1.00 → nenhum drop   (7%)
     public class LootTableService : ILootTableService
     {
-        private static readonly (string TagName, double MaxRoll)[] LootTable =
-        [
-            ("potion",         0.25),
-            ("dagger",         0.35),
-            ("leather-vest",   0.45),
-            ("iron-helmet",    0.57),
-            ("wooden-shield",  0.69),
-            ("leather-pants",  0.81),
-            ("iron-boots",     0.93),
-        ];
-
-        private readonly IItemDefinitionRepository _repo;
+        private readonly ILootTableRepository _lootRepo;
+        private readonly IItemDefinitionRepository _itemRepo;
         private readonly IItemFactory _factory;
 
-        public LootTableService(IItemDefinitionRepository repo, IItemFactory factory)
+        public LootTableService(
+            ILootTableRepository lootRepo,
+            IItemDefinitionRepository itemRepo,
+            IItemFactory factory)
         {
-            _repo = repo;
+            _lootRepo = lootRepo;
+            _itemRepo = itemRepo;
             _factory = factory;
         }
 
-        public IItem? RollLoot(Position position, string itemId, Func<double>? rng = null)
+        public IItem? RollLoot(Position position, string itemId, string monsterObjectCode, Func<double>? rng = null)
         {
-            var roll = (rng ?? Random.Shared.NextDouble)();
+            var entries = _lootRepo.GetEntriesFor(monsterObjectCode);
+            if (entries is null || entries.Count == 0) return null;
 
-            foreach (var (tagName, maxRoll) in LootTable)
+            int totalWeight = 0;
+            foreach (var e in entries) totalWeight += e.Weight;
+
+            var roll = (rng ?? Random.Shared.NextDouble)() * totalWeight;
+
+            double accumulated = 0;
+            foreach (var entry in entries)
             {
-                if (roll < maxRoll)
+                accumulated += entry.Weight;
+                if (roll < accumulated)
                 {
-                    var def = _repo.GetByTagName(tagName);
+                    var def = _itemRepo.GetByTagName(entry.ItemTag);
                     return def is null ? null : _factory.Create(def, itemId, position);
                 }
             }

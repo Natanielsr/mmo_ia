@@ -3,6 +3,7 @@ using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
 using GameServerApp.Services;
 using GameServerApp.World;
+using Moq;
 
 namespace GameServer.Tests.Items
 {
@@ -22,22 +23,49 @@ namespace GameServer.Tests.Items
             }
             """;
 
-        private readonly ILootTableService _sut =
-            new LootTableService(new ItemDefinitionRepository(ItemsJson), new ItemFactory());
+        // Tabela de teste: rat → potion(60) + dagger(10) = totalWeight 70; noDrop = 30/100
+        private static readonly string LootJson = """
+            {
+              "lootTables": {
+                "rat": [
+                  { "itemTag": "potion", "weight": 60 },
+                  { "itemTag": "dagger", "weight": 10 }
+                ]
+              }
+            }
+            """;
+
+        private readonly ILootTableService _sut = new LootTableService(
+            new LootTableRepository(LootJson),
+            new ItemDefinitionRepository(ItemsJson),
+            new ItemFactory());
 
         private static readonly Position Pos = new(5, 5);
 
+        // roll * 70 < 60 → potion  (roll < ~0.857)
+        // roll * 70 >= 60 → dagger  (roll >= ~0.857 e < 1.0)
+        // roll >= 1.0 → no drop (impossible with Random, but weight sum < 100 means no drop naturally)
+
         [Fact]
-        public void RollLoot_Returns_Null_When_Rng_Above_All_Thresholds()
+        public void RollLoot_Returns_Null_For_Unknown_Monster()
         {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 1.0);
+            var result = _sut.RollLoot(Pos, "id1", "unknown-monster", rng: () => 0.0);
             Assert.Null(result);
         }
 
         [Fact]
-        public void RollLoot_Returns_HealingPotion_When_Rng_In_Potion_Range()
+        public void RollLoot_Returns_Null_When_Roll_Exceeds_Total_Weight()
         {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.15);
+            // totalWeight = 70; roll * 70 = 70 → nenhuma entrada satisfaz (accumulated never > 70)
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 1.0);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void RollLoot_Returns_Potion_When_Roll_In_Potion_Range()
+        {
+            // roll * 70 = 0 < 60 → potion
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.0);
 
             Assert.NotNull(result);
             Assert.Equal(ItemType.Potion, result.Type);
@@ -45,97 +73,30 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void RollLoot_Returns_Weapon_When_Rng_In_Weapon_Range()
+        public void RollLoot_Returns_Dagger_When_Roll_In_Dagger_Range()
         {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.30);
+            // roll * 70 = 63 >= 60 → dagger
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.9);
 
             Assert.NotNull(result);
             Assert.Equal(ItemType.Weapon, result.Type);
             Assert.IsType<Weapon>(result);
+            Assert.Equal("dagger", result.TagName);
         }
 
         [Fact]
-        public void RollLoot_Returns_Armor_When_Rng_In_Armor_Range()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.40);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Armor, result.Type);
-            Assert.IsType<Armor>(result);
-        }
-
-        [Fact]
-        public void RollLoot_Returns_Helmet_When_Rng_In_Helmet_Range()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.50);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Helmet, result.Type);
-            Assert.IsType<Helmet>(result);
-        }
-
-        [Fact]
-        public void RollLoot_Returns_Shield_When_Rng_In_Shield_Range()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.60);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Shield, result.Type);
-            Assert.IsType<Shield>(result);
-        }
-
-        [Fact]
-        public void RollLoot_Returns_Legs_When_Rng_In_Legs_Range()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.75);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Legs, result.Type);
-            Assert.IsType<Legs>(result);
-        }
-
-        [Fact]
-        public void RollLoot_Returns_Boots_When_Rng_In_Boots_Range()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.85);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Boots, result.Type);
-            Assert.IsType<Boots>(result);
-        }
-
-        [Fact]
-        public void RollLoot_Uses_Provided_Rng_For_Determinism()
+        public void RollLoot_Uses_Provided_Rng_Exactly_Once()
         {
             int callCount = 0;
-            _sut.RollLoot(Pos, "id1", rng: () => { callCount++; return 0.5; });
+            _sut.RollLoot(Pos, "id1", "rat", rng: () => { callCount++; return 0.5; });
             Assert.Equal(1, callCount);
-        }
-
-        [Fact]
-        public void RollLoot_Never_Returns_Item_When_Rng_Above_093()
-        {
-            for (int i = 0; i < 50; i++)
-            {
-                var result = _sut.RollLoot(Pos, $"id{i}", rng: () => 0.99);
-                Assert.Null(result);
-            }
-        }
-
-        [Fact]
-        public void RollLoot_Returns_Potion_When_Rng_Is_Zero()
-        {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.0);
-
-            Assert.NotNull(result);
-            Assert.Equal(ItemType.Potion, result.Type);
         }
 
         [Fact]
         public void RollLoot_Assigns_InstanceId_And_Position()
         {
             var pos = new Position(3, 7);
-            var result = _sut.RollLoot(pos, "myId", rng: () => 0.15);
+            var result = _sut.RollLoot(pos, "myId", "rat", rng: () => 0.0);
 
             Assert.NotNull(result);
             Assert.Equal("myId", result.Id);
@@ -145,17 +106,49 @@ namespace GameServer.Tests.Items
         [Fact]
         public void RollLoot_Item_Has_TagName_From_Catalog()
         {
-            var result = _sut.RollLoot(Pos, "id1", rng: () => 0.30);
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.0);
 
             Assert.NotNull(result);
-            Assert.Equal("dagger", result.TagName);
+            Assert.Equal("potion", result.TagName);
         }
 
         [Fact]
         public void RollLoot_Without_Custom_Rng_Does_Not_Throw()
         {
-            var ex = Record.Exception(() => _sut.RollLoot(Pos, "id1"));
+            var ex = Record.Exception(() => _sut.RollLoot(Pos, "id1", "rat"));
             Assert.Null(ex);
+        }
+
+        [Fact]
+        public void RollLoot_Single_Entry_Always_Returns_Item_When_Roll_Is_Zero()
+        {
+            // Monta repo com apenas um item para o monstro
+            var lootRepo = new Mock<ILootTableRepository>();
+            lootRepo.Setup(r => r.GetEntriesFor("rat"))
+                    .Returns([new LootEntry("potion", 100)]);
+
+            var sut = new LootTableService(
+                lootRepo.Object,
+                new ItemDefinitionRepository(ItemsJson),
+                new ItemFactory());
+
+            var result = sut.RollLoot(Pos, "id1", "rat", rng: () => 0.0);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void RollLoot_Returns_Null_When_Monster_Has_No_Entries()
+        {
+            var lootRepo = new Mock<ILootTableRepository>();
+            lootRepo.Setup(r => r.GetEntriesFor("rat")).Returns((IReadOnlyList<LootEntry>?)null);
+
+            var sut = new LootTableService(
+                lootRepo.Object,
+                new ItemDefinitionRepository(ItemsJson),
+                new ItemFactory());
+
+            var result = sut.RollLoot(Pos, "id1", "rat", rng: () => 0.0);
+            Assert.Null(result);
         }
     }
 }
