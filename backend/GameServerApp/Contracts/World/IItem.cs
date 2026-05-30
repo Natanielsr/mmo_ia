@@ -6,6 +6,7 @@ namespace GameServerApp.Contracts.World
     {
         Generic,
         Potion,
+        Food,
         Weapon,
         Armor,
         Helmet,

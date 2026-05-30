@@ -111,5 +111,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player equips or unequips any item. Broadcast to all other players.
         /// </summary>
         void OnPlayerItemEquipped(string playerId, string slot, string? itemName);
+
+        /// <summary>
+        /// Triggered when a player consumes a food item. Broadcast to all for visual effect.
+        /// </summary>
+        void OnFoodConsumed(long playerId, string tagName);
     }
 }
