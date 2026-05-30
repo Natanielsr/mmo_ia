@@ -14,6 +14,7 @@ namespace GameServerApp.Managers
         private readonly IEquipmentProcessor _equipmentProcessor;
         private readonly IChunkProcessor _chunkProcessor;
         private readonly IPlayerRegenerationProcessor _regenerationProcessor;
+        private readonly IPlayerHoTProcessor _hotProcessor;
         private readonly IPlayerManager _playerManager;
         private readonly ICollisionManager _collisionManager;
         private readonly IStaticWorldManager _staticWorldManager;
@@ -26,6 +27,7 @@ namespace GameServerApp.Managers
             IEquipmentProcessor equipmentProcessor,
             IChunkProcessor chunkProcessor,
             IPlayerRegenerationProcessor regenerationProcessor,
+            IPlayerHoTProcessor hotProcessor,
             IPlayerManager playerManager,
             ICollisionManager collisionManager,
             IStaticWorldManager staticWorldManager)
@@ -37,6 +39,7 @@ namespace GameServerApp.Managers
             _equipmentProcessor = equipmentProcessor;
             _chunkProcessor = chunkProcessor;
             _regenerationProcessor = regenerationProcessor;
+            _hotProcessor = hotProcessor;
             _playerManager = playerManager;
             _collisionManager = collisionManager;
             _staticWorldManager = staticWorldManager;
@@ -66,6 +69,7 @@ namespace GameServerApp.Managers
             _combatProcessor.ProcessMonsterCombat();
             _monsterLifecycleProcessor.ProcessMonsterDespawn();
             _monsterLifecycleProcessor.ProcessMonsterRespawn();
+            _hotProcessor.ProcessHoT();
         }
 
         public void InstantiateObject(IWorldObject worldObject)
