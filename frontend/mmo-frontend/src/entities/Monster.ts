@@ -161,11 +161,26 @@ export class Monster extends Phaser.GameObjects.Container {
 
     public die(): void {
         this.isDead = true;
-        this.setDepth(this.depth - 2);
-        this.sprite.setAlpha(0.5);
-        this.nameText.setText(`${this.name} 💀`);
         this.nameText.visible = false;
         this.hpBar.visible = false;
+
+        this.sprite.setTint(0xaaaaff);
+
+        this.scene.tweens.add({
+            targets: this,
+            y: this.y - 80,
+            alpha: 0,
+            duration: 1500,
+            ease: 'Sine.easeOut',
+        });
+
+        this.scene.tweens.add({
+            targets: this.sprite,
+            scaleX: 1.4,
+            scaleY: 1.4,
+            duration: 1500,
+            ease: 'Sine.easeOut',
+        });
     }
 
     private static getWorldCoordinates(serverPosition: Position): Position {
