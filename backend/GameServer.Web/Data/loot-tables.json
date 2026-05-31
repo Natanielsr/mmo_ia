@@ -4,23 +4,26 @@
       { "itemTag": "cheese",  "weight": 20 }
     ],
     "wolf": [
+      { "itemTag": "dagger",        "weight": 15 },
       { "itemTag": "raw-meat",      "weight": 25 },
       { "itemTag": "leather-vest",  "weight": 10 },
-      { "itemTag": "leather-pants", "weight": 10 }
+      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "wooden-shield", "weight": 12 }
     ],
     "spider": [
+      { "itemTag": "dagger",        "weight": 15 },
       { "itemTag": "monster-meat",  "weight": 30 },
       { "itemTag": "leather-vest",  "weight": 10 },
-      { "itemTag": "leather-pants", "weight": 10 }
+      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "potion",        "weight": 20 },
+      { "itemTag": "wooden-shield", "weight": 12 }
     ],
     "orc": [
       { "itemTag": "potion",        "weight": 20 },
-      { "itemTag": "dagger",        "weight": 15 },
-      { "itemTag": "iron-helmet",   "weight": 12 },
-      { "itemTag": "wooden-shield", "weight": 12 },
-      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "dagger",        "weight": 20 },
+      { "itemTag": "iron-helmet",   "weight": 10 },
       { "itemTag": "iron-boots",    "weight": 10 },
-      { "itemTag": "plate-armor",   "weight": 5 }
+      { "itemTag": "plate-armor",   "weight": 10 }
     ]
   }
 }

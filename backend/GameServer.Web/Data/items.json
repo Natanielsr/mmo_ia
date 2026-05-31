@@ -28,7 +28,7 @@
       "value": 20,
       "type": "Armor",
       "weight": 2.0,
-      "defenseBonus": 1
+      "defenseBonus": 2
     },
     {
       "id": 4,
@@ -38,7 +38,7 @@
       "value": 18,
       "type": "Helmet",
       "weight": 1.2,
-      "defenseBonus": 1
+      "defenseBonus": 2
     },
     {
       "id": 5,
@@ -48,7 +48,7 @@
       "value": 15,
       "type": "Shield",
       "weight": 2.5,
-      "defenseBonus": 1
+      "defenseBonus": 2
     },
     {
       "id": 6,
@@ -68,7 +68,7 @@
       "value": 14,
       "type": "Boots",
       "weight": 1.5,
-      "defenseBonus": 1
+      "defenseBonus": 2
     },
     {
       "id": 8,
@@ -78,7 +78,7 @@
       "value": 80,
       "type": "Armor",
       "weight": 5.0,
-      "defenseBonus": 8
+      "defenseBonus": 3
     },
     {
       "id": 9,
@@ -88,7 +88,7 @@
       "value": 5,
       "type": "Food",
       "weight": 0.3,
-      "healAmount": 10
+      "healAmount": 20
     },
     {
       "id": 10,
@@ -98,7 +98,7 @@
       "value": 8,
       "type": "Food",
       "weight": 0.8,
-      "healAmount": 20
+      "healAmount": 40
     },
     {
       "id": 11,
@@ -108,7 +108,7 @@
       "value": 4,
       "type": "Food",
       "weight": 0.6,
-      "healAmount": 5
+      "healAmount": 10
     }
   ]
 }
