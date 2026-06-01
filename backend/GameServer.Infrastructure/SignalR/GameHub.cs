@@ -25,6 +25,7 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IHostEnvironment _env;
         private readonly IItemFactory _itemFactory;
         private readonly IItemDefinitionRepository _itemRepo;
+        private readonly IRankingService _rankingService;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -38,7 +39,8 @@ namespace GameServer.Infrastructure.SignalR
             IEquipmentManager equipmentManager,
             IHostEnvironment env,
             IItemFactory itemFactory,
-            IItemDefinitionRepository itemRepo)
+            IItemDefinitionRepository itemRepo,
+            IRankingService rankingService)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
@@ -52,6 +54,7 @@ namespace GameServer.Infrastructure.SignalR
             _env = env;
             _itemFactory = itemFactory;
             _itemRepo = itemRepo;
+            _rankingService = rankingService;
         }
 
         public async Task JoinGame(string playerName)
@@ -133,6 +136,9 @@ namespace GameServer.Infrastructure.SignalR
             }).ToList();
 
             await Clients.Caller.SendAsync("SyncItems", itemDataList);
+
+            // 6. Send current ranking to the new player
+            await Clients.Caller.SendAsync("RankingUpdated", _rankingService.GetTopRanking());
         }
 
         public async Task RequestMove(string direction)

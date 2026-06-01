@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 155,
+    "JoinedAt": "2026-06-01T13:19:48.4502905Z",
+    "DiedAt": "2026-06-01T13:20:19.9804881Z",
+    "TimeSurvivedSeconds": 31
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 35,
+    "JoinedAt": "2026-06-01T13:20:34.5847559Z",
+    "DiedAt": "2026-06-01T13:20:58.0646620Z",
+    "TimeSurvivedSeconds": 23
+  },
+  {
+    "Name": "Teste2",
+    "Level": 1,
+    "TotalExperience": 195,
+    "JoinedAt": "2026-06-01T13:21:13.8497034Z",
+    "DiedAt": "2026-06-01T13:22:12.1347594Z",
+    "TimeSurvivedSeconds": 58
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 0,
+    "JoinedAt": "2026-06-01T13:22:24.1765326Z",
+    "DiedAt": "2026-06-01T13:22:45.9075253Z",
+    "TimeSurvivedSeconds": 21
+  },
+  {
+    "Name": "Niel",
+    "Level": 1,
+    "TotalExperience": 0,
+    "JoinedAt": "2026-06-01T13:25:33.0861811Z",
+    "DiedAt": "2026-06-01T13:25:47.2194896Z",
+    "TimeSurvivedSeconds": 14
+  }
+]

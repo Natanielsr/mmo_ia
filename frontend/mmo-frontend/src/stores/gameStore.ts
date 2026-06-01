@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, readonly } from 'vue'
-import type { ItemData, EquipmentSlot, PlayerStatusData } from '../types'
+import type { ItemData, EquipmentSlot, PlayerStatusData, RankingEntryData } from '../types'
 
 export const useGameStore = defineStore('game', () => {
   // ── App phase ────────────────────────────────────────────────────────────
@@ -34,9 +34,17 @@ export const useGameStore = defineStore('game', () => {
   const equipAttackBonus  = ref(0)
   const equipDefenseBonus = ref(0)
 
+  // ── Ranking ───────────────────────────────────────────────────────────────
+  const ranking = ref<RankingEntryData[]>([])
+
+  function updateRanking(entries: RankingEntryData[]) {
+    ranking.value = entries
+  }
+
   // ── UI panel visibility ───────────────────────────────────────────────────
   const gearPanelOpen       = ref(false)
   const attributesModalOpen = ref(false)
+  const rankingPanelOpen    = ref(false)
   const panelBarVisible     = ref(false)
 
   // ── Game log ──────────────────────────────────────────────────────────────
@@ -178,12 +186,14 @@ export const useGameStore = defineStore('game', () => {
     equipmentSlots: readonly(equipmentSlots),
     equipAttackBonus:  readonly(equipAttackBonus),
     equipDefenseBonus: readonly(equipDefenseBonus),
-    gearPanelOpen, attributesModalOpen, panelBarVisible,
+    gearPanelOpen, attributesModalOpen, rankingPanelOpen, panelBarVisible,
+    ranking: readonly(ranking),
     logEntries: readonly(logEntries),
     // actions
     setLoggedIn, updateCharacterStatus, setPosition,
     setJoinCallback, requestJoin,
     updateInventory, updateEquipment, setEquipStats,
+    updateRanking,
     addLog, clearLog,
     toggleGearPanel, openGearPanel, toggleAttributesModal,
     setServerMessage, setConnectionError,

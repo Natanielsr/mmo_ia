@@ -189,5 +189,10 @@ namespace GameServer.Infrastructure.SignalR
         {
             _hubContext.Clients.All.SendAsync("FoodConsumed", new { PlayerId = playerId.ToString(), TagName = tagName });
         }
+
+        public void OnRankingUpdated(IReadOnlyList<RankingEntryData> ranking)
+        {
+            _hubContext.Clients.All.SendAsync("RankingUpdated", ranking);
+        }
     }
 }

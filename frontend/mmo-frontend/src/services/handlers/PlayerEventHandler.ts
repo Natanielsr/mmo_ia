@@ -1,6 +1,6 @@
 import type { HubConnection } from '@microsoft/signalr';
 import type { MainScene } from '../../scenes/MainScene';
-import type { PlayerData, AttackData } from '../../types';
+import type { PlayerData, AttackData, RankingEntryData } from '../../types';
 import { gameContainer } from '../../ui';
 import type { useGameStore } from '../../stores/gameStore';
 
@@ -146,6 +146,10 @@ export class PlayerEventHandler {
             const slot     = data.slot     ?? (data as any).Slot;
             const itemName = data.itemName ?? (data as any).ItemName ?? null;
             this.scene.playerItemEquipped(playerId, slot, itemName);
+        });
+
+        this.connection.on("RankingUpdated", (entries: RankingEntryData[]) => {
+            this.store.updateRanking(entries);
         });
     }
 }

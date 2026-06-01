@@ -1,9 +1,11 @@
 using GameServerApp.Contracts.World;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.Services;
 using GameServerApp.Managers;
 using GameServerApp.World;
 using Microsoft.Extensions.Options;
 using GameServerApp.Contracts.Config;
+using Moq;
 
 namespace GameServer.Tests.Managers;
 
@@ -16,7 +18,9 @@ public class GameStateImplTests
     public GameStateImplTests()
     {
         _collisionManager = new(_staticWorldManager);
-        _manager = new GameStateManager(_collisionManager);
+        var rankingService = new Mock<IRankingService>();
+        var worldEvents    = new Mock<IWorldEvents>();
+        _manager = new GameStateManager(_collisionManager, rankingService.Object, worldEvents.Object);
     }
     private readonly Position _spawnPoint = new Position(10, 10);
     private readonly Position _hospitalPoint = new Position(50, 50);

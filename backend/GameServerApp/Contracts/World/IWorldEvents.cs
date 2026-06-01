@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Dtos;
+using System.Collections.ObjectModel;
 
 namespace GameServerApp.Contracts.World
 {
@@ -116,5 +117,10 @@ namespace GameServerApp.Contracts.World
         /// Triggered when a player consumes a food item. Broadcast to all for visual effect.
         /// </summary>
         void OnFoodConsumed(long playerId, string tagName);
+
+        /// <summary>
+        /// Triggered when the ranking changes (player death). Broadcast to all.
+        /// </summary>
+        void OnRankingUpdated(IReadOnlyList<RankingEntryData> ranking);
     }
 }

@@ -21,6 +21,7 @@ namespace GameServerApp.Contracts.World
         int AttackPoints { get; }
         int TotalAttackPower { get; }
         int TotalDefense { get; }
+        DateTime JoinedAt { get; }
         DateTime LastMoveTime { get; }
         DateTime LastAttackTime { get; }
         PlayerState State { get; }

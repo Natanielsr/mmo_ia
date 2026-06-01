@@ -4,10 +4,12 @@ using GameServer.Infrastructure.SignalR;
 using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Processors;
+using GameServerApp.Contracts.Repositories;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.World;
 using GameServerApp.Managers;
 using GameServerApp.Processors;
+using GameServerApp.Repositories;
 using GameServerApp.Services;
 using GameServerApp.World;
 using Microsoft.Extensions.Options;
@@ -66,6 +68,12 @@ builder.Services.AddSingleton<ILootTableRepository>(_ =>
     return new LootTableRepository(File.ReadAllText(path));
 });
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
+builder.Services.AddSingleton<IRankingRepository>(sp =>
+{
+    var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "ranking.json");
+    return new JsonRankingRepository(path);
+});
+builder.Services.AddSingleton<IRankingService, RankingService>();
 
 // Register Processors
 builder.Services.AddSingleton<IPlayerMovementProcessor, PlayerMovementProcessor>();

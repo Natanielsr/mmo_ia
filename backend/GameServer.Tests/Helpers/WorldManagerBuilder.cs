@@ -75,7 +75,8 @@ namespace GameServer.Tests.Helpers
             _staticWorldOverride = sw;
             var cm            = new CollisionManager(sw);
             _collisionOverride   = cm;
-            _gameStateManager    = new GameStateManager(cm);
+            var rankingService = new Mock<IRankingService>();
+            _gameStateManager    = new GameStateManager(cm, rankingService.Object, Events.Object);
             return this;
         }
 

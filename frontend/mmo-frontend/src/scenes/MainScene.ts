@@ -142,6 +142,11 @@ export class MainScene extends Phaser.Scene {
             useGameStore().toggleAttributesModal();
         }
 
+        if (this.inputManager.isRankingJustPressed()) {
+            const store = useGameStore();
+            store.rankingPanelOpen = !store.rankingPanelOpen;
+        }
+
         if (this.debugPanel) {
             this.debugPanel.update(this.monsterManager.getMonstersDict());
         }

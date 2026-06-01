@@ -26,6 +26,7 @@ namespace GameServerApp.World
         public int AttackPoints { get; private set; }
         public int TotalAttackPower { get; private set; }
         public int TotalDefense { get; private set; }
+        public DateTime JoinedAt { get; } = DateTime.UtcNow;
         public DateTime LastMoveTime { get; private set; }
         public DateTime LastAttackTime { get; private set; }
         public PlayerState State { get; private set; }

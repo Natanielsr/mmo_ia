@@ -9,11 +9,18 @@ namespace GameServerApp.Managers
     public class GameStateManager : IGameStateManager
     {
         private readonly ICollisionManager _collisionManager;
+        private readonly IRankingService _rankingService;
+        private readonly IWorldEvents _worldEvents;
         private readonly Position _hospitalSpawnPoint = new Position(50, 50);
 
-        public GameStateManager(ICollisionManager collisionManager)
+        public GameStateManager(
+            ICollisionManager collisionManager,
+            IRankingService rankingService,
+            IWorldEvents worldEvents)
         {
             _collisionManager = collisionManager;
+            _rankingService   = rankingService;
+            _worldEvents      = worldEvents;
         }
 
         public void SpawnPlayer(IPlayer player, Position spawnPoint)
@@ -26,6 +33,8 @@ namespace GameServerApp.Managers
         {
             player.Die();
             _collisionManager.RemoveObject(player.Id);
+            _rankingService.RecordDeath(player);
+            _worldEvents.OnRankingUpdated(_rankingService.GetTopRanking());
         }
 
         public void SendPlayerToHospital(IPlayer player)

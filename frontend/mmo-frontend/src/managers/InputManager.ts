@@ -14,6 +14,8 @@ export class InputManager {
 
     private touchDirection: string | null = null;
     private touchAttackPressed: boolean = false;
+    private rankingKeyPressed: boolean = false;
+    private _tabListener: ((e: KeyboardEvent) => void) | null = null;
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -41,6 +43,13 @@ export class InputManager {
         this.attributesKey = this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
 
         this.setupTouchControls();
+        this._tabListener = (e: KeyboardEvent) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                this.rankingKeyPressed = true;
+            }
+        };
+        document.addEventListener('keydown', this._tabListener);
     }
 
     private setupTouchControls(): void {
@@ -118,5 +127,20 @@ export class InputManager {
 
     public isAttributesJustPressed(): boolean {
         return Phaser.Input.Keyboard.JustDown(this.attributesKey);
+    }
+
+    public isRankingJustPressed(): boolean {
+        if (this.rankingKeyPressed) {
+            this.rankingKeyPressed = false;
+            return true;
+        }
+        return false;
+    }
+
+    public destroy(): void {
+        if (this._tabListener) {
+            document.removeEventListener('keydown', this._tabListener);
+            this._tabListener = null;
+        }
     }
 }
