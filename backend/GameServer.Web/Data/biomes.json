@@ -13,7 +13,7 @@
         "bush": "bush",
         "pillar": "pillar"
       },
-      "monsterTags": ["rat", "wolf", "orc", "spider"],
+      "monsterTags": ["rat", "wolf"],
       "isDefault": true
     },
     {

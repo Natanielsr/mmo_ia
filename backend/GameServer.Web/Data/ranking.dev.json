@@ -94,5 +94,29 @@
     "JoinedAt": "2026-06-01T16:56:42.4830333Z",
     "DiedAt": "2026-06-01T16:58:30.4354982Z",
     "TimeSurvivedSeconds": 107
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 230,
+    "JoinedAt": "2026-06-01T16:56:28.6994765Z",
+    "DiedAt": "2026-06-01T16:59:53.6654504Z",
+    "TimeSurvivedSeconds": 204
+  },
+  {
+    "Name": "Nielgtr",
+    "Level": 1,
+    "TotalExperience": 265,
+    "JoinedAt": "2026-06-01T19:52:17.8178580Z",
+    "DiedAt": "2026-06-01T19:54:13.6298671Z",
+    "TimeSurvivedSeconds": 115
+  },
+  {
+    "Name": "Nielgtr",
+    "Level": 3,
+    "TotalExperience": 2020,
+    "JoinedAt": "2026-06-01T19:55:18.9337793Z",
+    "DiedAt": "2026-06-01T20:02:44.4395477Z",
+    "TimeSurvivedSeconds": 445
   }
 ]
