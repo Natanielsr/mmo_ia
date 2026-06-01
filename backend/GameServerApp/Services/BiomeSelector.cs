@@ -29,7 +29,6 @@ public class BiomeSelector : IBiomeSelector
             return defaultBiome;
 
         var noise = GetNoise(coord.CX, coord.CY);
-
         if (noise >= 0.5)
         {
             var darkForest = _biomeRepo.GetByTagName("dark_forest");
@@ -47,13 +46,49 @@ public class BiomeSelector : IBiomeSelector
         return GetBiomeForChunk(new ChunkCoord(cx, cy));
     }
 
-    // Multi-octave noise in [0,1] — produces organic patches of ~8-15 chunk diameter
-    private static double GetNoise(int cx, int cy)
+    public BiomeDefinition GetBiomeForTile(int tileX, int tileY)
     {
-        double val = Math.Sin(cx * 0.31) * Math.Cos(cy * 0.29)          // large patches
-                   + Math.Sin(cx * 0.17 + cy * 0.13) * 0.5              // medium variation
-                   + Math.Sin(cx * 0.07 - cy * 0.11) * 0.25;            // fine detail
-        // val range ≈ [-1.75, 1.75] → normalize to [0,1]
+        var defaultBiome = _biomeRepo.GetDefault();
+
+        // Safe radius in tile units: 2 chunks * chunkSize
+        double distTiles = Math.Sqrt((double)tileX * tileX + (double)tileY * tileY);
+        if (distTiles < SafeSpawnRadius * _chunkSize)
+            return defaultBiome;
+
+        double fx = (double)tileX / _chunkSize;
+        double fy = (double)tileY / _chunkSize;
+        double noise = GetNoise(fx, fy);
+
+        // Clear zones: no blending needed
+        if (noise < 0.4) return defaultBiome;
+
+        if (noise > 0.6)
+        {
+            var darkForest = _biomeRepo.GetByTagName("dark_forest");
+            if (darkForest != null) return darkForest;
+            return defaultBiome;
+        }
+
+        // Transition zone 0.4–0.6: deterministic per-tile blend matching frontend hash
+        uint hash = (uint)(tileX * 2654435761 + tileY * 2246822519);
+        double tileRng = hash / (double)uint.MaxValue;
+        double prob = (noise - 0.4) / 0.2; // 0.0 at edge of green, 1.0 at edge of dark
+
+        if (tileRng < prob)
+        {
+            var darkForest = _biomeRepo.GetByTagName("dark_forest");
+            if (darkForest != null) return darkForest;
+        }
+
+        return defaultBiome;
+    }
+
+    // Multi-octave noise in [0,1] — accepts float chunk coords for per-tile resolution
+    private static double GetNoise(double fx, double fy)
+    {
+        double val = Math.Sin(fx * 0.31) * Math.Cos(fy * 0.29)
+                   + Math.Sin(fx * 0.17 + fy * 0.13) * 0.5
+                   + Math.Sin(fx * 0.07 - fy * 0.11) * 0.25;
         return (val + 1.75) / 3.5;
     }
 }

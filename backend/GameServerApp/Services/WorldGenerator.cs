@@ -64,8 +64,6 @@ namespace GameServerApp.Services
             int startX = coord.CX * _config.Map.ChunkSize;
             int startY = coord.CY * _config.Map.ChunkSize;
 
-            var biome = _biomeSelector.GetBiomeForChunk(coord);
-
             // Escolhe uma formação baseada nos pesos
             IWorldFormation selectedFormation = PickFormation(rng);
 
@@ -74,7 +72,7 @@ namespace GameServerApp.Services
                 startY,
                 _config.Map.ChunkSize,
                 rng,
-                (x, y, type) => SpawnObject(x, y, rng, type, biome));
+                (x, y, type) => SpawnObject(x, y, rng, type, _biomeSelector.GetBiomeForTile(x, y)));
         }
 
         private IWorldFormation PickFormation(Random rng)

@@ -80,13 +80,12 @@ export class ChunkManager {
         return rt;
     }
 
-    // Mesma lógica do BiomeSelector.cs — noise contínuo por tile, transições orgânicas
+    // Espelha BiomeSelector.GetBiomeForTile — noise contínuo + zona de transição fade
     private getTileBiomeTag(wtx: number, wty: number): string {
         const safeRadius = 2 * this.chunkSize;
         const dist = Math.sqrt(wtx * wtx + wty * wty);
         if (dist < safeRadius) return 'green_field';
 
-        // Escala tile → chunk (noise opera em escala de chunk)
         const cx = wtx / this.chunkSize;
         const cy = wty / this.chunkSize;
         const val = Math.sin(cx * 0.31) * Math.cos(cy * 0.29)
@@ -94,7 +93,13 @@ export class ChunkManager {
                   + Math.sin(cx * 0.07 - cy * 0.11) * 0.25;
         const noise = (val + 1.75) / 3.5;
 
-        return noise >= 0.5 ? 'dark_forest' : 'green_field';
+        if (noise < 0.4) return 'green_field';
+        if (noise > 0.6) return 'dark_forest';
+
+        // Zona de transição 0.4–0.6: hash determinístico por tile → blend suave
+        const hash = (((wtx * 2654435761 + wty * 2246822519) >>> 0) / 0xFFFFFFFF);
+        const prob = (noise - 0.4) / 0.2;
+        return hash < prob ? 'dark_forest' : 'green_field';
     }
 
     private renderChunkObjects(objects: MapObjectData[], group: Phaser.GameObjects.Group) {

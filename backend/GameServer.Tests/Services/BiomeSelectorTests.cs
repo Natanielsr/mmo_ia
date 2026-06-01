@@ -94,4 +94,47 @@ public class BiomeSelectorTests
         var biome = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
         Assert.NotEmpty(biome.MonsterTags);
     }
+
+    [Fact]
+    public void GetBiomeForTile_Within_SafeRadius_Returns_GreenField()
+    {
+        // Tiles within 2*chunkSize (32) from origin are always green_field
+        var biome = _sut.GetBiomeForTile(10, 10);
+        Assert.Equal("green_field", biome.TagName);
+    }
+
+    [Fact]
+    public void GetBiomeForTile_At_Origin_Returns_GreenField()
+    {
+        var biome = _sut.GetBiomeForTile(0, 0);
+        Assert.Equal("green_field", biome.TagName);
+    }
+
+    [Theory]
+    [InlineData(100, 0)]
+    [InlineData(200, 150)]
+    [InlineData(-100, -100)]
+    public void GetBiomeForTile_Far_From_Origin_Returns_Valid_Biome(int tx, int ty)
+    {
+        var biome = _sut.GetBiomeForTile(tx, ty);
+        Assert.NotNull(biome);
+        Assert.Contains(biome.TagName, new[] { "green_field", "dark_forest" });
+    }
+
+    [Fact]
+    public void GetBiomeForTile_Is_Deterministic()
+    {
+        var b1 = _sut.GetBiomeForTile(150, 200);
+        var b2 = _sut.GetBiomeForTile(150, 200);
+        Assert.Equal(b1.TagName, b2.TagName);
+    }
+
+    [Fact]
+    public void GetBiomeForTile_And_GetBiomeForChunk_Agree_On_Clear_Cases()
+    {
+        // Tile at (0,0) chunk center (tile 8,8) — safe radius, both green_field
+        var tile = _sut.GetBiomeForTile(8, 8);
+        var chunk = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
+        Assert.Equal(chunk.TagName, tile.TagName);
+    }
 }
