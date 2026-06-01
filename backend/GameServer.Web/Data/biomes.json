@@ -1,0 +1,36 @@
+{
+  "biomes": [
+    {
+      "id": 1,
+      "tagName": "green_field",
+      "name": "Green Field",
+      "groundTilePrefix": "grass",
+      "groundTileCount": 12,
+      "semanticObjectMap": {
+        "default": "tree",
+        "tree": "tree",
+        "rock": "rock",
+        "bush": "bush",
+        "pillar": "pillar"
+      },
+      "monsterTags": ["rat", "wolf", "orc", "spider"],
+      "isDefault": true
+    },
+    {
+      "id": 2,
+      "tagName": "dark_forest",
+      "name": "Dark Forest",
+      "groundTilePrefix": "dark_grass",
+      "groundTileCount": 12,
+      "semanticObjectMap": {
+        "default": "dark_tree",
+        "tree": "dark_tree",
+        "rock": "dark_rock",
+        "bush": "dark_bush",
+        "pillar": "dark_pillar"
+      },
+      "monsterTags": ["spider", "orc"],
+      "isDefault": false
+    }
+  ]
+}
