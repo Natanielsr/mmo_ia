@@ -70,7 +70,8 @@ builder.Services.AddSingleton<ILootTableRepository>(_ =>
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
 builder.Services.AddSingleton<IRankingRepository>(sp =>
 {
-    var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "ranking.json");
+    var relativePath = builder.Configuration["RankingSettings:FilePath"] ?? "Data/ranking.json";
+    var path = Path.Combine(builder.Environment.ContentRootPath, relativePath);
     return new JsonRankingRepository(path);
 });
 builder.Services.AddSingleton<IRankingService, RankingService>();
