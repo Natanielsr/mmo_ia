@@ -15,6 +15,7 @@ namespace GameServerApp.Processors
         private readonly IWorldGenerator _worldGenerator;
         private readonly IItemManager _itemManager;
         private readonly IWorldEvents _worldEvents;
+        private readonly IBiomeSelector _biomeSelector;
         private readonly WorldConfig _config;
 
         public ChunkProcessor(
@@ -22,12 +23,14 @@ namespace GameServerApp.Processors
             IWorldGenerator worldGenerator,
             IItemManager itemManager,
             IWorldEvents worldEvents,
+            IBiomeSelector biomeSelector,
             IOptions<WorldConfig> config)
         {
             _staticWorldManager = staticWorldManager;
             _worldGenerator = worldGenerator;
             _itemManager = itemManager;
             _worldEvents = worldEvents;
+            _biomeSelector = biomeSelector;
             _config = config.Value;
         }
 
@@ -48,10 +51,12 @@ namespace GameServerApp.Processors
                     var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
                     var chunkItems   = _itemManager.GetItemsInChunk(coord);
 
+                    var biome = _biomeSelector.GetBiomeForChunk(coord);
                     var chunkData = new ChunkData
                     {
                         CX = coord.CX,
                         CY = coord.CY,
+                        BiomeTag = biome.TagName,
                         Objects = chunkObjects.Select(obj => new MapObjectData
                         {
                             Id         = obj.Id,

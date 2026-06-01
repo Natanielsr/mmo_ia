@@ -68,6 +68,12 @@ builder.Services.AddSingleton<ILootTableRepository>(_ =>
     return new LootTableRepository(File.ReadAllText(path));
 });
 builder.Services.AddSingleton<ILootTableService, LootTableService>();
+builder.Services.AddSingleton<IBiomeDefinitionRepository>(_ =>
+{
+    var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "biomes.json");
+    return new BiomeDefinitionRepository(File.ReadAllText(path));
+});
+builder.Services.AddSingleton<IBiomeSelector, BiomeSelector>();
 builder.Services.AddSingleton<IRankingRepository>(sp =>
 {
     var relativePath = builder.Configuration["RankingSettings:FilePath"] ?? "Data/ranking.json";

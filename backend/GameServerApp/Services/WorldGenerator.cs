@@ -2,6 +2,7 @@ using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
+using GameServerApp.Dtos;
 using GameServerApp.Services.WorldFormations;
 using GameServerApp.World;
 using GameServerApp.Contracts.World;
@@ -20,6 +21,7 @@ namespace GameServerApp.Services
         private readonly WorldConfig _config;
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IItemFactory _itemFactory;
+        private readonly IBiomeSelector _biomeSelector;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public WorldGenerator(
@@ -29,7 +31,8 @@ namespace GameServerApp.Services
             IWorldEvents worldEvents,
             IOptions<WorldConfig> config,
             IItemDefinitionRepository itemRepo,
-            IItemFactory itemFactory)
+            IItemFactory itemFactory,
+            IBiomeSelector biomeSelector)
         {
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;
@@ -38,6 +41,7 @@ namespace GameServerApp.Services
             _config = config.Value;
             _itemRepo = itemRepo;
             _itemFactory = itemFactory;
+            _biomeSelector = biomeSelector;
 
             // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
             _formations = new List<(IWorldFormation, double)>
@@ -60,15 +64,17 @@ namespace GameServerApp.Services
             int startX = coord.CX * _config.Map.ChunkSize;
             int startY = coord.CY * _config.Map.ChunkSize;
 
+            var biome = _biomeSelector.GetBiomeForChunk(coord);
+
             // Escolhe uma formação baseada nos pesos
             IWorldFormation selectedFormation = PickFormation(rng);
 
             selectedFormation.Generate(
-                startX, 
-                startY, 
-                _config.Map.ChunkSize, 
-                rng, 
-                (x, y, type) => SpawnObject(x, y, rng, type));
+                startX,
+                startY,
+                _config.Map.ChunkSize,
+                rng,
+                (x, y, type) => SpawnObject(x, y, rng, type, biome));
         }
 
         private IWorldFormation PickFormation(Random rng)
@@ -88,11 +94,11 @@ namespace GameServerApp.Services
             return _formations[0].Formation; // Default
         }
 
-        private void SpawnObject(int x, int y, Random rng, string? forcedType = null)
+        private void SpawnObject(int x, int y, Random rng, string? forcedType = null, BiomeDefinition? biome = null)
         {
             var pos = new Position(x, y);
 
-            // Se for um item
+            // Items passam direto sem mapeamento de bioma
             if (forcedType != null && forcedType.StartsWith("item:"))
             {
                 string tagName = forcedType.Substring(5);
@@ -108,8 +114,15 @@ namespace GameServerApp.Services
 
             if (_staticWorldManager.GetObjectAt(pos) != null) return;
 
-            string[] types = { "tree", "rock", "bush", "pillar" };
-            string code = forcedType ?? types[rng.Next(types.Length)];
+            // Escolhe tipo semântico (null = aleatório dos defaults)
+            string[] semanticDefaults = { "tree", "rock", "bush", "pillar" };
+            string semanticType = forcedType ?? semanticDefaults[rng.Next(semanticDefaults.Length)];
+
+            // Resolve objectCode via mapa semântico do bioma
+            string code = biome != null && biome.SemanticObjectMap.TryGetValue(semanticType, out var mapped)
+                ? mapped
+                : semanticType;
+
             string name = char.ToUpper(code[0]) + code.Substring(1);
 
             var obj = new StaticObject(

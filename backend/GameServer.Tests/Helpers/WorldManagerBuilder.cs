@@ -2,7 +2,9 @@ using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Processors;
 using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 using GameServerApp.Managers;
 using GameServerApp.Processors;
 using GameServerApp.Services;
@@ -38,6 +40,7 @@ namespace GameServer.Tests.Helpers
         public Mock<IItemManager>            ItemManager            { get; } = new();
         public Mock<IIdGeneratorService>     IdGenerator            { get; } = new();
         public Mock<IWorldGenerator>         WorldGenerator         { get; } = new();
+        public Mock<IBiomeSelector>          BiomeSelector          { get; } = new();
         public Mock<ILootTableService>       LootTable              { get; } = new();
         public Mock<IInventoryManager>       InventoryManager       { get; } = new();
         public Mock<IEquipmentManager>            EquipmentManager      { get; } = new();
@@ -114,6 +117,17 @@ namespace GameServer.Tests.Helpers
             var monsterMgr  = _monsterManagerOverride ?? MonsterManager.Object;
             var opts        = Options.Create(_config);
 
+            var defaultBiome = new BiomeDefinition
+            {
+                Id = 1, TagName = "green_field", Name = "Green Field",
+                GroundTilePrefix = "grass", GroundTileCount = 12,
+                SemanticObjectMap = new() { ["default"] = "tree" },
+                MonsterTags = new() { "rat", "wolf", "orc", "spider" },
+                IsDefault = true
+            };
+            BiomeSelector.Setup(b => b.GetBiomeForChunk(It.IsAny<ChunkCoord>())).Returns(defaultBiome);
+            BiomeSelector.Setup(b => b.GetBiomeForPosition(It.IsAny<Position>())).Returns(defaultBiome);
+
             var movementProcessor = new PlayerMovementProcessor(
                 _movementService ?? new Mock<IMovementService>().Object,
                 BuiltCollision,
@@ -135,6 +149,7 @@ namespace GameServer.Tests.Helpers
                 PlayerManager.Object,
                 MonsterMovementService.Object,
                 Events.Object,
+                BiomeSelector.Object,
                 opts);
 
             var itemProcessor = new ItemProcessor(
@@ -152,6 +167,7 @@ namespace GameServer.Tests.Helpers
                 WorldGenerator.Object,
                 ItemManager.Object,
                 Events.Object,
+                BiomeSelector.Object,
                 opts);
 
             BuiltRegeneration = new PlayerRegenerationProcessor(

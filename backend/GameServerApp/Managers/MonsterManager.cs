@@ -99,7 +99,8 @@ public class MonsterManager : IMonsterManager
         Position center,
         int minRadius,
         int maxRadius,
-        int? seed = null)
+        int? seed = null,
+        IReadOnlyList<string>? monsterTagsFilter = null)
     {
         if (count <= 0) return Array.Empty<IMonster>();
 
@@ -109,6 +110,12 @@ public class MonsterManager : IMonsterManager
         var maxAttempts = count * 50;
 
         var usedPositions = new HashSet<Position>(_monsters.Values.Select(m => m.Position));
+
+        var pool = monsterTagsFilter != null
+            ? _monsterRepo.GetAll().Where(m => monsterTagsFilter.Contains(m.TagName)).ToList()
+            : _monsterRepo.GetAll().ToList();
+
+        if (pool.Count == 0) return Array.Empty<IMonster>();
 
         while (spawned.Count < count && attempts < maxAttempts)
         {
@@ -125,8 +132,7 @@ public class MonsterManager : IMonsterManager
             if (usedPositions.Contains(position)) continue;
             if (_collisionManager.IsPositionBlocked(position)) continue;
 
-            var all = _monsterRepo.GetAll();
-            var template = all[rng.Next(all.Count)];
+            var template = pool[rng.Next(pool.Count)];
             var monsterId = _idGeneratorService.GenerateId();
 
             var monster = new Monster(

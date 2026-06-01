@@ -15,6 +15,7 @@ namespace GameServerApp.Processors
         private readonly IPlayerManager _playerManager;
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IWorldEvents _worldEvents;
+        private readonly IBiomeSelector _biomeSelector;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
 
@@ -23,12 +24,14 @@ namespace GameServerApp.Processors
             IPlayerManager playerManager,
             IMonsterMovementService monsterMovementService,
             IWorldEvents worldEvents,
+            IBiomeSelector biomeSelector,
             IOptions<WorldConfig> config)
         {
             _monsterManager = monsterManager;
             _playerManager = playerManager;
             _monsterMovementService = monsterMovementService;
             _worldEvents = worldEvents;
+            _biomeSelector = biomeSelector;
             _config = config.Value;
         }
 
@@ -85,11 +88,13 @@ namespace GameServerApp.Processors
                 {
                     int needed = _config.Monsters.PerPlayer - monstersNearCount;
 
+                    var biome = _biomeSelector.GetBiomeForPosition(player.Position);
                     var spawned = _monsterManager.SpawnMonstersNearPosition(
                         needed,
                         player.Position,
                         minRadius,
-                        _config.Monsters.SpawnRadius);
+                        _config.Monsters.SpawnRadius,
+                        monsterTagsFilter: biome.MonsterTags);
 
                     if (spawned != null && spawned.Any())
                     {

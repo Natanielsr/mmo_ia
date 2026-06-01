@@ -18,7 +18,8 @@ public interface IMonsterManager
         Position center,
         int minRadius,
         int maxRadius,
-        int? seed = null);
+        int? seed = null,
+        IReadOnlyList<string>? monsterTagsFilter = null);
 
     IReadOnlyCollection<IMonster> GetAllMonsters();
     IReadOnlyCollection<MonsterData> GetAllMonstersAsData();
