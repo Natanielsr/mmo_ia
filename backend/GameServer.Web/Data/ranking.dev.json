@@ -38,5 +38,61 @@
     "JoinedAt": "2026-06-01T13:25:33.0861811Z",
     "DiedAt": "2026-06-01T13:25:47.2194896Z",
     "TimeSurvivedSeconds": 14
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 20,
+    "JoinedAt": "2026-06-01T15:07:19.5924613Z",
+    "DiedAt": "2026-06-01T15:09:48.5495241Z",
+    "TimeSurvivedSeconds": 148
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 190,
+    "JoinedAt": "2026-06-01T15:17:09.8070677Z",
+    "DiedAt": "2026-06-01T15:22:47.8625633Z",
+    "TimeSurvivedSeconds": 338
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 100,
+    "JoinedAt": "2026-06-01T15:36:26.5482966Z",
+    "DiedAt": "2026-06-01T15:38:18.3692488Z",
+    "TimeSurvivedSeconds": 111
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 245,
+    "JoinedAt": "2026-06-01T16:35:59.8761246Z",
+    "DiedAt": "2026-06-01T16:40:55.5647652Z",
+    "TimeSurvivedSeconds": 295
+  },
+  {
+    "Name": "Nielgtr",
+    "Level": 1,
+    "TotalExperience": 120,
+    "JoinedAt": "2026-06-01T16:50:17.2436343Z",
+    "DiedAt": "2026-06-01T16:51:37.3832958Z",
+    "TimeSurvivedSeconds": 80
+  },
+  {
+    "Name": "Teste1",
+    "Level": 1,
+    "TotalExperience": 95,
+    "JoinedAt": "2026-06-01T16:54:21.8464446Z",
+    "DiedAt": "2026-06-01T16:56:17.2959290Z",
+    "TimeSurvivedSeconds": 115
+  },
+  {
+    "Name": "Teste2",
+    "Level": 1,
+    "TotalExperience": 60,
+    "JoinedAt": "2026-06-01T16:56:42.4830333Z",
+    "DiedAt": "2026-06-01T16:58:30.4354982Z",
+    "TimeSurvivedSeconds": 107
   }
 ]
