@@ -15,6 +15,7 @@ export class WorldEventHandler {
             this.scene.chunkLoaded({
                 cx: data.cx ?? data.Cx ?? data.CX,
                 cy: data.cy ?? data.Cy ?? data.CY,
+                biomeTag: data.biomeTag ?? data.BiomeTag ?? 'green_field',
                 objects: (data.objects ?? data.Objects ?? []).map((obj: any) => ({
                     id: String(obj.id ?? obj.Id),
                     name: String(obj.name ?? obj.Name),

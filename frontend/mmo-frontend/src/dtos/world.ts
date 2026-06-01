@@ -10,5 +10,6 @@ export interface MapObjectData {
 export interface ChunkData {
     cx: number;
     cy: number;
+    biomeTag: string;
     objects: MapObjectData[];
 }

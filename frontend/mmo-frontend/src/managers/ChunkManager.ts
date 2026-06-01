@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { ChunkData, MapObjectData } from '../types';
 import { GRID_SIZE } from '../config/constants';
+import { getBiomeRenderConfig } from '../config/biomeRenderRegistry';
 
 export class ChunkManager {
     private scene: Phaser.Scene;
@@ -31,7 +32,7 @@ export class ChunkManager {
         
         // Otimização: RenderTexture para os tiles de grama
         // Isso "achata" 256 sprites em uma única imagem por chunk
-        const rt = this.renderChunkTilesToTexture(data.cx, data.cy);
+        const rt = this.renderChunkTilesToTexture(data.cx, data.cy, data.biomeTag ?? 'green_field');
         
         this.loadedChunks.set(chunkKey, { group, rt });
 
@@ -40,7 +41,7 @@ export class ChunkManager {
 
     }
 
-    private renderChunkTilesToTexture(cx: number, cy: number): Phaser.GameObjects.RenderTexture {
+    private renderChunkTilesToTexture(cx: number, cy: number, _biomeTag: string): Phaser.GameObjects.RenderTexture {
         const sizePx = this.chunkSize * GRID_SIZE;
         const worldX = cx * sizePx;
         const worldY = -cy * sizePx;
@@ -56,12 +57,16 @@ export class ChunkManager {
 
         for (let x = 0; x < this.chunkSize; x++) {
             for (let y = 0; y < this.chunkSize; y++) {
-                const absX = Math.abs(cx * this.chunkSize + x);
-                const absY = Math.abs(cy * this.chunkSize + y);
-                const seed = (absX * 1000 + absY) % 12;
-                const grassType = `grass${seed + 1}`;
+                const wtx = cx * this.chunkSize + x;
+                const wty = cy * this.chunkSize + y;
 
-                tmpSprite.setTexture(grassType);
+                const biomeConfig = getBiomeRenderConfig(this.getTileBiomeTag(wtx, wty));
+                const { groundTilePrefix, groundTileCount } = biomeConfig;
+
+                const seed = (Math.abs(wtx) * 1000 + Math.abs(wty)) % groundTileCount;
+                const tileKey = `${groundTilePrefix}${seed + 1}`;
+
+                tmpSprite.setTexture(tileKey);
                 tmpSprite.setDisplaySize(GRID_SIZE, GRID_SIZE);
 
                 const localX = x * GRID_SIZE;
@@ -73,6 +78,23 @@ export class ChunkManager {
 
         tmpSprite.destroy();
         return rt;
+    }
+
+    // Mesma lógica do BiomeSelector.cs — noise contínuo por tile, transições orgânicas
+    private getTileBiomeTag(wtx: number, wty: number): string {
+        const safeRadius = 2 * this.chunkSize;
+        const dist = Math.sqrt(wtx * wtx + wty * wty);
+        if (dist < safeRadius) return 'green_field';
+
+        // Escala tile → chunk (noise opera em escala de chunk)
+        const cx = wtx / this.chunkSize;
+        const cy = wty / this.chunkSize;
+        const val = Math.sin(cx * 0.31) * Math.cos(cy * 0.29)
+                  + Math.sin(cx * 0.17 + cy * 0.13) * 0.5
+                  + Math.sin(cx * 0.07 - cy * 0.11) * 0.25;
+        const noise = (val + 1.75) / 3.5;
+
+        return noise >= 0.5 ? 'dark_forest' : 'green_field';
     }
 
     private renderChunkObjects(objects: MapObjectData[], group: Phaser.GameObjects.Group) {

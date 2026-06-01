@@ -9,6 +9,11 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
+        // Erro em asset ausente: falha rápida em vez de silêncio
+        this.load.on('loaderror', (file: Phaser.Loader.File) => {
+            throw new Error(`[BiomeAssets] Asset ausente: "${file.key}" → ${file.src}`);
+        });
+
         // Carrega spritesheet do personagem
         this.load.spritesheet('hero', 'assets/walkcycle/BODY_male.png', {
             frameWidth: 64,
@@ -73,6 +78,17 @@ export class PreloadScene extends Phaser.Scene {
         for (let i = 1; i <= 12; i++) {
             this.load.image(`grass${i}`, `assets/grass${i}.png`);
         }
+
+        // Dark Forest biome tiles
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`dark_grass${i}`, `assets/dark_forest/dark_grass${i}.png`);
+        }
+        // Dark Forest biome objects
+        this.load.image('dark_tree',   'assets/dark_forest/dark_tree.png');
+        this.load.image('dark_rock',   'assets/dark_forest/dark_rock.png');
+        this.load.image('dark_bush',   'assets/dark_forest/dark_bush.png');
+        this.load.image('dark_pillar', 'assets/dark_forest/dark_pillar.png');
+
         // this.load.audio('backgroundMusic', 'assets/music.mp3');
     }
 
