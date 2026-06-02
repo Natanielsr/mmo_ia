@@ -23,13 +23,15 @@ namespace GameServer.Tests.Items
             }
             """;
 
-        // Tabela de teste: rat → potion(60) + dagger(10) = totalWeight 70; noDrop = 30/100
+        // Tabela de teste: rat → potion(60) + dagger(10) + nothing(30) = totalWeight 100
+        // potion: 60/100 = 60%, dagger: 10/100 = 10%, nothing: 30/100 = 30% no drop
         private static readonly string LootJson = """
             {
               "lootTables": {
                 "rat": [
                   { "itemTag": "potion", "weight": 60 },
-                  { "itemTag": "dagger", "weight": 10 }
+                  { "itemTag": "dagger", "weight": 10 },
+                  { "itemTag": "nothing", "weight": 30 }
                 ]
               }
             }
@@ -42,9 +44,7 @@ namespace GameServer.Tests.Items
 
         private static readonly Position Pos = new(5, 5);
 
-        // roll * 70 < 60 → potion  (roll < ~0.857)
-        // roll * 70 >= 60 → dagger  (roll >= ~0.857 e < 1.0)
-        // roll >= 1.0 → no drop (impossible with Random, but weight sum < 100 means no drop naturally)
+        // roll * 100: [0, 60) → potion, [60, 70) → dagger, [70, 100) → nothing (no drop)
 
         [Fact]
         public void RollLoot_Returns_Null_For_Unknown_Monster()
@@ -54,10 +54,10 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void RollLoot_Returns_Null_When_Roll_Exceeds_Total_Weight()
+        public void RollLoot_Returns_Null_When_Roll_Hits_Nothing_Entry()
         {
-            // totalWeight = 70; roll * 70 = 70 → nenhuma entrada satisfaz (accumulated never > 70)
-            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 1.0);
+            // roll = 0.75 * 100 = 75, cai no "nothing" [70, 100)
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.75);
             Assert.Null(result);
         }
 
@@ -75,8 +75,8 @@ namespace GameServer.Tests.Items
         [Fact]
         public void RollLoot_Returns_Dagger_When_Roll_In_Dagger_Range()
         {
-            // roll * 70 = 63 >= 60 → dagger
-            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.9);
+            // roll = 0.65 * 100 = 65, cai em dagger [60, 70)
+            var result = _sut.RollLoot(Pos, "id1", "rat", rng: () => 0.65);
 
             Assert.NotNull(result);
             Assert.Equal(ItemType.Weapon, result.Type);
@@ -120,9 +120,9 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void RollLoot_Single_Entry_Always_Returns_Item_When_Roll_Is_Zero()
+        public void RollLoot_Single_Entry_Returns_Item_When_Not_Nothing()
         {
-            // Monta repo com apenas um item para o monstro
+            // Monta repo com apenas um potion para o monstro
             var lootRepo = new Mock<ILootTableRepository>();
             lootRepo.Setup(r => r.GetEntriesFor("rat"))
                     .Returns([new LootEntry("potion", 100)]);
@@ -134,6 +134,23 @@ namespace GameServer.Tests.Items
 
             var result = sut.RollLoot(Pos, "id1", "rat", rng: () => 0.0);
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void RollLoot_Returns_Null_When_Single_Entry_Is_Nothing()
+        {
+            // Apenas "nothing" — sempre sem drop
+            var lootRepo = new Mock<ILootTableRepository>();
+            lootRepo.Setup(r => r.GetEntriesFor("rat"))
+                    .Returns([new LootEntry("nothing", 100)]);
+
+            var sut = new LootTableService(
+                lootRepo.Object,
+                new ItemDefinitionRepository(ItemsJson),
+                new ItemFactory());
+
+            var result = sut.RollLoot(Pos, "id1", "rat", rng: () => 0.5);
+            Assert.Null(result);
         }
 
         [Fact]

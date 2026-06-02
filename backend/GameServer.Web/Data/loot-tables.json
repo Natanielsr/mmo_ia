@@ -1,29 +1,60 @@
 {
   "lootTables": {
     "rat": [
-      { "itemTag": "cheese",  "weight": 20 }
+      { "itemTag": "dagger",        "weight": 5 },
+      { "itemTag": "cheese",        "weight": 20 },
+      { "itemTag": "raw-meat",      "weight": 5 },
+      { "itemTag": "potion",        "weight": 5 },
+      { "itemTag": "nothing",       "weight": 165 }
     ],
     "wolf": [
-      { "itemTag": "dagger",        "weight": 15 },
+      { "itemTag": "dagger",        "weight": 5 },
       { "itemTag": "raw-meat",      "weight": 25 },
-      { "itemTag": "leather-vest",  "weight": 10 },
-      { "itemTag": "leather-pants", "weight": 10 },
-      { "itemTag": "wooden-shield", "weight": 12 }
+      { "itemTag": "potion",        "weight": 5 },
+      { "itemTag": "nothing",       "weight": 165 }
     ],
     "spider": [
-      { "itemTag": "dagger",        "weight": 15 },
+      { "itemTag": "dagger",        "weight": 5 },
       { "itemTag": "monster-meat",  "weight": 30 },
-      { "itemTag": "leather-vest",  "weight": 10 },
-      { "itemTag": "leather-pants", "weight": 10 },
-      { "itemTag": "potion",        "weight": 20 },
-      { "itemTag": "wooden-shield", "weight": 12 }
+      { "itemTag": "potion",        "weight": 5 },
+      { "itemTag": "nothing",       "weight": 160 }
     ],
     "orc": [
       { "itemTag": "potion",        "weight": 20 },
       { "itemTag": "dagger",        "weight": 20 },
       { "itemTag": "iron-helmet",   "weight": 10 },
       { "itemTag": "iron-boots",    "weight": 10 },
-      { "itemTag": "plate-armor",   "weight": 10 }
+      { "itemTag": "wooden-shield", "weight": 10 },
+      { "itemTag": "plate-armor",   "weight": 10 },
+      { "itemTag": "nothing",       "weight": 120 }
+    ],
+    "bug": [
+      { "itemTag": "dagger",        "weight": 5 },
+      { "itemTag": "potion",        "weight": 5 },
+      { "itemTag": "nothing",       "weight": 190 }
+    ],
+    "snake": [
+      { "itemTag": "dagger",        "weight": 5 },
+      { "itemTag": "raw-meat",      "weight": 25 },
+      { "itemTag": "potion",        "weight": 5 },
+      { "itemTag": "nothing",       "weight": 165 }
+    ],
+    "goblin": [
+      { "itemTag": "dagger",        "weight": 20 },
+      { "itemTag": "monster-meat",  "weight": 25 },
+      { "itemTag": "leather-vest",  "weight": 10 },
+      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "wooden-shield", "weight": 10 },
+      { "itemTag": "potion",        "weight": 10 },
+      { "itemTag": "nothing",       "weight": 95 }
+    ],
+    "skeleton": [
+      { "itemTag": "dagger",        "weight": 10 },
+      { "itemTag": "leather-vest",  "weight": 10 },
+      { "itemTag": "leather-pants", "weight": 10 },
+      { "itemTag": "wooden-shield", "weight": 10 },
+      { "itemTag": "potion",        "weight": 20 },
+      { "itemTag": "nothing",       "weight": 140 }
     ]
   }
 }

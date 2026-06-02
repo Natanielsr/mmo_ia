@@ -1,8 +1,12 @@
 {
   "monsters": [
-    { "id": 1, "tagName": "rat",    "name": "Rat",    "hp": 30, "attack": 4,  "xp": 20  },
-    { "id": 2, "tagName": "wolf",   "name": "Wolf",   "hp": 60, "attack": 10, "xp": 60  },
-    { "id": 3, "tagName": "orc",    "name": "Orc",    "hp": 90, "attack": 14, "xp": 100 },
-    { "id": 4, "tagName": "spider", "name": "Spider", "hp": 45, "attack": 7,  "xp": 35  }
+    { "id": 1, "tagName": "rat",      "name": "Rat",      "hp": 30, "attack": 4,  "xp": 20  },
+    { "id": 2, "tagName": "wolf",     "name": "Wolf",     "hp": 60, "attack": 10, "xp": 60  },
+    { "id": 3, "tagName": "orc",      "name": "Orc",      "hp": 90, "attack": 14, "xp": 100 },
+    { "id": 4, "tagName": "spider",   "name": "Spider",   "hp": 45, "attack": 7,  "xp": 35  },
+    { "id": 5, "tagName": "bug",      "name": "Bug",      "hp": 20, "attack": 3,  "xp": 15  },
+    { "id": 6, "tagName": "snake",    "name": "Snake",    "hp": 40, "attack": 6,  "xp": 30  },
+    { "id": 7, "tagName": "goblin",   "name": "Goblin",   "hp": 55, "attack": 9,  "xp": 50  },
+    { "id": 8, "tagName": "skeleton", "name": "Skeleton", "hp": 75, "attack": 12, "xp": 80  }
   ]
 }

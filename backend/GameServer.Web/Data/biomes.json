@@ -13,7 +13,7 @@
         "bush": "bush",
         "pillar": "pillar"
       },
-      "monsterTags": ["rat", "wolf"],
+      "monsterTags": ["rat", "wolf", "bug", "snake"],
       "isDefault": true
     },
     {
@@ -29,7 +29,7 @@
         "bush": "dark_bush",
         "pillar": "dark_pillar"
       },
-      "monsterTags": ["spider", "orc"],
+      "monsterTags": ["spider", "orc", "goblin", "skeleton"],
       "isDefault": false
     }
   ]

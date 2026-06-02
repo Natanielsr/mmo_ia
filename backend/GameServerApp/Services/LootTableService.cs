@@ -36,6 +36,8 @@ namespace GameServerApp.Services
                 accumulated += entry.Weight;
                 if (roll < accumulated)
                 {
+                    if (entry.ItemTag == "nothing") return null;
+
                     var def = _itemRepo.GetByTagName(entry.ItemTag);
                     return def is null ? null : _factory.Create(def, itemId, position);
                 }
