@@ -90,7 +90,6 @@ builder.Services.AddSingleton<IItemProcessor, ItemProcessor>();
 builder.Services.AddSingleton<IEquipmentProcessor, EquipmentProcessor>();
 builder.Services.AddSingleton<IChunkProcessor, ChunkProcessor>();
 builder.Services.AddSingleton<IPlayerRegenerationProcessor, PlayerRegenerationProcessor>();
-builder.Services.AddSingleton<IPlayerHoTProcessor, PlayerHoTProcessor>();
 
 // Register Managers (Orchestrators/Stateful)
 builder.Services.AddSingleton<IGameStateManager, GameStateManager>();

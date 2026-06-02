@@ -41,8 +41,5 @@ namespace GameServerApp.Contracts.World
         void ApplyEquipmentBonuses(int attackBonus, int defenseBonus);
         void SetGodMode(bool enabled);
         void SetLevel(int targetLevel);
-        void ApplyHoT(string source, int healPerTick, int totalTicks);
-        void AccumulateHoT(string source, int healPerTick, int additionalTicks);
-        bool TickHoT();
     }
 }
