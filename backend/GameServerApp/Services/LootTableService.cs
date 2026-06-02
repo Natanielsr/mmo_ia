@@ -25,10 +25,14 @@ namespace GameServerApp.Services
             var entries = _lootRepo.GetEntriesFor(monsterObjectCode);
             if (entries is null || entries.Count == 0) return null;
 
+            var nextRandom = rng ?? Random.Shared.NextDouble;
+
             int totalWeight = 0;
             foreach (var e in entries) totalWeight += e.Weight;
 
-            var roll = (rng ?? Random.Shared.NextDouble)() * totalWeight;
+            var roll = nextRandom() * 100;
+
+            if (roll > totalWeight) return null;
 
             double accumulated = 0;
             foreach (var entry in entries)
@@ -36,8 +40,6 @@ namespace GameServerApp.Services
                 accumulated += entry.Weight;
                 if (roll < accumulated)
                 {
-                    if (entry.ItemTag == "nothing") return null;
-
                     var def = _itemRepo.GetByTagName(entry.ItemTag);
                     return def is null ? null : _factory.Create(def, itemId, position);
                 }
