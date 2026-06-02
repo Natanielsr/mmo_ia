@@ -21,3 +21,6 @@ GameServer.Tests/obj
 
 # Ignore coverage reports
 frontend/mmo-frontend/coverage
+
+# Dev ranking data (runtime state)
+backend/GameServer.Web/Data/ranking.dev.json
