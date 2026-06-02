@@ -12,7 +12,7 @@ public class BiomeSelector : IBiomeSelector
     private readonly int _chunkSize;
 
     // Keep spawn area always green_field (2 chunks radius)
-    private const double SafeSpawnRadius = 2.0;
+    private const double SafeSpawnRadius = 5.0;
 
     public BiomeSelector(IBiomeDefinitionRepository biomeRepo, IOptions<WorldConfig> config)
     {
