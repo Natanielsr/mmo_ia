@@ -40,18 +40,9 @@ namespace GameServerApp.World
             {
                 if (_slots[i]?.Id != itemId) continue;
 
-                if (_slots[i]!.Type == ItemType.Potion)
+                if (_slots[i] is HealingItem hi)
                 {
-                    player.Heal(20);
-                    _slots[i]!.Quantity--;
-                    if (_slots[i]!.Quantity <= 0) _slots[i] = null;
-                    return true;
-                }
-
-                if (_slots[i]!.Type == ItemType.Food)
-                {
-                    var food = _slots[i] as Cheese;
-                    player.AccumulateHoT("food", food?.HealPerTick ?? 1, food?.TotalTicks ?? 10);
+                    player.Heal(hi.HealAmount);
                     _slots[i]!.Quantity--;
                     if (_slots[i]!.Quantity <= 0) _slots[i] = null;
                     return true;

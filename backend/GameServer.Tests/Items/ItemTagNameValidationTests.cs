@@ -1,4 +1,5 @@
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.World;
 using Xunit;
 
@@ -44,10 +45,10 @@ public class ItemTagNameValidationTests
     }
 
     [Fact]
-    public void HealingPotion_Constructor_Throws_When_TagName_Is_Empty()
+    public void HealingItem_Constructor_Throws_When_TagName_Is_Empty()
     {
         Assert.Throws<ArgumentException>(() =>
-            new HealingPotion("id", "Potion", 0.5f, "", Pos));
+            new HealingItem("id", "Potion", 0.5f, "", Pos, ItemType.Potion));
     }
 
     [Fact]
@@ -88,7 +89,7 @@ public class ItemTagNameValidationTests
     [Fact]
     public void All_Catalog_Item_Types_Preserve_TagName()
     {
-        Assert.Equal("potion",        new HealingPotion("id", "HP",           0.5f, "potion",        Pos).TagName);
+        Assert.Equal("potion",        new HealingItem  ("id", "HP",           0.5f, "potion",        Pos, ItemType.Potion).TagName);
         Assert.Equal("dagger",        new Weapon       ("id", "Dagger",       1.5f, "dagger",        Pos, attackBonus: 5).TagName);
         Assert.Equal("leather-vest",  new Armor        ("id", "Leather Vest", 2.0f, "leather-vest",  Pos, defenseBonus: 1).TagName);
         Assert.Equal("plate-armor",   new Armor        ("id", "Plate Armor",  5.0f, "plate-armor",   Pos, defenseBonus: 8).TagName);

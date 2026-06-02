@@ -36,7 +36,7 @@ namespace GameServer.Tests.Integration
             _mockItemRepo.Setup(r => r.GetByTagName("potion")).Returns(potionDef);
             _mockItemFactory.Setup(f => f.Create(potionDef, It.IsAny<string>(), It.IsAny<Position>()))
                 .Returns((ItemDefinition def, string id, Position pos) =>
-                    new HealingPotion(id, def.Name, def.Weight, def.TagName, pos));
+                    new HealingItem(id, def.Name, def.Weight, def.TagName, pos, ItemType.Potion));
 
             _mockBiomeSelector
                 .Setup(b => b.GetBiomeForChunk(It.IsAny<ChunkCoord>()))

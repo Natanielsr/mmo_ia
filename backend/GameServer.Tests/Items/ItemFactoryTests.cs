@@ -91,14 +91,14 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void Create_Potion_Returns_HealingPotion_Instance()
+        public void Create_Potion_Returns_HealingItem_Instance()
         {
             var def = MakeDef("Potion", "potion", healAmount: 20);
             var item = _sut.Create(def, "id1", Pos);
 
-            Assert.IsType<HealingPotion>(item);
+            Assert.IsType<HealingItem>(item);
             Assert.Equal(ItemType.Potion, item.Type);
-            Assert.Equal(20, ((HealingPotion)item).HealAmount);
+            Assert.Equal(20, ((HealingItem)item).HealAmount);
         }
 
         [Fact]
@@ -130,35 +130,31 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void Create_Food_Returns_Cheese_Instance()
+        public void Create_Food_Returns_HealingItem_Instance()
         {
             var def = MakeDef("Food", "cheese", healAmount: 10);
             var item = _sut.Create(def, "id1", Pos);
 
-            Assert.IsType<Cheese>(item);
+            Assert.IsType<HealingItem>(item);
             Assert.Equal(ItemType.Food, item.Type);
         }
 
         [Fact]
-        public void Create_Food_Sets_HealPerTick_And_TotalTicks()
+        public void Create_Food_Sets_HealAmount()
         {
             var def = MakeDef("Food", "cheese", healAmount: 10);
             var item = _sut.Create(def, "id1", Pos);
-            var cheese = Assert.IsType<Cheese>(item);
 
-            Assert.Equal(1, cheese.HealPerTick);
-            Assert.Equal(10, cheese.TotalTicks);
+            Assert.Equal(10, ((HealingItem)item).HealAmount);
         }
 
         [Fact]
-        public void Create_Food_RawMeat_HealPerTick_Is_1_And_TotalTicks_Is_HealAmount()
+        public void Create_Food_RawMeat_HealAmount_Is_HealAmount()
         {
             var def = MakeDef("Food", "raw-meat", healAmount: 20);
             var item = _sut.Create(def, "id1", Pos);
-            var meat = Assert.IsType<Cheese>(item);
 
-            Assert.Equal(1, meat.HealPerTick);
-            Assert.Equal(20, meat.TotalTicks);
+            Assert.Equal(20, ((HealingItem)item).HealAmount);
         }
     }
 }

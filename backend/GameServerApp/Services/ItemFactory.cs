@@ -12,13 +12,13 @@ public class ItemFactory : IItemFactory
     {
         return def.Type switch
         {
-            "Potion" => new HealingPotion(
-                instanceId, def.Name, def.Weight, def.TagName, position,
+            "Potion" => new HealingItem(
+                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Potion,
                 healAmount: def.HealAmount ?? 20,
                 description: def.Description, value: def.Value),
 
-            "Food" => new Cheese(
-                instanceId, def.Name, def.Weight, def.TagName, position,
+            "Food" => new HealingItem(
+                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Food,
                 healAmount: def.HealAmount ?? 10,
                 description: def.Description, value: def.Value),
 

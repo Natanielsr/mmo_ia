@@ -64,7 +64,7 @@ namespace GameServer.Tests.Inventory
         [Fact]
         public void UseItem_On_Potion_Heals_Player_And_Removes_Slot_When_Quantity_Is_1()
         {
-            var item = MakeItem("p1", ItemType.Potion, quantity: 1);
+            var item = new HealingItem("p1", "Potion", 0.5f, "potion", new Position(0, 0), ItemType.Potion, healAmount: 20);
             _inv.AddItem(item);
             var player = new Mock<IPlayer>();
 
@@ -77,7 +77,8 @@ namespace GameServer.Tests.Inventory
         [Fact]
         public void UseItem_On_Stacked_Potion_Decrements_Quantity_Without_Removing_Slot()
         {
-            var item = MakeItem("p1", ItemType.Potion, quantity: 3);
+            var item = new HealingItem("p1", "Potion", 0.5f, "potion", new Position(0, 0), ItemType.Potion, healAmount: 20);
+            item.Quantity = 3;
             _inv.AddItem(item);
             var player = new Mock<IPlayer>();
 
@@ -119,9 +120,10 @@ namespace GameServer.Tests.Inventory
 
         // --- Food (Cheese) ---
 
-        private static GameServerApp.World.Cheese MakeCheese(string id = "c1", int quantity = 1)
+        private static GameServerApp.World.HealingItem MakeCheese(string id = "c1", int quantity = 1)
         {
-            var cheese = new GameServerApp.World.Cheese(id, "Cheese", 0.3f, "cheese", new Position(0, 0), healAmount: 10);
+            var cheese = new GameServerApp.World.HealingItem(id, "Cheese", 0.3f, "cheese", new Position(0, 0),
+                GameServerApp.Contracts.World.ItemType.Food, healAmount: 10);
             cheese.Quantity = quantity;
             return cheese;
         }
@@ -138,7 +140,7 @@ namespace GameServer.Tests.Inventory
         }
 
         [Fact]
-        public void UseItem_Food_Calls_ApplyHoT_On_Player_And_Returns_True()
+        public void UseItem_Food_Calls_Heal_On_Player_And_Returns_True()
         {
             var cheese = MakeCheese();
             _inv.AddItem(cheese);
@@ -147,7 +149,7 @@ namespace GameServer.Tests.Inventory
             bool result = _inv.UseItem("c1", player.Object);
 
             Assert.True(result);
-            player.Verify(p => p.AccumulateHoT("food", 1, 10), Times.Once);
+            player.Verify(p => p.Heal(10), Times.Once);
         }
 
         [Fact]

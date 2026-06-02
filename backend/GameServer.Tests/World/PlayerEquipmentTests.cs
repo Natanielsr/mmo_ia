@@ -1,4 +1,5 @@
 using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
 using GameServerApp.World;
 
 namespace GameServer.Tests.World
@@ -141,7 +142,7 @@ namespace GameServer.Tests.World
         public void Equip_Non_Equippable_Item_Returns_Null_And_Does_Nothing()
         {
             var eq     = new PlayerEquipment();
-            var potion = new HealingPotion("p1", "Healing Potion", 0.1f, "healing-potion", P); // Slot == null
+            var potion = new HealingItem("p1", "Healing Potion", 0.1f, "healing-potion", P, ItemType.Potion); // Slot == null
             var result = eq.Equip(potion);
             Assert.Null(result);
             Assert.Null(eq.GetItem(EquipmentSlot.Weapon));

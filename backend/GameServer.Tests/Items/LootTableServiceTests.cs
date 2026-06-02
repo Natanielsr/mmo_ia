@@ -69,7 +69,7 @@ namespace GameServer.Tests.Items
 
             Assert.NotNull(result);
             Assert.Equal(ItemType.Potion, result.Type);
-            Assert.IsType<HealingPotion>(result);
+            Assert.IsType<HealingItem>(result);
         }
 
         [Fact]
