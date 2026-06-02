@@ -50,7 +50,7 @@ export class PlayerEventHandler {
             this.scene.getPlayer(id)?.playHealEffect();
         });
 
-        this.connection.on("FoodConsumed", (data: any) => {
+        this.connection.on("HealingConsumed", (data: any) => {
             const id = String(data.playerId ?? data.PlayerId);
             this.scene.getPlayer(id)?.playCrunchEffect();
         });

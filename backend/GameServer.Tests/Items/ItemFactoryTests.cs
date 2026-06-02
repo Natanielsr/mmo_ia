@@ -130,28 +130,28 @@ namespace GameServer.Tests.Items
         }
 
         [Fact]
-        public void Create_Food_Returns_HealingItem_Instance()
+        public void Create_Healing_Returns_HealingItem_Instance()
         {
-            var def = MakeDef("Food", "cheese", healAmount: 10);
+            var def = MakeDef("Healing", "cheese", healAmount: 10);
             var item = _sut.Create(def, "id1", Pos);
 
             Assert.IsType<HealingItem>(item);
-            Assert.Equal(ItemType.Food, item.Type);
+            Assert.Equal(ItemType.Healing, item.Type);
         }
 
         [Fact]
-        public void Create_Food_Sets_HealAmount()
+        public void Create_Healing_Sets_HealAmount()
         {
-            var def = MakeDef("Food", "cheese", healAmount: 10);
+            var def = MakeDef("Healing", "cheese", healAmount: 10);
             var item = _sut.Create(def, "id1", Pos);
 
             Assert.Equal(10, ((HealingItem)item).HealAmount);
         }
 
         [Fact]
-        public void Create_Food_RawMeat_HealAmount_Is_HealAmount()
+        public void Create_Healing_RawMeat_HealAmount_Is_HealAmount()
         {
-            var def = MakeDef("Food", "raw-meat", healAmount: 20);
+            var def = MakeDef("Healing", "raw-meat", healAmount: 20);
             var item = _sut.Create(def, "id1", Pos);
 
             Assert.Equal(20, ((HealingItem)item).HealAmount);

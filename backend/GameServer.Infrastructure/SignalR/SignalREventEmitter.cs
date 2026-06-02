@@ -185,9 +185,9 @@ namespace GameServer.Infrastructure.SignalR
             _hubContext.Clients.All.SendAsync("PlayerItemEquipped", new { PlayerId = playerId, Slot = slot, ItemName = itemName });
         }
 
-        public void OnFoodConsumed(long playerId, string tagName)
+        public void OnHealingConsumed(long playerId, string tagName)
         {
-            _hubContext.Clients.All.SendAsync("FoodConsumed", new { PlayerId = playerId.ToString(), TagName = tagName });
+            _hubContext.Clients.All.SendAsync("HealingConsumed", new { PlayerId = playerId.ToString(), TagName = tagName });
         }
 
         public void OnRankingUpdated(IReadOnlyList<RankingEntryData> ranking)

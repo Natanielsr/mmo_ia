@@ -9,16 +9,16 @@ public class HealingItemTests
     private static readonly Position Pos = new(0, 0);
 
     [Fact]
-    public void HealingItem_Food_Type_Is_Food()
+    public void HealingItem_Healing_Type_Is_Healing()
     {
-        var item = new HealingItem("id1", "Cheese", 0.3f, "cheese", Pos, ItemType.Food, healAmount: 20);
-        Assert.Equal(ItemType.Food, item.Type);
+        var item = new HealingItem("id1", "Cheese", 0.3f, "cheese", Pos, ItemType.Healing, healAmount: 20);
+        Assert.Equal(ItemType.Healing, item.Type);
     }
 
     [Fact]
-    public void HealingItem_Food_HealAmount_Correct()
+    public void HealingItem_Healing_HealAmount_Correct()
     {
-        var item = new HealingItem("id1", "Cheese", 0.3f, "cheese", Pos, ItemType.Food, healAmount: 20);
+        var item = new HealingItem("id1", "Cheese", 0.3f, "cheese", Pos, ItemType.Healing, healAmount: 20);
         Assert.Equal(20, item.HealAmount);
     }
 
@@ -39,7 +39,7 @@ public class HealingItemTests
     [Fact]
     public void HealingItem_RawMeat_HealAmount_Is_40()
     {
-        var item = new HealingItem("id3", "Raw Meat", 0.8f, "raw-meat", Pos, ItemType.Food, healAmount: 40);
+        var item = new HealingItem("id3", "Raw Meat", 0.8f, "raw-meat", Pos, ItemType.Healing, healAmount: 40);
         Assert.Equal(40, item.HealAmount);
     }
 }

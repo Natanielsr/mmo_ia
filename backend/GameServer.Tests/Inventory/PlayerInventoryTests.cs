@@ -118,18 +118,18 @@ namespace GameServer.Tests.Inventory
         public void DropItem_Returns_False_When_Item_Not_Found()
             => Assert.False(_inv.DropItem("ghost", new Position(0, 0)));
 
-        // --- Food (Cheese) ---
+        // --- Healing (Cheese) ---
 
         private static GameServerApp.World.HealingItem MakeCheese(string id = "c1", int quantity = 1)
         {
             var cheese = new GameServerApp.World.HealingItem(id, "Cheese", 0.3f, "cheese", new Position(0, 0),
-                GameServerApp.Contracts.World.ItemType.Food, healAmount: 10);
+                GameServerApp.Contracts.World.ItemType.Healing, healAmount: 10);
             cheese.Quantity = quantity;
             return cheese;
         }
 
         [Fact]
-        public void AddItem_Food_Same_TagName_Stacks()
+        public void AddItem_Healing_Same_TagName_Stacks()
         {
             var c1 = MakeCheese("c1");
             var c2 = MakeCheese("c2");
@@ -140,7 +140,7 @@ namespace GameServer.Tests.Inventory
         }
 
         [Fact]
-        public void UseItem_Food_Calls_Heal_On_Player_And_Returns_True()
+        public void UseItem_Healing_Calls_Heal_On_Player_And_Returns_True()
         {
             var cheese = MakeCheese();
             _inv.AddItem(cheese);
@@ -153,7 +153,7 @@ namespace GameServer.Tests.Inventory
         }
 
         [Fact]
-        public void UseItem_Food_Decrements_Quantity_And_Removes_When_Zero()
+        public void UseItem_Healing_Decrements_Quantity_And_Removes_When_Zero()
         {
             var cheese = MakeCheese(quantity: 1);
             _inv.AddItem(cheese);
@@ -165,7 +165,7 @@ namespace GameServer.Tests.Inventory
         }
 
         [Fact]
-        public void UseItem_Food_Stacked_Decrements_Without_Removing()
+        public void UseItem_Healing_Stacked_Decrements_Without_Removing()
         {
             var cheese = MakeCheese(quantity: 3);
             _inv.AddItem(cheese);

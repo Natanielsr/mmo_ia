@@ -16,7 +16,7 @@ namespace GameServerApp.World
                 var existing = _slots.FirstOrDefault(s => s?.Type == ItemType.Potion);
                 if (existing != null) { existing.Quantity++; return true; }
             }
-            if (item.Type == ItemType.Food)
+            if (item.Type == ItemType.Healing)
             {
                 var existing = _slots.FirstOrDefault(s => s?.TagName == item.TagName);
                 if (existing != null) { existing.Quantity++; return true; }

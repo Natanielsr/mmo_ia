@@ -86,9 +86,9 @@
       "name": "Cheese",
       "description": "Recupera 10 HP ao longo de 10 segundos",
       "value": 5,
-      "type": "Food",
+      "type": "Healing",
       "weight": 0.3,
-      "healAmount": 20
+      "healAmount": 5
     },
     {
       "id": 10,
@@ -96,9 +96,9 @@
       "name": "Raw Meat",
       "description": "Recupera 20 HP ao longo de 10 segundos",
       "value": 8,
-      "type": "Food",
+      "type": "Healing",
       "weight": 0.8,
-      "healAmount": 40
+      "healAmount": 10
     },
     {
       "id": 11,
@@ -106,9 +106,9 @@
       "name": "Monster Meat",
       "description": "Recupera 5 HP ao longo do tempo",
       "value": 4,
-      "type": "Food",
+      "type": "Healing",
       "weight": 0.6,
-      "healAmount": 10
+      "healAmount": 3
     }
   ]
 }

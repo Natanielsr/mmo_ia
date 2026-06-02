@@ -114,9 +114,9 @@ namespace GameServerApp.Contracts.World
         void OnPlayerItemEquipped(string playerId, string slot, string? itemName);
 
         /// <summary>
-        /// Triggered when a player consumes a food item. Broadcast to all for visual effect.
+        /// Triggered when a player consumes a healing item. Broadcast to all for visual effect.
         /// </summary>
-        void OnFoodConsumed(long playerId, string tagName);
+        void OnHealingConsumed(long playerId, string tagName);
 
         /// <summary>
         /// Triggered when the ranking changes (player death). Broadcast to all.

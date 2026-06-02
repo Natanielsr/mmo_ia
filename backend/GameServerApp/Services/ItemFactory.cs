@@ -17,8 +17,8 @@ public class ItemFactory : IItemFactory
                 healAmount: def.HealAmount ?? 20,
                 description: def.Description, value: def.Value),
 
-            "Food" => new HealingItem(
-                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Food,
+            "Healing" => new HealingItem(
+                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Healing,
                 healAmount: def.HealAmount ?? 10,
                 description: def.Description, value: def.Value),
 

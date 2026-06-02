@@ -24,7 +24,7 @@ export class ItemManager {
 
         if (itemData.type === 'Potion') {
             item = new HealingPotion(itemData, this.scene);
-        } else if (itemData.type === 'Food') {
+        } else if (itemData.type === 'Healing') {
             item = new WorldCheese(itemData, this.scene);
         } else if (itemData.type === 'Weapon') {
             item = new WorldWeapon(itemData, this.scene);
