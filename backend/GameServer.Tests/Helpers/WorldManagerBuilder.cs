@@ -127,6 +127,7 @@ namespace GameServer.Tests.Helpers
             };
             BiomeSelector.Setup(b => b.GetBiomeForChunk(It.IsAny<ChunkCoord>())).Returns(defaultBiome);
             BiomeSelector.Setup(b => b.GetBiomeForPosition(It.IsAny<Position>())).Returns(defaultBiome);
+            BiomeSelector.Setup(b => b.GetBiomeForTile(It.IsAny<int>(), It.IsAny<int>())).Returns(defaultBiome);
 
             var movementProcessor = new PlayerMovementProcessor(
                 _movementService ?? new Mock<IMovementService>().Object,

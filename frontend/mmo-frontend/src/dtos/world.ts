@@ -11,5 +11,6 @@ export interface ChunkData {
     cx: number;
     cy: number;
     biomeTag: string;
+    tileBiomeTags: string[];
     objects: MapObjectData[];
 }

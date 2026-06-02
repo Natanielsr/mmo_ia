@@ -137,4 +137,38 @@ public class BiomeSelectorTests
         var chunk = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
         Assert.Equal(chunk.TagName, tile.TagName);
     }
+
+    // Coordenadas espelhadas nos testes do frontend (biomeNoise.test.ts)
+    // Garante que grama renderizada (frontend) bate com bioma dos objetos (backend)
+    [Theory]
+    [InlineData(100, 100, "dark_forest")]
+    [InlineData(200, 50,  "green_field")]
+    [InlineData(300, 100, "dark_forest")]
+    [InlineData(-100, 100, "green_field")]
+    public void GetBiomeForTile_KnownCoordinates_ReturnExpectedBiome(int tx, int ty, string expectedTag)
+    {
+        var biome = _sut.GetBiomeForTile(tx, ty);
+        Assert.Equal(expectedTag, biome.TagName);
+    }
+
+    [Fact]
+    public void GetBiomeForTile_DarkForest_Exists_SystemIsNotAllGreenField()
+    {
+        var coords = new[] { (200, 50), (300, 100), (400, 150), (500, 200) };
+        var tags = coords.Select(c => _sut.GetBiomeForTile(c.Item1, c.Item2).TagName);
+        Assert.Contains("dark_forest", tags);
+    }
+
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(10, 10)]
+    [InlineData(30, 0)]
+    [InlineData(0, 30)]
+    [InlineData(-20, 15)]
+    public void GetBiomeForTile_InsideSafeRadius_AlwaysGreenField(int tx, int ty)
+    {
+        // Safe radius = 2 * chunkSize(16) = 32 tiles
+        var biome = _sut.GetBiomeForTile(tx, ty);
+        Assert.Equal("green_field", biome.TagName);
+    }
 }

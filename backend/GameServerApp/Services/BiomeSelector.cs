@@ -72,12 +72,12 @@ public class BiomeSelector : IBiomeSelector
     private static double GetNoise(double fx, double fy)
     {
         // Warp input coords to break regularity
-        double wx = fx + 1.8 * Math.Sin(fx * 0.23 + fy * 0.17);
-        double wy = fy + 1.8 * Math.Cos(fx * 0.19 - fy * 0.29);
+        double wx = fx + 0.8 * Math.Sin(fx * 1.15 + fy * 0.85);
+        double wy = fy + 0.8 * Math.Cos(fx * 0.95 - fy * 1.45);
 
-        double val = Math.Sin(wx * 0.31) * Math.Cos(wy * 0.29)
-                   + Math.Sin(wx * 0.17 + wy * 0.13) * 0.5
-                   + Math.Sin(wx * 0.07 - wy * 0.11) * 0.25;
+        double val = Math.Sin(wx * 1.55) * Math.Cos(wy * 1.45)
+                   + Math.Sin(wx * 0.85 + wy * 0.65) * 0.5
+                   + Math.Sin(wx * 0.35 - wy * 0.55) * 0.25;
         return (val + 1.75) / 3.5;
     }
 }

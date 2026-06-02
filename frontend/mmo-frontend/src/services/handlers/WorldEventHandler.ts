@@ -16,6 +16,7 @@ export class WorldEventHandler {
                 cx: data.cx ?? data.Cx ?? data.CX,
                 cy: data.cy ?? data.Cy ?? data.CY,
                 biomeTag: data.biomeTag ?? data.BiomeTag ?? 'green_field',
+                tileBiomeTags: data.tileBiomeTags ?? data.TileBiomeTags ?? [],
                 objects: (data.objects ?? data.Objects ?? []).map((obj: any) => ({
                     id: String(obj.id ?? obj.Id),
                     name: String(obj.name ?? obj.Name),

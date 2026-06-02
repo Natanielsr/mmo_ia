@@ -52,11 +52,21 @@ namespace GameServerApp.Processors
                     var chunkItems   = _itemManager.GetItemsInChunk(coord);
 
                     var biome = _biomeSelector.GetBiomeForChunk(coord);
+                    var tileBiomeTags = new List<string>(_config.Map.ChunkSize * _config.Map.ChunkSize);
+                    for (int ty = 0; ty < _config.Map.ChunkSize; ty++)
+                        for (int tx = 0; tx < _config.Map.ChunkSize; tx++)
+                        {
+                            int worldX = coord.CX * _config.Map.ChunkSize + tx;
+                            int worldY = coord.CY * _config.Map.ChunkSize + ty;
+                            tileBiomeTags.Add(_biomeSelector.GetBiomeForTile(worldX, worldY).TagName);
+                        }
+
                     var chunkData = new ChunkData
                     {
                         CX = coord.CX,
                         CY = coord.CY,
                         BiomeTag = biome.TagName,
+                        TileBiomeTags = tileBiomeTags,
                         Objects = chunkObjects.Select(obj => new MapObjectData
                         {
                             Id         = obj.Id,

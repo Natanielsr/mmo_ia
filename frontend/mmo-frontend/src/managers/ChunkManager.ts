@@ -32,7 +32,7 @@ export class ChunkManager {
         
         // Otimização: RenderTexture para os tiles de grama
         // Isso "achata" 256 sprites em uma única imagem por chunk
-        const rt = this.renderChunkTilesToTexture(data.cx, data.cy, data.biomeTag ?? 'green_field');
+        const rt = this.renderChunkTilesToTexture(data.cx, data.cy, data.tileBiomeTags ?? []);
         
         this.loadedChunks.set(chunkKey, { group, rt });
 
@@ -41,7 +41,7 @@ export class ChunkManager {
 
     }
 
-    private renderChunkTilesToTexture(cx: number, cy: number, _biomeTag: string): Phaser.GameObjects.RenderTexture {
+    private renderChunkTilesToTexture(cx: number, cy: number, tileBiomeTags: string[]): Phaser.GameObjects.RenderTexture {
         const sizePx = this.chunkSize * GRID_SIZE;
         const worldX = cx * sizePx;
         const worldY = -cy * sizePx;
@@ -60,7 +60,8 @@ export class ChunkManager {
                 const wtx = cx * this.chunkSize + x;
                 const wty = cy * this.chunkSize + y;
 
-                const biomeConfig = getBiomeRenderConfig(this.getTileBiomeTag(wtx, wty));
+                const idx = y * this.chunkSize + x;
+                const biomeConfig = getBiomeRenderConfig(tileBiomeTags[idx] ?? 'green_field');
                 const { groundTilePrefix, groundTileCount } = biomeConfig;
 
                 const seed = (Math.abs(wtx) * 1000 + Math.abs(wty)) % groundTileCount;
@@ -78,27 +79,6 @@ export class ChunkManager {
 
         tmpSprite.destroy();
         return rt;
-    }
-
-    // Espelha BiomeSelector.GetBiomeForTile — noise contínuo + zona de transição fade
-    private getTileBiomeTag(wtx: number, wty: number): string {
-        const safeRadius = 2 * this.chunkSize;
-        const dist = Math.sqrt(wtx * wtx + wty * wty);
-        if (dist < safeRadius) return 'green_field';
-
-        const cx = wtx / this.chunkSize;
-        const cy = wty / this.chunkSize;
-
-        // Domain warp: mesma fórmula do BiomeSelector.GetNoise
-        const wx = cx + 1.8 * Math.sin(cx * 0.23 + cy * 0.17);
-        const wy = cy + 1.8 * Math.cos(cx * 0.19 - cy * 0.29);
-
-        const val = Math.sin(wx * 0.31) * Math.cos(wy * 0.29)
-                  + Math.sin(wx * 0.17 + wy * 0.13) * 0.5
-                  + Math.sin(wx * 0.07 - wy * 0.11) * 0.25;
-        const noise = (val + 1.75) / 3.5;
-
-        return noise >= 0.5 ? 'dark_forest' : 'green_field';
     }
 
     private renderChunkObjects(objects: MapObjectData[], group: Phaser.GameObjects.Group) {
