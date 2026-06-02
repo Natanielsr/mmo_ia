@@ -76,8 +76,7 @@ public class BiomeSelector : IBiomeSelector
         double wy = fy + 0.8 * Math.Cos(fx * 0.95 - fy * 1.45);
 
         double val = Math.Sin(wx * 1.55) * Math.Cos(wy * 1.45)
-                   + Math.Sin(wx * 0.85 + wy * 0.65) * 0.5
-                   + Math.Sin(wx * 0.35 - wy * 0.55) * 0.25;
-        return (val + 1.75) / 3.5;
+                   + Math.Sin(wx * 0.85 + wy * 0.65) * 0.5;
+        return (val + 1.5) / 3.0;
     }
 }
