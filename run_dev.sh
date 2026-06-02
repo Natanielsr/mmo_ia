@@ -19,20 +19,20 @@ trap _cleanup SIGINT
 _ok()   { echo -e "\033[32m✓\033[0m"; }
 _fail() { echo -e "\033[31m✗\033[0m\n"; cat "$_tmp"; rm -f "$_tmp"; exit 1; }
 
+# ── Build ─────────────────────────────────────────────────────
+echo -e "\033[1mBuild\033[0m"
+
+printf "  Backend            ... "
+dotnet build "$BACKEND_PROJECT" --nologo -v quiet > "$_tmp" 2>&1 && _ok || _fail
+
 # ── Testes ────────────────────────────────────────────────────
-echo -e "\033[1mTestes\033[0m"
+echo -e "\n\033[1mTestes\033[0m"
 
 printf "  Backend  (xUnit)   ... "
 dotnet test "$TEST_PROJECT" --verbosity quiet --nologo > "$_tmp" 2>&1 && _ok || _fail
 
 printf "  Frontend (Vitest)  ... "
 (cd "$FRONTEND_DIR" && npm test) > "$_tmp" 2>&1 && _ok || _fail
-
-# ── Build ─────────────────────────────────────────────────────
-echo -e "\n\033[1mBuild\033[0m"
-
-printf "  Backend            ... "
-dotnet build "$BACKEND_PROJECT" --nologo -v quiet > "$_tmp" 2>&1 && _ok || _fail
 
 # ── Portas ────────────────────────────────────────────────────
 if lsof -t -i :"$BACKEND_PORT" > /dev/null 2>&1; then
