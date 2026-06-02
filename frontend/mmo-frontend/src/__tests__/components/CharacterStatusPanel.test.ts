@@ -60,8 +60,8 @@ describe('CharacterStatusPanel', () => {
 
   it('xp bar width reflects xp within current level', async () => {
     const { wrapper, store } = mountWithStore()
-    // Level 2: range 1000–2000. At 1500 XP, 50% into level.
-    store.updateCharacterStatus({ level: 2, experience: 1500 })
+    // Level 2: prev=1000, next=2100, window=1100. Meio = 1000+550=1550 → 50%.
+    store.updateCharacterStatus({ level: 2, experience: 1550 })
     await wrapper.vm.$nextTick()
     const fill = wrapper.find('#xp-fill').element as HTMLElement
     expect(fill.style.width).toBe('50%')

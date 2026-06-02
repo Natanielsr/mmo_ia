@@ -33,7 +33,9 @@ namespace GameServerApp.World
         public bool IsDead => State == PlayerState.Dead;
         public bool IsGodMode { get; private set; }
 
-        private const long ExperiencePerLevel = 1000;
+        private int _equipmentAttackBonus = 0;
+        private int _equipmentDefenseBonus = 0;
+        private int _baseDefense = 0;
 
         public Player(long id, string name, Position startPosition, int attackPoints = 10, int maxHp = 100)
         {
@@ -88,8 +90,10 @@ namespace GameServerApp.World
 
         public void ApplyEquipmentBonuses(int attackBonus, int defenseBonus)
         {
-            TotalAttackPower = AttackPoints + attackBonus;
-            TotalDefense = defenseBonus;
+            _equipmentAttackBonus = attackBonus;
+            _equipmentDefenseBonus = defenseBonus;
+            TotalAttackPower = AttackPoints + _equipmentAttackBonus;
+            TotalDefense = _baseDefense + _equipmentDefenseBonus;
         }
 
         public void Die()
@@ -154,14 +158,20 @@ namespace GameServerApp.World
             // Will be enhanced when inventory system is implemented
         }
 
+        private static long ExperienceThreshold(int level)
+            => (long)(10000.0 * (Math.Pow(1.1, level) - 1.0));
+
         private void CheckLevelUp()
         {
-            const long ExperiencePerLevel = 1000;
-            while (Experience >= Level * ExperiencePerLevel)
+            while (Experience >= ExperienceThreshold(Level))
             {
                 Level++;
                 MaxHp += 10;
                 Hp = MaxHp;
+                AttackPoints += 2;
+                _baseDefense += 1;
+                TotalAttackPower = AttackPoints + _equipmentAttackBonus;
+                TotalDefense = _baseDefense + _equipmentDefenseBonus;
             }
         }
 
@@ -176,6 +186,10 @@ namespace GameServerApp.World
             Experience = 0;
             MaxHp = 100 + (10 * (targetLevel - 1));
             Hp = MaxHp;
+            AttackPoints = 10 + (2 * (targetLevel - 1));
+            _baseDefense = targetLevel - 1;
+            TotalAttackPower = AttackPoints + _equipmentAttackBonus;
+            TotalDefense = _baseDefense + _equipmentDefenseBonus;
         }
 
         private record HoTEffect(string Source, int HealPerTick, int TicksRemaining);

@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useGameStore } from '../stores/gameStore'
+import { xpThreshold } from '../utils/xpCalc'
 
 const store = useGameStore()
 
@@ -37,11 +38,15 @@ const hpPercent = computed(() => {
 })
 
 const xpIntoLevel = computed(() => {
-  const prev = (store.level - 1) * 1000
+  const prev = xpThreshold(store.level - 1)
   return Math.ceil(Math.max(0, store.experience - prev))
 })
 
-const xpRequired = computed(() => 1000)
+const xpRequired = computed(() => {
+  const prev = xpThreshold(store.level - 1)
+  const next = xpThreshold(store.level)
+  return next - prev
+})
 
 const xpPercent = computed(() =>
   Math.min(100, Math.max(0, (xpIntoLevel.value / xpRequired.value) * 100))

@@ -336,4 +336,37 @@ public class PlayerImplTests
         Assert.Equal(120, player.MaxHp);
         Assert.Equal(120, player.Hp);
     }
+
+    [Fact]
+    public void Player_AttackPoints_Should_Increase_On_Level_Up()
+    {
+        var player = new Player(1, "Test", _startPosition, attackPoints: 10);
+
+        player.GainExperience(1000);
+
+        Assert.Equal(12, player.AttackPoints);  // 10 + 2*1
+        Assert.Equal(12, player.TotalAttackPower);
+    }
+
+    [Fact]
+    public void Player_BaseDefense_Should_Increase_On_Level_Up()
+    {
+        var player = new Player(1, "Test", _startPosition, attackPoints: 10);
+
+        player.GainExperience(1000);
+
+        Assert.Equal(1, player.TotalDefense);  // 0 + 1*1
+    }
+
+    [Fact]
+    public void Player_SetLevel_Should_Scale_Attack_And_Defense()
+    {
+        var player = new Player(1, "Test", _startPosition, attackPoints: 10);
+
+        player.SetLevel(5);
+
+        Assert.Equal(18, player.AttackPoints);   // 10 + 2*(5-1)
+        Assert.Equal(18, player.TotalAttackPower);
+        Assert.Equal(4, player.TotalDefense);    // (5-1)
+    }
 }
