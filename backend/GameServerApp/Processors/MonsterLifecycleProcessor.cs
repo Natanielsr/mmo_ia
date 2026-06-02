@@ -94,7 +94,8 @@ namespace GameServerApp.Processors
                         player.Position,
                         minRadius,
                         _config.Monsters.SpawnRadius,
-                        monsterTagsFilter: biome.MonsterTags);
+                        monsterTagsFilter: biome.MonsterTags,
+                        positionValidator: pos => _biomeSelector.GetBiomeForTile(pos.X, pos.Y).TagName == biome.TagName);
 
                     if (spawned != null && spawned.Any())
                     {

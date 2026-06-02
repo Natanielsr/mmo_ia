@@ -100,7 +100,8 @@ public class MonsterManager : IMonsterManager
         int minRadius,
         int maxRadius,
         int? seed = null,
-        IReadOnlyList<string>? monsterTagsFilter = null)
+        IReadOnlyList<string>? monsterTagsFilter = null,
+        Func<Position, bool>? positionValidator = null)
     {
         if (count <= 0) return Array.Empty<IMonster>();
 
@@ -131,6 +132,7 @@ public class MonsterManager : IMonsterManager
 
             if (usedPositions.Contains(position)) continue;
             if (_collisionManager.IsPositionBlocked(position)) continue;
+            if (positionValidator != null && !positionValidator(position)) continue;
 
             var template = pool[rng.Next(pool.Count)];
             var monsterId = _idGeneratorService.GenerateId();

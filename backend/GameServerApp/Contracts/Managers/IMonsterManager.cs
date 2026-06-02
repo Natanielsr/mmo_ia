@@ -19,7 +19,8 @@ public interface IMonsterManager
         int minRadius,
         int maxRadius,
         int? seed = null,
-        IReadOnlyList<string>? monsterTagsFilter = null);
+        IReadOnlyList<string>? monsterTagsFilter = null,
+        Func<Position, bool>? positionValidator = null);
 
     IReadOnlyCollection<IMonster> GetAllMonsters();
     IReadOnlyCollection<MonsterData> GetAllMonstersAsData();

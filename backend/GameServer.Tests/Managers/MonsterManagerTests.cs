@@ -434,4 +434,44 @@ public class MonsterManagerTests
         Assert.Contains("Duplicate monster ID generated", exception.Message);
         Assert.Contains(duplicateId.ToString(), exception.Message);
     }
+
+    [Fact]
+    public void SpawnMonstersNearPosition_PositionValidator_BlocksAll_ReturnsEmpty()
+    {
+        // Arrange
+        var idCounter = 30000L;
+        _idGeneratorServiceMock.Setup(s => s.GenerateId()).Returns(() => idCounter++);
+        _collisionManagerMock.Setup(c => c.IsPositionBlocked(It.IsAny<Position>())).Returns(false);
+
+        // Act
+        var result = _monsterManager.SpawnMonstersNearPosition(
+            count: 5,
+            center: new Position(0, 0),
+            minRadius: 10,
+            maxRadius: 20,
+            positionValidator: _ => false);
+
+        // Assert
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void SpawnMonstersNearPosition_PositionValidator_AllowsAll_SpawnsNormally()
+    {
+        // Arrange
+        var idCounter = 31000L;
+        _idGeneratorServiceMock.Setup(s => s.GenerateId()).Returns(() => idCounter++);
+        _collisionManagerMock.Setup(c => c.IsPositionBlocked(It.IsAny<Position>())).Returns(false);
+
+        // Act
+        var result = _monsterManager.SpawnMonstersNearPosition(
+            count: 3,
+            center: new Position(0, 0),
+            minRadius: 10,
+            maxRadius: 20,
+            positionValidator: _ => true);
+
+        // Assert
+        Assert.Equal(3, result.Count);
+    }
 }
