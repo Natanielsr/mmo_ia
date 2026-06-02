@@ -28,6 +28,12 @@ dotnet test "$TEST_PROJECT" --verbosity quiet --nologo > "$_tmp" 2>&1 && _ok || 
 printf "  Frontend (Vitest)  ... "
 (cd "$FRONTEND_DIR" && npm test) > "$_tmp" 2>&1 && _ok || _fail
 
+# ── Build ─────────────────────────────────────────────────────
+echo -e "\n\033[1mBuild\033[0m"
+
+printf "  Backend            ... "
+dotnet build "$BACKEND_PROJECT" --nologo -v quiet > "$_tmp" 2>&1 && _ok || _fail
+
 # ── Portas ────────────────────────────────────────────────────
 if lsof -t -i :"$BACKEND_PORT" > /dev/null 2>&1; then
     printf "\n  Liberando porta %s ... " "$BACKEND_PORT"
