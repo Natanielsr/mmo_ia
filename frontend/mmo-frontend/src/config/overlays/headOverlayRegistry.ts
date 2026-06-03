@@ -1,10 +1,10 @@
 import type { OverlayConfig } from './types'
 
 export const HEAD_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
-    'iron-helmet': {
-        walkTextureKey: 'head_iron_helmet_walk',
+    'plate-helmet': {
+        walkTextureKey: 'head_plate_helmet_walk',
         walkAssetPath: 'assets/walkcycle/HEAD_plate_armor_helmet.png',
-        slashTextureKey: 'head_iron_helmet_slash',
+        slashTextureKey: 'head_plate_helmet_slash',
         slashAssetPath: 'assets/slash/HEAD_plate_armor_helmet.png',
         frameWidth: 64,
         frameHeight: 64,
@@ -12,8 +12,38 @@ export const HEAD_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
         walkFrameRate: 16,
         slashFrameRate: 24,
-        hurtTextureKey: 'head_iron_helmet_hurt',
+        hurtTextureKey: 'head_plate_helmet_hurt',
         hurtAssetPath:  'assets/hurt/HEAD_plate_armor_helmet.png',
+        hurtFrameRate:  12,
+    },
+    'kettle-hat': {
+        walkTextureKey:  'head_kettle_hat_walk',
+        walkAssetPath:   'assets/walkcycle/HEAD_chain_armor_helmet.png',
+        slashTextureKey: 'head_kettle_hat_slash',
+        slashAssetPath:  'assets/slash/HEAD_chain_armor_helmet.png',
+        frameWidth:  64,
+        frameHeight: 64,
+        walkDirectionFrames:  { north: [1, 8], west: [10, 17], south: [19, 26], east: [28, 35] },
+        slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
+        walkFrameRate:  16,
+        slashFrameRate: 24,
+        hurtTextureKey: 'head_kettle_hat_hurt',
+        hurtAssetPath:  'assets/hurt/HEAD_chain_armor_helmet.png',
+        hurtFrameRate:  12,
+    },
+    'robe-hood': {
+        walkTextureKey:  'head_robe_hood_walk',
+        walkAssetPath:   'assets/walkcycle/HEAD_robe_hood.png',
+        slashTextureKey: 'head_robe_hood_slash',
+        slashAssetPath:  'assets/slash/HEAD_robe_hood.png',
+        frameWidth:  64,
+        frameHeight: 64,
+        walkDirectionFrames:  { north: [1, 8], west: [10, 17], south: [19, 26], east: [28, 35] },
+        slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
+        walkFrameRate:  16,
+        slashFrameRate: 24,
+        hurtTextureKey: 'head_robe_hood_hurt',
+        hurtAssetPath:  'assets/hurt/HEAD_robe_hood.png',
         hurtFrameRate:  12,
     }
 }

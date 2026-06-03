@@ -41,8 +41,8 @@ describe('getBodyOverlayConfig — lookup por slot + item', () => {
         expect(getBodyOverlayConfig('Boots', 'item-inexistente')).toBeNull();
     });
 
-    it('retorna config para iron-boots no slot Boots', () => {
-        const cfg = getBodyOverlayConfig('Boots', 'iron-boots');
+    it('retorna config para plate-boots no slot Boots', () => {
+        const cfg = getBodyOverlayConfig('Boots', 'plate-boots');
         expect(cfg).not.toBeNull();
     });
 
@@ -56,8 +56,8 @@ describe('getBodyOverlayConfig — lookup por slot + item', () => {
         expect(cfg).not.toBeNull();
     });
 
-    it('retorna config para iron-helmet no slot Helmet', () => {
-        const cfg = getBodyOverlayConfig('Helmet', 'iron-helmet');
+    it('retorna config para plate-helmet no slot Helmet', () => {
+        const cfg = getBodyOverlayConfig('Helmet', 'plate-helmet');
         expect(cfg).not.toBeNull();
     });
 

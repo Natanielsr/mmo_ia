@@ -32,9 +32,9 @@
     },
     {
       "id": 4,
-      "tagName": "iron-helmet",
-      "name": "Iron Helmet",
-      "description": "Elmo de ferro resistente",
+      "tagName": "plate-helmet",
+      "name": "Plate Helmet",
+      "description": "Elmo de placas de aço resistente",
       "value": 18,
       "type": "Helmet",
       "weight": 1.2,
@@ -62,9 +62,9 @@
     },
     {
       "id": 7,
-      "tagName": "iron-boots",
-      "name": "Iron Boots",
-      "description": "Botas de ferro pesadas",
+      "tagName": "plate-boots",
+      "name": "Plate Boots",
+      "description": "Botas de placas de aço",
       "value": 14,
       "type": "Boots",
       "weight": 1.5,
@@ -109,6 +109,96 @@
       "type": "Healing",
       "weight": 0.6,
       "healAmount": 3
+    },
+    {
+      "id": 12,
+      "tagName": "chain-armor",
+      "name": "Chain Armor",
+      "description": "Cota de malha resistente",
+      "value": 25,
+      "type": "Armor",
+      "weight": 3.0,
+      "defenseBonus": 2
+    },
+    {
+      "id": 13,
+      "tagName": "kettle-hat",
+      "name": "Kettle Hat",
+      "description": "Elmo de malha com aba",
+      "value": 12,
+      "type": "Helmet",
+      "weight": 0.8,
+      "defenseBonus": 1
+    },
+    {
+      "id": 14,
+      "tagName": "leather-shoes",
+      "name": "Leather Shoes",
+      "description": "Sapatos leves de couro",
+      "value": 8,
+      "type": "Boots",
+      "weight": 0.5,
+      "defenseBonus": 1
+    },
+    {
+      "id": 15,
+      "tagName": "plate-legs",
+      "name": "Plate Legs",
+      "description": "Grevas de placas de aço",
+      "value": 20,
+      "type": "Legs",
+      "weight": 2.0,
+      "defenseBonus": 2
+    },
+    {
+      "id": 16,
+      "tagName": "purple-jacket",
+      "name": "Purple Jacket",
+      "description": "Jaqueta de malha roxa",
+      "value": 30,
+      "type": "Armor",
+      "weight": 2.5,
+      "defenseBonus": 2
+    },
+    {
+      "id": 17,
+      "tagName": "rob-legs",
+      "name": "Robe Legs",
+      "description": "Saia de robe longa",
+      "value": 10,
+      "type": "Legs",
+      "weight": 0.8,
+      "defenseBonus": 1
+    },
+    {
+      "id": 18,
+      "tagName": "robe",
+      "name": "Robe",
+      "description": "Robe mágico leve",
+      "value": 15,
+      "type": "Armor",
+      "weight": 1.5,
+      "defenseBonus": 1
+    },
+    {
+      "id": 19,
+      "tagName": "robe-hood",
+      "name": "Robe Hood",
+      "description": "Capuz de robe encantado",
+      "value": 10,
+      "type": "Helmet",
+      "weight": 0.5,
+      "defenseBonus": 1
+    },
+    {
+      "id": 20,
+      "tagName": "white-shirt",
+      "name": "White Shirt",
+      "description": "Camisa branca de couro leve",
+      "value": 8,
+      "type": "Armor",
+      "weight": 0.8,
+      "defenseBonus": 1
     }
   ]
 }
