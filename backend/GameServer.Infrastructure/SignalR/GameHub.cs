@@ -26,6 +26,7 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IItemFactory _itemFactory;
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IRankingService _rankingService;
+        private readonly ILootTableService _lootTableService;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -40,7 +41,8 @@ namespace GameServer.Infrastructure.SignalR
             IHostEnvironment env,
             IItemFactory itemFactory,
             IItemDefinitionRepository itemRepo,
-            IRankingService rankingService)
+            IRankingService rankingService,
+            ILootTableService lootTableService)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
@@ -55,6 +57,7 @@ namespace GameServer.Infrastructure.SignalR
             _itemFactory = itemFactory;
             _itemRepo = itemRepo;
             _rankingService = rankingService;
+            _lootTableService = lootTableService;
         }
 
         public async Task JoinGame(string playerName)

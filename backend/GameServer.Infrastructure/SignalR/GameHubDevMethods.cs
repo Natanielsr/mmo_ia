@@ -105,6 +105,17 @@ namespace GameServer.Infrastructure.SignalR
                 if (monster.IsDead)
                 {
                     _worldEvents.OnMonsterDied(monster.Id.ToString());
+
+                    var dropped = _lootTableService.RollLoot(
+                        monster.Position,
+                        _idGeneratorService.GenerateId().ToString(),
+                        monster.ObjectCode);
+                    if (dropped != null)
+                    {
+                        _itemManager.DropItem(dropped);
+                        _worldEvents.OnItemDropped(dropped);
+                    }
+
                     _monsterManager.RemoveMonster(monster.Id);
                 }
             }
