@@ -175,6 +175,11 @@ namespace GameServerApp.World
             }
         }
 
+        public void SetSpeed(double speed)
+        {
+            Speed = Math.Clamp(speed, 1.0, 10.0);
+        }
+
         public void SetGodMode(bool enabled)
         {
             IsGodMode = enabled;

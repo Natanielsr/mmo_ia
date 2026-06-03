@@ -52,6 +52,15 @@ namespace GameServer.Infrastructure.SignalR
             });
         }
 
+        public void DevSetSpeed(double multiplier)
+        {
+            if (!IsDev) return;
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player == null) return;
+
+            player.SetSpeed(multiplier);
+        }
+
         public void DevGodMode(bool enabled)
         {
             if (!IsDev) return;

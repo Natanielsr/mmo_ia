@@ -369,4 +369,34 @@ public class PlayerImplTests
         Assert.Equal(14, player.TotalAttackPower);
         Assert.Equal(2, player.TotalDefense);    // (5-1)/2
     }
+
+    [Fact]
+    public void Player_SetSpeed_Should_Update_Speed()
+    {
+        var player = new Player(1, "Test", _startPosition);
+
+        player.SetSpeed(5.0);
+
+        Assert.Equal(5.0, player.Speed);
+    }
+
+    [Fact]
+    public void Player_SetSpeed_Should_Clamp_To_Minimum_Of_One()
+    {
+        var player = new Player(1, "Test", _startPosition);
+
+        player.SetSpeed(0.0);
+
+        Assert.Equal(1.0, player.Speed);
+    }
+
+    [Fact]
+    public void Player_SetSpeed_Should_Clamp_To_Maximum_Of_Ten()
+    {
+        var player = new Player(1, "Test", _startPosition);
+
+        player.SetSpeed(99.0);
+
+        Assert.Equal(10.0, player.Speed);
+    }
 }

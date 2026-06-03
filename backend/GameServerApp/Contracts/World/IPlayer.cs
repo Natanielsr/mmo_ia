@@ -39,6 +39,7 @@ namespace GameServerApp.Contracts.World
         void EquipItem(string itemId);
         void UnequipItem(string itemId);
         void ApplyEquipmentBonuses(int attackBonus, int defenseBonus);
+        void SetSpeed(double speed);
         void SetGodMode(bool enabled);
         void SetLevel(int targetLevel);
     }

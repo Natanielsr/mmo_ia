@@ -99,6 +99,16 @@ export class DevConsole {
             } else if (cmd === '/allitems') {
                 await this.signalRService.invoke('DevGiveAllItems');
                 this.log('✓ Todos os itens spawned no inventário');
+            } else if (cmd === '/speed' && parts[1]) {
+                const speed = parseFloat(parts[1]);
+                if (isNaN(speed) || speed <= 0) {
+                    this.log('✗ Velocidade inválida. Use: /speed <1-10>');
+                    return;
+                }
+                await this.signalRService.invoke('DevSetSpeed', speed);
+                this.log(`✓ Velocidade definida para ${Math.min(Math.max(speed, 1), 10).toFixed(1)} (padrão: 2.0)`);
+            } else if (cmd === '/speed') {
+                this.log('✗ Use: /speed <valor> (1.0–10.0, padrão 2.0)');
             } else {
                 this.log('✗ Comando desconhecido. Digite /help para ajuda.');
             }
@@ -112,19 +122,22 @@ export class DevConsole {
             '─ COMANDOS DE CHEAT ─',
             '/spawn <tagName>  → Spawna item no chão (ex: plate-armor, dagger, potion)',
             '/level <n>        → Define nível (1-999)',
+            '/speed <n>        → Define velocidade (1.0–10.0, padrão 2.0)',
             '/god              → Ativa modo deus (invencível)',
             '/mortal           → Desativa modo deus',
             '/heal             → Restaura HP total',
-            '/kill             → Mata monstros próximos',
-            '/allitems         → Spawna um de cada item',
+            '/kill             → Mata monstros próximos (raio 5)',
+            '/allitems         → Spawna um de cada item no inventário',
             '/clear            → Limpa o console',
             '/exit             → Fecha o console',
             '/help             → Mostra esta mensagem',
             '─ Teclas ─',
             'ESC               → Fecha o console',
+            '~ (til)           → Abre/fecha o console',
             '─ Exemplos ─',
             '/spawn plate-armor',
             '/level 10',
+            '/speed 5',
             '/god'
         ];
         help.forEach(line => this.log(line));
