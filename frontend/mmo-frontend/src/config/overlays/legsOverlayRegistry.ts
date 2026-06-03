@@ -31,7 +31,7 @@ export const LEGS_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         hurtAssetPath:  'assets/hurt/LEGS_plate_armor_pants.png',
         hurtFrameRate:  12,
     },
-    'rob-legs': {
+    'robe-legs': {
         walkTextureKey:  'legs_rob_legs_walk',
         walkAssetPath:   'assets/walkcycle/LEGS_robe_skirt.png',
         slashTextureKey: 'legs_rob_legs_slash',

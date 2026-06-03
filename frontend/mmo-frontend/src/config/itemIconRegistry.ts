@@ -15,7 +15,7 @@ export const ITEM_ICON_REGISTRY: Record<string, string> = {
   'leather-shoes': '/assets/items_icon/leather-shoes.png',
   'plate-legs':    '/assets/items_icon/plate-legs.png',
   'purple-jacket': '/assets/items_icon/purple-jacket.png',
-  'rob-legs':      '/assets/items_icon/rob-legs.png',
+  'robe-legs':     '/assets/items_icon/robe-legs.png',
   'robe':          '/assets/items_icon/robe.png',
   'robe-hood':     '/assets/items_icon/roob-hood.png',
   'white-shirt':   '/assets/items_icon/white-shirt.png',

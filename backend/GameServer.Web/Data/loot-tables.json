@@ -47,7 +47,7 @@
     "orc-sorcerer": [
       { "itemTag": "robe",          "weight": 20 },
       { "itemTag": "robe-hood",     "weight": 15 },
-      { "itemTag": "rob-legs",      "weight": 15 },
+      { "itemTag": "robe-legs",     "weight": 15 },
       { "itemTag": "leather-shoes", "weight": 15 },
       { "itemTag": "potion",        "weight": 10 }
     ],

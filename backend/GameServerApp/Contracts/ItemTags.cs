@@ -14,7 +14,7 @@ public static class ItemTags
     public const string LeatherShoes = "leather-shoes";
     public const string PlateLegs    = "plate-legs";
     public const string PurpleJacket = "purple-jacket";
-    public const string RobLegs      = "rob-legs";
+    public const string RobeLegs     = "robe-legs";
     public const string Robe         = "robe";
     public const string RobeHood     = "robe-hood";
     public const string WhiteShirt   = "white-shirt";
