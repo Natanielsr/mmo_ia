@@ -18,6 +18,7 @@ public static class ItemTags
     public const string Robe         = "robe";
     public const string RobeHood     = "robe-hood";
     public const string WhiteShirt   = "white-shirt";
+    public const string LeatherHat   = "leather-hat";
     public const string PlateArmor   = "plate-armor";
     public const string Cheese        = "cheese";
     public const string RawMeat       = "raw-meat";

@@ -199,6 +199,16 @@
       "type": "Armor",
       "weight": 0.8,
       "defenseBonus": 1
+    },
+    {
+      "id": 21,
+      "tagName": "leather-hat",
+      "name": "Leather Hat",
+      "description": "Chapéu de couro leve",
+      "value": 10,
+      "type": "Helmet",
+      "weight": 0.5,
+      "defenseBonus": 1
     }
   ]
 }

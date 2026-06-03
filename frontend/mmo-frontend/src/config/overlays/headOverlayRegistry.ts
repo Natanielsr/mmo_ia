@@ -45,5 +45,20 @@ export const HEAD_OVERLAY_REGISTRY: Record<string, OverlayConfig> = {
         hurtTextureKey: 'head_robe_hood_hurt',
         hurtAssetPath:  'assets/hurt/HEAD_robe_hood.png',
         hurtFrameRate:  12,
+    },
+    'leather-hat': {
+        walkTextureKey:  'head_leather_hat_walk',
+        walkAssetPath:   'assets/walkcycle/HEAD_leather_armor_hat.png',
+        slashTextureKey: 'head_leather_hat_slash',
+        slashAssetPath:  'assets/slash/HEAD_leather_armor_hat.png',
+        frameWidth:  64,
+        frameHeight: 64,
+        walkDirectionFrames:  { north: [1, 8], west: [10, 17], south: [19, 26], east: [28, 35] },
+        slashDirectionFrames: { north: [0, 5], west: [6, 11], south: [12, 17], east: [18, 23] },
+        walkFrameRate:  16,
+        slashFrameRate: 24,
+        hurtTextureKey: 'head_leather_hat_hurt',
+        hurtAssetPath:  'assets/hurt/HEAD_leather_armor_hat.png',
+        hurtFrameRate:  12,
     }
 }

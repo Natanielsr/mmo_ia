@@ -19,6 +19,7 @@ export const ITEM_ICON_REGISTRY: Record<string, string> = {
   'robe':          '/assets/items_icon/robe.png',
   'robe-hood':     '/assets/items_icon/roob-hood.png',
   'white-shirt':   '/assets/items_icon/white-shirt.png',
+  'leather-hat':   '/assets/items_icon/leather-hat.png',
 }
 
 export function getItemIconSrc(tagName: string): string {
