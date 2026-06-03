@@ -28,25 +28,26 @@ describe('calcXpPercent', () => {
         expect(calcXpPercent(0, 1)).toBe(0);
     });
 
-    it('retorna 50% com 500 XP no nível 1', () => {
-        expect(calcXpPercent(500, 1)).toBe(50);
+    it('retorna 50% com 100 XP no nível 1', () => {
+        // Nível 1: prev=0, next=200, window=200. Meio = 100
+        expect(calcXpPercent(100, 1)).toBe(50);
     });
 
-    it('retorna 100% com 1000 XP exatos (limite do nível 1)', () => {
-        expect(calcXpPercent(1000, 1)).toBe(100);
+    it('retorna 100% com 200 XP exatos (limite do nível 1)', () => {
+        expect(calcXpPercent(200, 1)).toBe(100);
     });
 
-    it('retorna 0% no início do nível 2 (1000 XP acumulado)', () => {
-        expect(calcXpPercent(1000, 2)).toBe(0);
+    it('retorna 0% no início do nível 2 (200 XP acumulado)', () => {
+        expect(calcXpPercent(200, 2)).toBe(0);
     });
 
-    it('retorna 50% no meio do nível 2 (1550 XP = 1000 + 1100/2)', () => {
-        // Nível 2: prev=1000, next=2100, window=1100. Meio = 1000+550=1550
-        expect(calcXpPercent(1550, 2)).toBe(50);
+    it('retorna 50% no meio do nível 2 (796 XP = 200 + 1192/2)', () => {
+        // Nível 2: prev=200, next=1392, window=1192. Meio = 200+596=796
+        expect(calcXpPercent(796, 2)).toBe(50);
     });
 
-    it('retorna 100% no limite do nível 2 (2100 XP total)', () => {
-        expect(calcXpPercent(2100, 2)).toBe(100);
+    it('retorna 100% no limite do nível 2 (1392 XP total)', () => {
+        expect(calcXpPercent(1392, 2)).toBe(100);
     });
 
     it('nunca ultrapassa 100%', () => {
@@ -54,8 +55,8 @@ describe('calcXpPercent', () => {
     });
 
     it('nunca retorna negativo com XP abaixo do nível', () => {
-        // XP 500 mas nivel 2 (prevThreshold = 1000) → xpIntoLevel = 0
-        expect(calcXpPercent(500, 2)).toBe(0);
+        // XP 100 mas nivel 2 (prevThreshold = 200) → xpIntoLevel = 0
+        expect(calcXpPercent(100, 2)).toBe(0);
     });
 
     it('cada nível começa em 0% na sua threshold exata', () => {

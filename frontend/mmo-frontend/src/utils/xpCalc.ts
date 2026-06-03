@@ -3,9 +3,9 @@ export function calcHpPercent(hp: number, maxHp: number): number {
     return Math.max(0, hp / (maxHp || 1));
 }
 
-/** XP total acumulado necessário para atingir o nível dado. Espelha backend: 10000*(1.1^level - 1). */
+/** XP total acumulado necessário para atingir o nível dado. Espelha backend: 200 * level^2.8. */
 export function xpThreshold(level: number): number {
-    return Math.floor(10000 * (Math.pow(1.1, level) - 1));
+    return Math.floor(200 * Math.pow(level, 2.8));
 }
 
 /** Percentual de XP dentro do nível atual (0–100). */

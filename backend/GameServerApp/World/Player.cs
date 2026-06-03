@@ -159,7 +159,7 @@ namespace GameServerApp.World
         }
 
         private static long ExperienceThreshold(int level)
-            => (long)(10000.0 * (Math.Pow(1.1, level) - 1.0));
+            => (long)(200.0 * Math.Pow(level, 2.8));
 
         private void CheckLevelUp()
         {
@@ -168,8 +168,8 @@ namespace GameServerApp.World
                 Level++;
                 MaxHp += 10;
                 Hp = MaxHp;
-                AttackPoints += 2;
-                _baseDefense += 1;
+                AttackPoints += 1;
+                if (Level % 2 == 0) _baseDefense += 1;
                 TotalAttackPower = AttackPoints + _equipmentAttackBonus;
                 TotalDefense = _baseDefense + _equipmentDefenseBonus;
             }
@@ -186,8 +186,8 @@ namespace GameServerApp.World
             Experience = 0;
             MaxHp = 100 + (10 * (targetLevel - 1));
             Hp = MaxHp;
-            AttackPoints = 10 + (2 * (targetLevel - 1));
-            _baseDefense = targetLevel - 1;
+            AttackPoints = 10 + (1 * (targetLevel - 1));
+            _baseDefense = (targetLevel - 1) / 2;
             TotalAttackPower = AttackPoints + _equipmentAttackBonus;
             TotalDefense = _baseDefense + _equipmentDefenseBonus;
         }

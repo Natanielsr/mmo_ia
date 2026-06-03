@@ -4,37 +4,35 @@
       { "itemTag": "dagger",        "weight": 5  },
       { "itemTag": "cheese",        "weight": 60 },
       { "itemTag": "raw-meat",      "weight": 10 },
-      { "itemTag": "potion",        "weight": 10  }
+      { "itemTag": "potion",        "weight": 5  }
     ],
     "wolf": [
       { "itemTag": "dagger",        "weight": 5  },
       { "itemTag": "raw-meat",      "weight": 60 },
-      { "itemTag": "potion",        "weight": 15  },
+      { "itemTag": "potion",        "weight": 5  },
       { "itemTag": "purple-jacket", "weight": 5  },
       { "itemTag": "white-shirt",   "weight": 5  }
     ],
     "spider": [
       { "itemTag": "dagger",        "weight": 5  },
       { "itemTag": "monster-meat",  "weight": 60 },
-      { "itemTag": "potion",        "weight": 15  }
+      { "itemTag": "potion",        "weight": 5  }
     ],
     "orc": [
-      { "itemTag": "potion",        "weight": 15 },
-      { "itemTag": "dagger",        "weight": 15 },
-      { "itemTag": "plate-helmet",   "weight": 15 },
-      { "itemTag": "plate-boots",   "weight": 15  },
-      { "itemTag": "wooden-shield", "weight": 15  },
-      { "itemTag": "plate-armor",   "weight": 15  }
+      { "itemTag": "plate-helmet",   "weight": 20 },
+      { "itemTag": "plate-boots",   "weight": 20  },
+      { "itemTag": "plate-armor",   "weight": 20  },
+      { "itemTag": "plate-legs",   "weight": 20  }
     ],
     "bug": [
       { "itemTag": "dagger",        "weight": 5 },
       { "itemTag": "monster-meat",  "weight": 60 },
-      { "itemTag": "potion",        "weight": 15 }
+      { "itemTag": "potion",        "weight": 5 }
     ],
     "snake": [
       { "itemTag": "dagger",        "weight": 5  },
       { "itemTag": "raw-meat",      "weight": 60 },
-      { "itemTag": "potion",        "weight": 15  }
+      { "itemTag": "potion",        "weight": 5  }
     ],
     "goblin": [
       { "itemTag": "dagger",        "weight": 15 },
@@ -43,7 +41,7 @@
       { "itemTag": "leather-pants", "weight": 15 },
       { "itemTag": "leather-shoes", "weight": 15 },
       { "itemTag": "wooden-shield", "weight": 15 },
-      { "itemTag": "potion",        "weight": 15 }
+      { "itemTag": "potion",        "weight": 5 }
     ],
     "skeleton": [
       { "itemTag": "dagger",        "weight": 20 },
@@ -51,7 +49,7 @@
       { "itemTag": "leather-pants", "weight": 20  },
       { "itemTag": "leather-shoes", "weight": 20  },
       { "itemTag": "wooden-shield", "weight": 20  },
-      { "itemTag": "potion",        "weight": 20 }
+      { "itemTag": "potion",        "weight": 5 }
     ]
   }
 }

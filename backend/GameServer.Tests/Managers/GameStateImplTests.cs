@@ -80,7 +80,7 @@ public class GameStateImplTests
     public void GameStateManager_Should_Handle_Level_Up_Flow()
     {
         var player = CreatePlayer();
-        _manager.AddPlayerExperience(player, 1000);
+        _manager.AddPlayerExperience(player, 200); // Threshold(1) = 200
         _manager.CheckForLevelUp(player);
 
         Assert.Equal(2, player.Level);

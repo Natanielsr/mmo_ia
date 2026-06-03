@@ -154,7 +154,7 @@ public class PlayerImplTests
     {
         var player = CreatePlayer();
 
-        player.GainExperience(1000);
+        player.GainExperience(200); // Threshold(1) = 200
 
         Assert.Equal(2, player.Level);
     }
@@ -207,9 +207,9 @@ public class PlayerImplTests
     {
         var player = CreatePlayer();
 
-        // Level 2 at 1000 XP (1*1000), Level 3 at 2000 XP (2*1000)
-        // 2500 XP passes both thresholds but not Level 4 (3*1000=3000)
-        player.GainExperience(2500);
+        // Level 2 at 200 XP, Level 3 at 1392 XP, Level 4 at 4334 XP
+        // 2000 XP passes first two thresholds but not Level 4 (4334)
+        player.GainExperience(2000);
 
         Assert.Equal(3, player.Level);
     }
@@ -219,7 +219,7 @@ public class PlayerImplTests
     {
         var player = CreatePlayer();
 
-        player.GainExperience(1000); // Level up to 2
+        player.GainExperience(200); // Level up to 2
 
         Assert.Equal(110, player.MaxHp); // +10 per level
         Assert.Equal(110, player.Hp);    // Full heal on level up
@@ -230,10 +230,10 @@ public class PlayerImplTests
     {
         var player = CreatePlayer();
 
-        player.GainExperience(999);
+        player.GainExperience(199); // Threshold(1) = 200
 
         Assert.Equal(1, player.Level);
-        Assert.Equal(999, player.Experience);
+        Assert.Equal(199, player.Experience);
         Assert.Equal(100, player.MaxHp);
     }
 
@@ -244,8 +244,8 @@ public class PlayerImplTests
         player.TakeDamage(50);
         
         // This gives exactly enough XP to level up to 2
-        player.GainExperience(1000);
-        
+        player.GainExperience(200); // Threshold(1) = 200
+
         Assert.Equal(2, player.Level);
         Assert.Equal(110, player.MaxHp);
         Assert.Equal(110, player.Hp); // Should be fully healed
@@ -311,7 +311,7 @@ public class PlayerImplTests
     public void Player_SetLevel_Should_Work_From_Any_Starting_Level()
     {
         var player = CreatePlayer();
-        player.GainExperience(1000);
+        player.GainExperience(200); // Threshold(1) = 200
         Assert.Equal(2, player.Level);
 
         player.SetLevel(8);
@@ -342,10 +342,10 @@ public class PlayerImplTests
     {
         var player = new Player(1, "Test", _startPosition, attackPoints: 10);
 
-        player.GainExperience(1000);
+        player.GainExperience(200); // Threshold(1) = 200, 1 level up
 
-        Assert.Equal(12, player.AttackPoints);  // 10 + 2*1
-        Assert.Equal(12, player.TotalAttackPower);
+        Assert.Equal(11, player.AttackPoints);  // 10 + 1*1
+        Assert.Equal(11, player.TotalAttackPower);
     }
 
     [Fact]
@@ -365,8 +365,8 @@ public class PlayerImplTests
 
         player.SetLevel(5);
 
-        Assert.Equal(18, player.AttackPoints);   // 10 + 2*(5-1)
-        Assert.Equal(18, player.TotalAttackPower);
-        Assert.Equal(4, player.TotalDefense);    // (5-1)
+        Assert.Equal(14, player.AttackPoints);   // 10 + 1*(5-1)
+        Assert.Equal(14, player.TotalAttackPower);
+        Assert.Equal(2, player.TotalDefense);    // (5-1)/2
     }
 }
