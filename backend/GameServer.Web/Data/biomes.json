@@ -29,7 +29,7 @@
         "bush": "dark_bush",
         "pillar": "dark_pillar"
       },
-      "monsterTags": ["spider", "orc", "goblin", "skeleton"],
+      "monsterTags": ["spider", "orc", "goblin", "skeleton", "orc-sorcerer"],
       "isDefault": false
     }
   ]
