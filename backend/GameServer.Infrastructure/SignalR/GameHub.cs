@@ -27,6 +27,7 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IRankingService _rankingService;
         private readonly ILootTableService _lootTableService;
+        private readonly IFractalRiverWorldService _fractalWorld;
 
         public GameHub(
             IWorldManager worldProcessor,
@@ -42,7 +43,8 @@ namespace GameServer.Infrastructure.SignalR
             IItemFactory itemFactory,
             IItemDefinitionRepository itemRepo,
             IRankingService rankingService,
-            ILootTableService lootTableService)
+            ILootTableService lootTableService,
+            IFractalRiverWorldService fractalWorld)
         {
             _worldProcessor = worldProcessor;
             _worldEvents = worldEvents;
@@ -58,6 +60,7 @@ namespace GameServer.Infrastructure.SignalR
             _itemRepo = itemRepo;
             _rankingService = rankingService;
             _lootTableService = lootTableService;
+            _fractalWorld = fractalWorld;
         }
 
         public async Task JoinGame(string playerName)
@@ -67,7 +70,7 @@ namespace GameServer.Infrastructure.SignalR
             var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
             if (player == null)
             {
-                player = new Player(_idGeneratorService.GenerateId(), playerName, new Position(0, 0));
+                player = new Player(_idGeneratorService.GenerateId(), playerName, FindSafeSpawn());
                 _playerManager.AddPlayer(Context.ConnectionId, player);
             }
 
@@ -85,7 +88,10 @@ namespace GameServer.Infrastructure.SignalR
             _worldEvents.OnPlayerJoined(playerPositionData);
             _worldEvents.OnPlayerStatusUpdated(playerStatusData);
 
-            // 2.5 Load initial chunks
+            // 2.4 Send the full FractalRiver world matrix (terrain) once
+            await Clients.Caller.SendAsync("WorldMap", _fractalWorld.GetWorldMap());
+
+            // 2.5 Load initial chunks (objects + items only)
             _worldProcessor.ProcessChunkLoading(player, Context.ConnectionId);
 
             // 3. Send all existing players to the new player
@@ -142,6 +148,27 @@ namespace GameServer.Infrastructure.SignalR
 
             // 6. Send current ranking to the new player
             await Clients.Caller.SendAsync("RankingUpdated", _rankingService.GetTopRanking());
+        }
+
+        /// <summary>Acha um tile de terra perto do centro do mapa (busca em anéis a partir do centro).</summary>
+        private Position FindSafeSpawn()
+        {
+            int cols = _fractalWorld.WorldData.Cols;
+            int rows = _fractalWorld.WorldData.Rows;
+            int cx = cols / 2, cy = rows / 2;
+            int maxR = System.Math.Max(cols, rows);
+
+            for (int r = 0; r <= maxR; r++)
+                for (int dy = -r; dy <= r; dy++)
+                    for (int dx = -r; dx <= r; dx++)
+                    {
+                        if (System.Math.Max(System.Math.Abs(dx), System.Math.Abs(dy)) != r) continue; // só o anel atual
+                        int x = cx + dx, y = cy + dy;
+                        if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
+                        if (!_fractalWorld.IsWaterTile(x, y)) return new Position(x, y);
+                    }
+
+            return new Position(cx, cy);
         }
 
         public async Task RequestMove(string direction)
