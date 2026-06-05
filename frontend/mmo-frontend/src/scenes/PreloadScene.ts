@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { WEAPON_OVERLAY_REGISTRY, getAllBodyConfigs } from '../config/overlays';
 import { ITEM_ICON_REGISTRY } from '../config/itemIconRegistry';
 import { MONSTER_SPRITE_REGISTRY } from '../config/monsterSpriteRegistry';
+import { getAllTerrainAssetEntries } from '../config/terrainAssetMap';
 
 export class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -88,6 +89,13 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('dark_rock',   'assets/dark_forest/dark_rock.png');
         this.load.image('dark_bush',   'assets/dark_forest/dark_bush.png');
         this.load.image('dark_pillar', 'assets/dark_forest/dark_pillar.png');
+
+        // Terrain transition tiles (grass, sand, paths, water edges)
+        for (const entry of getAllTerrainAssetEntries()) {
+            this.load.image(entry.key, entry.path);
+        }
+        // Tile de água cheia (FractalRiver WaterFull)
+        this.load.image('water_full', 'assets/terrain/water_full.png');
 
         // this.load.audio('backgroundMusic', 'assets/music.mp3');
     }
