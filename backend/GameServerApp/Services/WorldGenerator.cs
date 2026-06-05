@@ -96,6 +96,8 @@ namespace GameServerApp.Services
         {
             var pos = new Position(x, y);
 
+            if (_staticWorldManager.IsBlocked(pos)) return;
+
             // Items passam direto sem mapeamento de bioma
             if (forcedType != null && forcedType.StartsWith("item:"))
             {

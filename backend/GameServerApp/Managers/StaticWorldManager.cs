@@ -107,6 +107,8 @@ namespace GameServerApp.Managers
             list.Add(staticObject);
         }
 
+        public void AddBlockedPosition(Position position) => _blockedPositions.Add(position);
+
         public bool RemoveObjectAt(Position position)
         {
             if (_staticObjects.TryGetValue(position, out var obj))

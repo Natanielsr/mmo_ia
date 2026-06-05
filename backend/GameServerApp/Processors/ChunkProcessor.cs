@@ -15,7 +15,6 @@ namespace GameServerApp.Processors
         private readonly IWorldGenerator _worldGenerator;
         private readonly IItemManager _itemManager;
         private readonly IWorldEvents _worldEvents;
-        private readonly IBiomeSelector _biomeSelector;
         private readonly WorldConfig _config;
 
         public ChunkProcessor(
@@ -23,14 +22,12 @@ namespace GameServerApp.Processors
             IWorldGenerator worldGenerator,
             IItemManager itemManager,
             IWorldEvents worldEvents,
-            IBiomeSelector biomeSelector,
             IOptions<WorldConfig> config)
         {
             _staticWorldManager = staticWorldManager;
             _worldGenerator = worldGenerator;
             _itemManager = itemManager;
             _worldEvents = worldEvents;
-            _biomeSelector = biomeSelector;
             _config = config.Value;
         }
 
@@ -45,28 +42,20 @@ namespace GameServerApp.Processors
                 {
                     var coord = new ChunkCoord(cx + dx, cy + dy);
 
+                    // Confina objetos ao mapa: ignora chunks totalmente fora dos limites do mundo.
+                    if (!IsChunkInsideMap(coord))
+                        continue;
+
                     if (!_staticWorldManager.IsChunkLoaded(coord))
                         _worldGenerator.GenerateChunk(coord);
 
                     var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
                     var chunkItems   = _itemManager.GetItemsInChunk(coord);
 
-                    var biome = _biomeSelector.GetBiomeForChunk(coord);
-                    var tileBiomeTags = new List<string>(_config.Map.ChunkSize * _config.Map.ChunkSize);
-                    for (int ty = 0; ty < _config.Map.ChunkSize; ty++)
-                        for (int tx = 0; tx < _config.Map.ChunkSize; tx++)
-                        {
-                            int worldX = coord.CX * _config.Map.ChunkSize + tx;
-                            int worldY = coord.CY * _config.Map.ChunkSize + ty;
-                            tileBiomeTags.Add(_biomeSelector.GetBiomeForTile(worldX, worldY).TagName);
-                        }
-
                     var chunkData = new ChunkData
                     {
-                        CX = coord.CX,
-                        CY = coord.CY,
-                        BiomeTag = biome.TagName,
-                        TileBiomeTags = tileBiomeTags,
+                        Cx = coord.CX,
+                        Cy = coord.CY,
                         Objects = chunkObjects.Select(obj => new MapObjectData
                         {
                             Id         = obj.Id,
@@ -94,6 +83,15 @@ namespace GameServerApp.Processors
                     _worldEvents.OnChunkLoaded(connectionId, chunkData);
                 }
             }
+        }
+
+        /// <summary>True se o chunk sobrepõe os limites do mapa [0,Width) × [0,Height).</summary>
+        private bool IsChunkInsideMap(ChunkCoord coord)
+        {
+            int size = _config.Map.ChunkSize;
+            return coord.CX >= 0 && coord.CY >= 0
+                && coord.CX * size < _config.Map.Width
+                && coord.CY * size < _config.Map.Height;
         }
     }
 }
