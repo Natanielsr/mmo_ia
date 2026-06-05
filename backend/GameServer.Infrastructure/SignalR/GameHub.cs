@@ -88,10 +88,7 @@ namespace GameServer.Infrastructure.SignalR
             _worldEvents.OnPlayerJoined(playerPositionData);
             _worldEvents.OnPlayerStatusUpdated(playerStatusData);
 
-            // 2.4 Send the full FractalRiver world matrix (terrain) once
-            await Clients.Caller.SendAsync("WorldMap", _fractalWorld.GetWorldMap());
-
-            // 2.5 Load initial chunks (objects + items only)
+            // 2.5 Load initial chunks (objects + items + terrain tiles)
             _worldProcessor.ProcessChunkLoading(player, Context.ConnectionId);
 
             // 3. Send all existing players to the new player

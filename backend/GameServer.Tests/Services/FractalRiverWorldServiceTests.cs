@@ -58,4 +58,47 @@ public class FractalRiverWorldServiceTests
             foreach (var t in row)
                 Assert.InRange(t, 0, maxTile);
     }
+
+    [Fact]
+    public void GetChunkTiles_ReturnsDimensionsMatchingChunkSize()
+    {
+        var service = CreateService(width: 32, height: 32);
+        const int chunkSize = 16;
+
+        var (tiles, biomes) = service.GetChunkTiles(0, 0, chunkSize);
+
+        Assert.Equal(chunkSize, tiles.Length);
+        Assert.Equal(chunkSize, tiles[0].Length);
+        Assert.Equal(chunkSize, biomes.Length);
+        Assert.Equal(chunkSize, biomes[0].Length);
+    }
+
+    [Fact]
+    public void GetChunkTiles_ValuesMatchGetWorldMap()
+    {
+        var service = CreateService(width: 32, height: 32);
+        const int chunkSize = 16;
+        var map = service.GetWorldMap();
+
+        var (tiles, biomes) = service.GetChunkTiles(0, 0, chunkSize);
+
+        for (int row = 0; row < chunkSize; row++)
+            for (int col = 0; col < chunkSize; col++)
+            {
+                Assert.Equal(map.Tiles[row][col], tiles[row][col]);
+                Assert.Equal(map.Biomes[row][col], biomes[row][col]);
+            }
+    }
+
+    [Fact]
+    public void GetChunkTiles_OutOfBoundsCoord_ReturnsZeros()
+    {
+        var service = CreateService(width: 16, height: 16);
+
+        var (tiles, biomes) = service.GetChunkTiles(cx: 5, cy: 5, chunkSize: 16);
+
+        foreach (var row in tiles)
+            foreach (var t in row)
+                Assert.Equal(0, t);
+    }
 }

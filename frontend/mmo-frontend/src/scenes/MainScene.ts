@@ -203,11 +203,6 @@ export class MainScene extends Phaser.Scene {
         this.chunkManager.handleChunkLoaded(data);
     }
 
-    // --- World Map (FractalRiver full matrix) ---
-    public worldMapLoaded(data: import('../dtos/world').WorldMapData) {
-        this.chunkManager.renderWorldMap(data);
-    }
-
     // --- Wrapper Methods ---
     public updatePlayerPosition(data: any, isMe: boolean = false) { this.playerManager.updatePlayerPosition(data, isMe); }
     public updatePlayerStatus(data: any) { this.playerManager.updatePlayerStatus(data); }

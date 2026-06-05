@@ -11,15 +11,6 @@ export class WorldEventHandler {
     }
 
     register(): void {
-        this.connection.on("WorldMap", (data: any) => {
-            this.scene.worldMapLoaded({
-                cols: data.cols ?? data.Cols ?? 0,
-                rows: data.rows ?? data.Rows ?? 0,
-                tiles: data.tiles ?? data.Tiles ?? [],
-                biomes: data.biomes ?? data.Biomes ?? [],
-            });
-        });
-
         this.connection.on("ChunkLoaded", (data: any) => {
             this.scene.chunkLoaded({
                 cx: data.cx ?? data.Cx ?? data.CX,
@@ -34,7 +25,9 @@ export class WorldEventHandler {
                     },
                     type: String(obj.type ?? obj.Type),
                     isPassable: Boolean(obj.isPassable ?? obj.IsPassable)
-                }))
+                })),
+                tiles: (data.tiles ?? data.Tiles) as number[][] | undefined,
+                biomes: (data.biomes ?? data.Biomes) as number[][] | undefined,
             });
         });
     }

@@ -130,6 +130,11 @@ namespace GameServer.Tests.Helpers
             BiomeSelector.Setup(b => b.GetBiomeForPosition(It.IsAny<Position>())).Returns(defaultBiome);
             BiomeSelector.Setup(b => b.GetBiomeForTile(It.IsAny<int>(), It.IsAny<int>())).Returns(defaultBiome);
 
+            FractalRiverWorld.Setup(f => f.GetChunkTiles(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns((int _cx, int _cy, int size) =>
+                    (Enumerable.Range(0, size).Select(_ => new int[size]).ToArray(),
+                     Enumerable.Range(0, size).Select(_ => new int[size]).ToArray()));
+
             var movementProcessor = new PlayerMovementProcessor(
                 _movementService ?? new Mock<IMovementService>().Object,
                 BuiltCollision,
@@ -169,6 +174,7 @@ namespace GameServer.Tests.Helpers
                 WorldGenerator.Object,
                 ItemManager.Object,
                 Events.Object,
+                FractalRiverWorld.Object,
                 opts);
 
             BuiltRegeneration = new PlayerRegenerationProcessor(

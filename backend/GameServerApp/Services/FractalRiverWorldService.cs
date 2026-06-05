@@ -54,4 +54,27 @@ public class FractalRiverWorldService : IFractalRiverWorldService
         Tiles = WorldData.TilesAsJaggedArray(),
         Biomes = WorldData.BiomesAsJaggedArray(),
     };
+
+    public (int[][] Tiles, int[][] Biomes) GetChunkTiles(int cx, int cy, int chunkSize)
+    {
+        var tiles  = new int[chunkSize][];
+        var biomes = new int[chunkSize][];
+        int startX = cx * chunkSize;
+        int startY = cy * chunkSize;
+
+        for (int row = 0; row < chunkSize; row++)
+        {
+            tiles[row]  = new int[chunkSize];
+            biomes[row] = new int[chunkSize];
+            for (int col = 0; col < chunkSize; col++)
+            {
+                int wx = startX + col;
+                int wy = startY + row;
+                tiles[row][col]  = (wx < WorldData.Cols && wy < WorldData.Rows) ? (int)WorldData.Tiles[wx, wy]  : 0;
+                biomes[row][col] = (wx < WorldData.Cols && wy < WorldData.Rows) ? (int)WorldData.Biomes[wx, wy] : 0;
+            }
+        }
+
+        return (tiles, biomes);
+    }
 }

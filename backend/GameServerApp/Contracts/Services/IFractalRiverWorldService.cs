@@ -12,4 +12,7 @@ public interface IFractalRiverWorldService
 
     /// <summary>Matriz completa do mundo (tiles + biomas) para enviar ao frontend.</summary>
     WorldMapData GetWorldMap();
+
+    /// <summary>Extrai tiles e biomas de um chunk específico (chunkSize×chunkSize, convenção [row][col]).</summary>
+    (int[][] Tiles, int[][] Biomes) GetChunkTiles(int cx, int cy, int chunkSize);
 }

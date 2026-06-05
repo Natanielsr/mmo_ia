@@ -15,6 +15,7 @@ namespace GameServerApp.Processors
         private readonly IWorldGenerator _worldGenerator;
         private readonly IItemManager _itemManager;
         private readonly IWorldEvents _worldEvents;
+        private readonly IFractalRiverWorldService _fractalWorld;
         private readonly WorldConfig _config;
 
         public ChunkProcessor(
@@ -22,12 +23,14 @@ namespace GameServerApp.Processors
             IWorldGenerator worldGenerator,
             IItemManager itemManager,
             IWorldEvents worldEvents,
+            IFractalRiverWorldService fractalWorld,
             IOptions<WorldConfig> config)
         {
             _staticWorldManager = staticWorldManager;
             _worldGenerator = worldGenerator;
             _itemManager = itemManager;
             _worldEvents = worldEvents;
+            _fractalWorld = fractalWorld;
             _config = config.Value;
         }
 
@@ -51,11 +54,14 @@ namespace GameServerApp.Processors
 
                     var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
                     var chunkItems   = _itemManager.GetItemsInChunk(coord);
+                    var (tiles, biomes) = _fractalWorld.GetChunkTiles(coord.CX, coord.CY, _config.Map.ChunkSize);
 
                     var chunkData = new ChunkData
                     {
                         Cx = coord.CX,
                         Cy = coord.CY,
+                        Tiles = tiles,
+                        Biomes = biomes,
                         Objects = chunkObjects.Select(obj => new MapObjectData
                         {
                             Id         = obj.Id,

@@ -1,9 +1,7 @@
 import Phaser from 'phaser';
 import type { ChunkData, MapObjectData } from '../types';
-import type { WorldMapData } from '../dtos/world';
 import { GRID_SIZE } from '../config/constants';
-import { TileType } from '../config/tileTypeRegistry';
-import type { BiomeIndex } from '../config/tileTypeRegistry';
+import { TileType, type BiomeIndex } from '../config/tileTypeRegistry';
 import { getTerrainAssetEntry } from '../config/terrainAssetMap';
 
 export class ChunkManager {
@@ -12,7 +10,6 @@ export class ChunkManager {
     private visitedChunks: Set<string> = new Set();
     private chunkSize: number = 16;
     private allObjects: Map<string, MapObjectData[]> = new Map();
-    private worldRts: Phaser.GameObjects.RenderTexture[] = [];
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -27,87 +24,64 @@ export class ChunkManager {
         this.visitedChunks.add(chunkKey);
         this.allObjects.set(chunkKey, data.objects);
 
-        // Se o chunk já está renderizado, não faz nada
         if (this.loadedChunks.has(chunkKey)) {
             return;
         }
 
         const group = this.scene.add.group();
-
-        // Renderiza apenas Objetos Estáticos (Árvores, Pedras, etc.).
-        // O terreno é renderizado de uma vez via renderWorldMap (matriz FractalRiver).
         this.renderChunkObjects(data.objects, group);
 
-        this.loadedChunks.set(chunkKey, { group });
+        const rt = data.tiles ? this.renderChunkTerrain(data.cx, data.cy, data.tiles, data.biomes) : undefined;
+
+        this.loadedChunks.set(chunkKey, { group, rt });
     }
 
-    /**
-     * Renderiza o mapa inteiro a partir da matriz do FractalRiver numa única RenderTexture.
-     * O backend usa Y-down (DualGrid) e o frontend Y-up: além de inverter a posição das linhas,
-     * o conteúdo de cada tile é espelhado verticalmente (flipY) para alinhar a artwork.
-     */
-    public renderWorldMap(map: WorldMapData) {
-        const { cols, rows, tiles, biomes } = map;
-        if (!cols || !rows) return;
+    private renderChunkTerrain(
+        cx: number, cy: number,
+        tiles: number[][],
+        biomes?: number[][]
+    ): Phaser.GameObjects.RenderTexture {
+        const size = this.chunkSize;
+        const rtW  = size * GRID_SIZE;
+        const rtH  = size * GRID_SIZE;
+        // World coords: x positive right, y positive up (frontend Y-up convention)
+        const rtX  =  cx       * size * GRID_SIZE;
+        const rtY  = -(cy + 1) * size * GRID_SIZE;
 
-        this.clearWorldRts();
-
-        // Divide o mundo em blocos para nunca estourar o limite de textura da GPU.
-        // BLOCK*GRID_SIZE = 2048px por RenderTexture (seguro em qualquer hardware).
-        const BLOCK = 32;
+        const rt = this.scene.add.renderTexture(rtX, rtY, rtW, rtH);
+        rt.setOrigin(0, 0);
+        rt.setDepth(-100000);
 
         const tmp = this.scene.make.image({ x: 0, y: 0, key: 'water_full', add: false });
         tmp.setOrigin(0, 0);
 
-        for (let by = 0; by < rows; by += BLOCK) {
-            for (let bx = 0; bx < cols; bx += BLOCK) {
-                const bw = Math.min(BLOCK, cols - bx);
-                const bh = Math.min(BLOCK, rows - by);
+        for (let row = 0; row < size; row++) {
+            for (let col = 0; col < size; col++) {
+                const tileType = tiles[row]?.[col] ?? TileType.WaterFull;
+                const biome    = ((biomes?.[row]?.[col] ?? 0)) as BiomeIndex;
 
-                // Bloco cobre worldX [bx*GRID, (bx+bw)*GRID], worldY [-(by+bh)*GRID, -by*GRID].
-                const rt = this.scene.add.renderTexture(
-                    bx * GRID_SIZE, -(by + bh) * GRID_SIZE, bw * GRID_SIZE, bh * GRID_SIZE,
-                );
-                rt.setOrigin(0, 0);
-                rt.setDepth(-100000);
-
-                for (let ly = 0; ly < bh; ly++) {
-                    for (let lx = 0; lx < bw; lx++) {
-                        const x = bx + lx;
-                        const y = by + ly;
-                        const tileType = tiles[y]?.[x] ?? TileType.TerrainFull;
-                        const biome = (biomes[y]?.[x] ?? 0) as BiomeIndex;
-
-                        let key: string;
-                        let flipY = true; // espelha N↔S da artwork (backend Y-down → frontend Y-up)
-                        if (tileType === TileType.WaterFull) {
-                            key = 'water_full';
-                            flipY = false; // tile cheio, simétrico
-                        } else {
-                            const entry = getTerrainAssetEntry(tileType, biome);
-                            key = entry ? entry.key : 'water_full';
-                        }
-
-                        tmp.setTexture(key);
-                        tmp.setFlipY(flipY);
-                        tmp.setDisplaySize(GRID_SIZE, GRID_SIZE);
-
-                        const localX = lx * GRID_SIZE;
-                        const localY = (bh - 1 - ly) * GRID_SIZE; // inverte ordem das linhas (Y-up)
-                        rt.draw(tmp, localX, localY);
-                    }
+                let key: string;
+                let flipY = true;
+                if (tileType === TileType.WaterFull) {
+                    key   = 'water_full';
+                    flipY = false;
+                } else {
+                    const entry = getTerrainAssetEntry(tileType, biome);
+                    key = entry ? entry.key : 'water_full';
                 }
 
-                this.worldRts.push(rt);
+                tmp.setTexture(key);
+                tmp.setFlipY(flipY);
+                tmp.setDisplaySize(GRID_SIZE, GRID_SIZE);
+
+                const localX = col * GRID_SIZE;
+                const localY = (size - 1 - row) * GRID_SIZE; // inverts row order (Y-up)
+                rt.draw(tmp, localX, localY);
             }
         }
 
         tmp.destroy();
-    }
-
-    private clearWorldRts() {
-        this.worldRts.forEach(rt => rt.destroy());
-        this.worldRts = [];
+        return rt;
     }
 
     private renderChunkObjects(objects: MapObjectData[], group: Phaser.GameObjects.Group) {
@@ -122,15 +96,12 @@ export class ChunkManager {
         });
     }
 
-    /**
-     * Limpa chunks que estão muito distantes do jogador para economizar memória e CPU
-     */
     public update(playerPos: { x: number, y: number }, loadRadius: number = 2) {
         const pcx = Math.floor(playerPos.x / this.chunkSize);
         const pcy = Math.floor(playerPos.y / this.chunkSize);
 
         const keysToRemove: string[] = [];
-        const safetyMargin = 1; // Mantém um pouco mais do que o necessário para evitar flicker
+        const safetyMargin = 1;
 
         this.loadedChunks.forEach((_, key) => {
             const [cx, cy] = key.split(',').map(Number);
@@ -150,11 +121,8 @@ export class ChunkManager {
             }
         });
 
-        // Otimização de Memória: Limita o cache global de objetos se ficar muito grande
-        // Mantemos os últimos 100 chunks visitados para não pesar a memória
         if (this.allObjects.size > 100) {
             const allKeys = Array.from(this.allObjects.keys());
-            // Remove os mais antigos (abordagem simples)
             for (let i = 0; i < allKeys.length - 100; i++) {
                 this.allObjects.delete(allKeys[i]);
                 this.visitedChunks.delete(allKeys[i]);
@@ -168,6 +136,5 @@ export class ChunkManager {
             chunk.rt?.destroy();
         });
         this.loadedChunks.clear();
-        this.clearWorldRts();
     }
 }
