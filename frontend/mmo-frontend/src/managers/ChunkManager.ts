@@ -1,7 +1,10 @@
 import Phaser from 'phaser';
 import type { ChunkData, MapObjectData } from '../types';
+import type { WorldMapData } from '../dtos/world';
 import { GRID_SIZE } from '../config/constants';
-import { getBiomeRenderConfig } from '../config/biomeRenderRegistry';
+import { TileType } from '../config/tileTypeRegistry';
+import type { BiomeIndex } from '../config/tileTypeRegistry';
+import { getTerrainAssetEntry } from '../config/terrainAssetMap';
 
 export class ChunkManager {
     private scene: Phaser.Scene;
@@ -9,6 +12,7 @@ export class ChunkManager {
     private visitedChunks: Set<string> = new Set();
     private chunkSize: number = 16;
     private allObjects: Map<string, MapObjectData[]> = new Map();
+    private worldRts: Phaser.GameObjects.RenderTexture[] = [];
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -29,56 +33,81 @@ export class ChunkManager {
         }
 
         const group = this.scene.add.group();
-        
-        // Otimização: RenderTexture para os tiles de grama
-        // Isso "achata" 256 sprites em uma única imagem por chunk
-        const rt = this.renderChunkTilesToTexture(data.cx, data.cy, data.tileBiomeTags ?? []);
-        
-        this.loadedChunks.set(chunkKey, { group, rt });
 
-        // Renderiza Objetos Estáticos (Árvores, Pedras, etc.)
+        // Renderiza apenas Objetos Estáticos (Árvores, Pedras, etc.).
+        // O terreno é renderizado de uma vez via renderWorldMap (matriz FractalRiver).
         this.renderChunkObjects(data.objects, group);
 
+        this.loadedChunks.set(chunkKey, { group });
     }
 
-    private renderChunkTilesToTexture(cx: number, cy: number, tileBiomeTags: string[]): Phaser.GameObjects.RenderTexture {
-        const sizePx = this.chunkSize * GRID_SIZE;
-        const worldX = cx * sizePx;
-        const worldY = -cy * sizePx;
+    /**
+     * Renderiza o mapa inteiro a partir da matriz do FractalRiver numa única RenderTexture.
+     * O backend usa Y-down (DualGrid) e o frontend Y-up: além de inverter a posição das linhas,
+     * o conteúdo de cada tile é espelhado verticalmente (flipY) para alinhar a artwork.
+     */
+    public renderWorldMap(map: WorldMapData) {
+        const { cols, rows, tiles, biomes } = map;
+        if (!cols || !rows) return;
 
-        const rt = this.scene.add.renderTexture(worldX + sizePx / 2, worldY - sizePx / 2, sizePx, sizePx);
-        rt.setOrigin(0.5, 0.5);
-        rt.setDepth(-100000);
+        this.clearWorldRts();
 
-        // Sprite temporário reutilizável para desenhar cada tile no tamanho correto
-        const tmpSprite = this.scene.make.image({ x: 0, y: 0, key: 'grass1', add: false });
-        tmpSprite.setDisplaySize(GRID_SIZE, GRID_SIZE);
-        tmpSprite.setOrigin(0, 0);
+        // Divide o mundo em blocos para nunca estourar o limite de textura da GPU.
+        // BLOCK*GRID_SIZE = 2048px por RenderTexture (seguro em qualquer hardware).
+        const BLOCK = 32;
 
-        for (let x = 0; x < this.chunkSize; x++) {
-            for (let y = 0; y < this.chunkSize; y++) {
-                const wtx = cx * this.chunkSize + x;
-                const wty = cy * this.chunkSize + y;
+        const tmp = this.scene.make.image({ x: 0, y: 0, key: 'water_full', add: false });
+        tmp.setOrigin(0, 0);
 
-                const idx = y * this.chunkSize + x;
-                const biomeConfig = getBiomeRenderConfig(tileBiomeTags[idx] ?? 'green_field');
-                const { groundTilePrefix, groundTileCount } = biomeConfig;
+        for (let by = 0; by < rows; by += BLOCK) {
+            for (let bx = 0; bx < cols; bx += BLOCK) {
+                const bw = Math.min(BLOCK, cols - bx);
+                const bh = Math.min(BLOCK, rows - by);
 
-                const seed = (Math.abs(wtx) * 1000 + Math.abs(wty)) % groundTileCount;
-                const tileKey = `${groundTilePrefix}${seed + 1}`;
+                // Bloco cobre worldX [bx*GRID, (bx+bw)*GRID], worldY [-(by+bh)*GRID, -by*GRID].
+                const rt = this.scene.add.renderTexture(
+                    bx * GRID_SIZE, -(by + bh) * GRID_SIZE, bw * GRID_SIZE, bh * GRID_SIZE,
+                );
+                rt.setOrigin(0, 0);
+                rt.setDepth(-100000);
 
-                tmpSprite.setTexture(tileKey);
-                tmpSprite.setDisplaySize(GRID_SIZE, GRID_SIZE);
+                for (let ly = 0; ly < bh; ly++) {
+                    for (let lx = 0; lx < bw; lx++) {
+                        const x = bx + lx;
+                        const y = by + ly;
+                        const tileType = tiles[y]?.[x] ?? TileType.TerrainFull;
+                        const biome = (biomes[y]?.[x] ?? 0) as BiomeIndex;
 
-                const localX = x * GRID_SIZE;
-                const localY = (this.chunkSize - 1 - y) * GRID_SIZE;
+                        let key: string;
+                        let flipY = true; // espelha N↔S da artwork (backend Y-down → frontend Y-up)
+                        if (tileType === TileType.WaterFull) {
+                            key = 'water_full';
+                            flipY = false; // tile cheio, simétrico
+                        } else {
+                            const entry = getTerrainAssetEntry(tileType, biome);
+                            key = entry ? entry.key : 'water_full';
+                        }
 
-                rt.draw(tmpSprite, localX, localY);
+                        tmp.setTexture(key);
+                        tmp.setFlipY(flipY);
+                        tmp.setDisplaySize(GRID_SIZE, GRID_SIZE);
+
+                        const localX = lx * GRID_SIZE;
+                        const localY = (bh - 1 - ly) * GRID_SIZE; // inverte ordem das linhas (Y-up)
+                        rt.draw(tmp, localX, localY);
+                    }
+                }
+
+                this.worldRts.push(rt);
             }
         }
 
-        tmpSprite.destroy();
-        return rt;
+        tmp.destroy();
+    }
+
+    private clearWorldRts() {
+        this.worldRts.forEach(rt => rt.destroy());
+        this.worldRts = [];
     }
 
     private renderChunkObjects(objects: MapObjectData[], group: Phaser.GameObjects.Group) {
@@ -139,5 +168,6 @@ export class ChunkManager {
             chunk.rt?.destroy();
         });
         this.loadedChunks.clear();
+        this.clearWorldRts();
     }
 }
