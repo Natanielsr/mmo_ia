@@ -25,6 +25,7 @@ builder.Services.AddSignalR()
     .AddJsonProtocol(options =>
     {
         options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
 // Add CORS
@@ -51,6 +52,7 @@ builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>()
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 builder.Services.AddSingleton<IWorldGenerator, WorldGenerator>();
+builder.Services.AddSingleton<IFractalRiverWorldService, FractalRiverWorldService>();
 builder.Services.AddSingleton<IItemFactory, ItemFactory>();
 builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
 {
@@ -114,6 +116,7 @@ builder.Services.AddSingleton<IIdGeneratorService, IdGeneratorService>();
 
 var app = builder.Build();
 
+InitializeWaterBlocks(app.Services);
 InitializeRandomMonsters(app.Services);
 
 app.UseCors("AllowAll");
@@ -128,6 +131,18 @@ app.MapControllers();
 
 app.Run();
 
+
+static void InitializeWaterBlocks(IServiceProvider services)
+{
+    var fractal = services.GetRequiredService<IFractalRiverWorldService>();
+    var staticWorld = services.GetRequiredService<IStaticWorldManager>();
+    var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
+
+    for (int y = 0; y < config.Map.Height; y++)
+        for (int x = 0; x < config.Map.Width; x++)
+            if (fractal.IsWaterTile(x, y))
+                staticWorld.AddBlockedPosition(new GameServerApp.Contracts.Types.Position(x, y));
+}
 
 static void InitializeRandomMonsters(IServiceProvider services)
 {
