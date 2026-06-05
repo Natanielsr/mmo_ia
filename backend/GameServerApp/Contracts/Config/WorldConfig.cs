@@ -15,6 +15,8 @@ public class MapConfig
     public int ChunkSize { get; set; } = 16;
     public int LoadRadius { get; set; } = 1;
     public int SafeSpawnRadius { get; set; } = 4;
+    public int GeneratorSeed { get; set; } = 42;
+    public float GeneratorFrequency { get; set; } = 0.05f;
 }
 
 public class MonsterConfig
