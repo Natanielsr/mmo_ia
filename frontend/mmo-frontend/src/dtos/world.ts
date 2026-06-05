@@ -10,7 +10,12 @@ export interface MapObjectData {
 export interface ChunkData {
     cx: number;
     cy: number;
-    biomeTag: string;
-    tileBiomeTags: string[];
     objects: MapObjectData[];
+}
+
+export interface WorldMapData {
+    cols: number;
+    rows: number;
+    tiles: number[][];   // tiles[row][col] = TileType ordinal
+    biomes: number[][];  // biomes[row][col] = 0=Grass 1=Sand 2=Snow
 }
