@@ -19,6 +19,7 @@ namespace GameServerApp.Contracts.Managers
     bool IsChunkLoaded(ChunkCoord coord);
     IEnumerable<IStaticWorldObject> GetChunkObjects(ChunkCoord coord);
     void AddStaticObject(IStaticWorldObject staticObject);
+    void AddBlockedPosition(Position position);
     bool RemoveObjectAt(Position position);
     void Clear();
     }
