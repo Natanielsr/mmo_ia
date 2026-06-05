@@ -41,6 +41,7 @@ namespace GameServer.Tests.Helpers
         public Mock<IIdGeneratorService>     IdGenerator            { get; } = new();
         public Mock<IWorldGenerator>         WorldGenerator         { get; } = new();
         public Mock<IBiomeSelector>          BiomeSelector          { get; } = new();
+        public Mock<IFractalRiverWorldService> FractalRiverWorld     { get; } = new();
         public Mock<ILootTableService>       LootTable              { get; } = new();
         public Mock<IInventoryManager>       InventoryManager       { get; } = new();
         public Mock<IEquipmentManager>            EquipmentManager      { get; } = new();
@@ -168,7 +169,6 @@ namespace GameServer.Tests.Helpers
                 WorldGenerator.Object,
                 ItemManager.Object,
                 Events.Object,
-                BiomeSelector.Object,
                 opts);
 
             BuiltRegeneration = new PlayerRegenerationProcessor(

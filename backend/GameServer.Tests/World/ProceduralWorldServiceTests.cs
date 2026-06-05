@@ -77,6 +77,11 @@ public class ProceduralWorldServiceTests
             throw new NotImplementedException();
         }
 
+        public void AddBlockedPosition(Position position)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Clear()
         {
             throw new NotImplementedException();
