@@ -15,7 +15,7 @@ public class MapConfig
     public int ChunkSize { get; set; } = 16;
     public int LoadChunks { get; set; } = 9;
     public int SafeSpawnRadius { get; set; } = 4;
-    public int GeneratorSeed { get; set; } = 42;
+    public int GeneratorSeed { get; set; } = Random.Shared.Next();
     public float GeneratorFrequency { get; set; } = 0.05f;
 }
 
