@@ -13,7 +13,7 @@ public class MapConfig
     public int Width { get; set; } = 32;
     public int Height { get; set; } = 32;
     public int ChunkSize { get; set; } = 16;
-    public int LoadRadius { get; set; } = 1;
+    public int LoadChunks { get; set; } = 9;
     public int SafeSpawnRadius { get; set; } = 4;
     public int GeneratorSeed { get; set; } = 42;
     public float GeneratorFrequency { get; set; } = 0.05f;

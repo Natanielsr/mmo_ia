@@ -160,7 +160,7 @@ namespace GameServer.Tests.Managers
 
             _worldManager.ProcessChunkLoading(player, connectionId);
 
-            // Mapa default 32×32, ChunkSize 16, LoadRadius 1, player em (0,0):
+            // Mapa default 32×32, ChunkSize 16, LoadChunks 9 (3×3), player em (0,0):
             // dos 9 chunks vizinhos só os 4 dentro dos limites (cx,cy ∈ {0,1}) são carregados.
             _b.Events.Verify(e => e.OnChunkLoaded(connectionId, It.Is<ChunkData>(d =>
                 d.Items.Any(i => i.Id == "item1" && i.Name == "Potion"))), Times.Exactly(4));

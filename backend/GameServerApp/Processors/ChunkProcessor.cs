@@ -39,14 +39,19 @@ namespace GameServerApp.Processors
             int cx = (int)Math.Floor((double)player.Position.X / _config.Map.ChunkSize);
             int cy = (int)Math.Floor((double)player.Position.Y / _config.Map.ChunkSize);
 
-            for (int dx = -_config.Map.LoadRadius; dx <= _config.Map.LoadRadius; dx++)
+            int side = (int)Math.Floor(Math.Sqrt(_config.Map.LoadChunks));
+            int half = side / 2;
+
+            for (int dx = -half; dx <= half; dx++)
             {
-                for (int dy = -_config.Map.LoadRadius; dy <= _config.Map.LoadRadius; dy++)
+                for (int dy = -half; dy <= half; dy++)
                 {
                     var coord = new ChunkCoord(cx + dx, cy + dy);
 
-                    // Confina objetos ao mapa: ignora chunks totalmente fora dos limites do mundo.
                     if (!IsChunkInsideMap(coord))
+                        continue;
+
+                    if (player.SentChunks.Contains(coord))
                         continue;
 
                     if (!_staticWorldManager.IsChunkLoaded(coord))
@@ -87,6 +92,7 @@ namespace GameServerApp.Processors
                     };
 
                     _worldEvents.OnChunkLoaded(connectionId, chunkData);
+                    player.SentChunks.Add(coord);
                 }
             }
         }

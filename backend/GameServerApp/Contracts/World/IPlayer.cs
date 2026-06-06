@@ -1,4 +1,5 @@
 using GameServerApp.Contracts.Types;
+using System.Collections.Generic;
 
 namespace GameServerApp.Contracts.World
 {
@@ -26,6 +27,7 @@ namespace GameServerApp.Contracts.World
         DateTime LastAttackTime { get; }
         PlayerState State { get; }
         bool IsGodMode { get; }
+        HashSet<ChunkCoord> SentChunks { get; }
 
         void Move(Position newPosition);
         void Attack(IWorldObject target);

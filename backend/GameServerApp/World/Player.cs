@@ -32,6 +32,7 @@ namespace GameServerApp.World
         public PlayerState State { get; private set; }
         public bool IsDead => State == PlayerState.Dead;
         public bool IsGodMode { get; private set; }
+        public HashSet<ChunkCoord> SentChunks { get; } = [];
 
         private int _equipmentAttackBonus = 0;
         private int _equipmentDefenseBonus = 0;
