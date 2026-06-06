@@ -1,3 +1,4 @@
+using FractalRiver;
 using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
@@ -9,74 +10,36 @@ namespace GameServerApp.Services;
 public class BiomeSelector : IBiomeSelector
 {
     private readonly IBiomeDefinitionRepository _biomeRepo;
-    private readonly int _chunkSize;
+    private readonly IBiomeMap                  _biomeMap;
+    private readonly int                        _chunkSize;
 
-    // Keep spawn area always green_field (2 chunks radius)
-    private const double SafeSpawnRadius = 5.0;
-
-    public BiomeSelector(IBiomeDefinitionRepository biomeRepo, IOptions<WorldConfig> config)
+    public BiomeSelector(IBiomeDefinitionRepository biomeRepo, IBiomeMap biomeMap, IOptions<WorldConfig> config)
     {
         _biomeRepo = biomeRepo;
+        _biomeMap  = biomeMap;
         _chunkSize = config.Value.Map.ChunkSize;
     }
 
     public BiomeDefinition GetBiomeForChunk(ChunkCoord coord)
     {
-        var defaultBiome = _biomeRepo.GetDefault();
-
-        var distance = Math.Sqrt((double)coord.CX * coord.CX + (double)coord.CY * coord.CY);
-        if (distance < SafeSpawnRadius)
-            return defaultBiome;
-
-        var noise = GetNoise(coord.CX, coord.CY);
-        if (noise >= 0.5)
-        {
-            var darkForest = _biomeRepo.GetByTagName("dark_forest");
-            if (darkForest != null)
-                return darkForest;
-        }
-
-        return defaultBiome;
+        int tileX = coord.CX * _chunkSize + _chunkSize / 2;
+        int tileY = coord.CY * _chunkSize + _chunkSize / 2;
+        return GetBiomeForTile(tileX, tileY);
     }
 
     public BiomeDefinition GetBiomeForPosition(Position pos)
     {
-        int cx = (int)Math.Floor((double)pos.X / _chunkSize);
-        int cy = (int)Math.Floor((double)pos.Y / _chunkSize);
-        return GetBiomeForChunk(new ChunkCoord(cx, cy));
+        return GetBiomeForTile(pos.X, pos.Y);
     }
 
     public BiomeDefinition GetBiomeForTile(int tileX, int tileY)
     {
-        var defaultBiome = _biomeRepo.GetDefault();
-
-        // Safe radius in tile units: 2 chunks * chunkSize
-        double distTiles = Math.Sqrt((double)tileX * tileX + (double)tileY * tileY);
-        if (distTiles < SafeSpawnRadius * _chunkSize)
-            return defaultBiome;
-
-        double fx = (double)tileX / _chunkSize;
-        double fy = (double)tileY / _chunkSize;
-        double noise = GetNoise(fx, fy);
-
-        if (noise >= 0.5)
+        return _biomeMap.GetBiomeAt(tileX, tileY) switch
         {
-            var darkForest = _biomeRepo.GetByTagName("dark_forest");
-            if (darkForest != null) return darkForest;
-        }
-
-        return defaultBiome;
-    }
-
-    // Domain-warped multi-octave noise → irregular organic biome shapes, hard threshold
-    private static double GetNoise(double fx, double fy)
-    {
-        // Warp input coords to break regularity
-        double wx = fx + 0.8 * Math.Sin(fx * 1.15 + fy * 0.85);
-        double wy = fy + 0.8 * Math.Cos(fx * 0.95 - fy * 1.45);
-
-        double val = Math.Sin(wx * 1.55) * Math.Cos(wy * 1.45)
-                   + Math.Sin(wx * 0.85 + wy * 0.65) * 0.5;
-        return (val + 1.5) / 3.0;
+            Biome.Sand       => _biomeRepo.GetByTagName("sand")        ?? _biomeRepo.GetDefault(),
+            Biome.Snow       => _biomeRepo.GetByTagName("snow")        ?? _biomeRepo.GetDefault(),
+            Biome.DarkForest => _biomeRepo.GetByTagName("dark_forest") ?? _biomeRepo.GetDefault(),
+            _                => _biomeRepo.GetDefault()
+        };
     }
 }

@@ -1,15 +1,16 @@
+using FractalRiver;
 using GameServerApp.Contracts.Config;
 using GameServerApp.Contracts.Services;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Services;
 using Microsoft.Extensions.Options;
 using Moq;
-using Xunit;
 
 namespace GameServer.Tests.Services;
 
 public class BiomeSelectorTests
 {
+    private readonly Mock<IBiomeMap> _mockBiomeMap = new();
     private readonly IBiomeSelector _sut;
 
     public BiomeSelectorTests()
@@ -18,157 +19,153 @@ public class BiomeSelectorTests
             {
               "biomes": [
                 {
-                  "id": 1,
-                  "tagName": "green_field",
-                  "name": "Green Field",
-                  "groundTilePrefix": "grass",
-                  "groundTileCount": 12,
+                  "id": 1, "tagName": "green_field", "name": "Green Field",
+                  "groundTilePrefix": "grass", "groundTileCount": 12,
                   "semanticObjectMap": { "default": "tree" },
-                  "monsterTags": ["rat", "wolf"],
-                  "isDefault": true
+                  "monsterTags": ["rat", "wolf"], "isDefault": true
                 },
                 {
-                  "id": 2,
-                  "tagName": "dark_forest",
-                  "name": "Dark Forest",
-                  "groundTilePrefix": "darkgrass",
-                  "groundTileCount": 12,
+                  "id": 2, "tagName": "dark_forest", "name": "Dark Forest",
+                  "groundTilePrefix": "darkgrass", "groundTileCount": 12,
                   "semanticObjectMap": { "default": "dark_tree" },
-                  "monsterTags": ["spider", "orc"],
-                  "isDefault": false
+                  "monsterTags": ["spider", "orc"], "isDefault": false
+                },
+                {
+                  "id": 3, "tagName": "sand", "name": "Desert",
+                  "groundTilePrefix": "sand", "groundTileCount": 12,
+                  "semanticObjectMap": { "default": "cactus" },
+                  "monsterTags": ["scorpion", "snake"], "isDefault": false
+                },
+                {
+                  "id": 4, "tagName": "snow", "name": "Snowlands",
+                  "groundTilePrefix": "snow", "groundTileCount": 12,
+                  "semanticObjectMap": { "default": "pine_tree" },
+                  "monsterTags": ["wolf", "bear"], "isDefault": false
                 }
               ]
             }
             """;
 
-        var repo = new BiomeDefinitionRepository(json);
+        var repo   = new BiomeDefinitionRepository(json);
         var config = Options.Create(new WorldConfig { Map = { ChunkSize = 16 } });
-        _sut = new BiomeSelector(repo, config);
+        _sut = new BiomeSelector(repo, _mockBiomeMap.Object, config);
+    }
+
+    // --- Sand ---
+
+    [Fact]
+    public void GetBiomeForTile_WhenBiomeMapReturnsSand_ReturnsSandDefinition()
+    {
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Sand);
+        Assert.Equal("sand", _sut.GetBiomeForTile(0, -200).TagName);
     }
 
     [Fact]
-    public void Chunk_At_Origin_Returns_Default_Biome()
+    public void GetBiomeForTile_Sand_HasScorpionAndSnakeMonsterTags()
     {
-        var biome = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
-        Assert.Equal("green_field", biome.TagName);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Sand);
+        var biome = _sut.GetBiomeForTile(0, -200);
+        Assert.Contains("scorpion", biome.MonsterTags);
+        Assert.Contains("snake",    biome.MonsterTags);
+    }
+
+    // --- Snow ---
+
+    [Fact]
+    public void GetBiomeForTile_WhenBiomeMapReturnsSnow_ReturnsSnowDefinition()
+    {
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Snow);
+        Assert.Equal("snow", _sut.GetBiomeForTile(0, 200).TagName);
     }
 
     [Fact]
-    public void Chunk_Within_SafeSpawnRadius_Returns_Default_Biome()
+    public void GetBiomeForTile_Snow_HasWolfAndBearMonsterTags()
     {
-        // Distance = sqrt(1+1) ≈ 1.41, below SafeSpawnRadius of 2
-        var biome = _sut.GetBiomeForChunk(new ChunkCoord(1, 1));
-        Assert.Equal("green_field", biome.TagName);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Snow);
+        var biome = _sut.GetBiomeForTile(0, 200);
+        Assert.Contains("wolf", biome.MonsterTags);
+        Assert.Contains("bear", biome.MonsterTags);
     }
 
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(1, 0)]
-    [InlineData(0, 1)]
-    [InlineData(1, -1)]
-    public void Chunks_Near_Origin_Always_Return_GreenField(int cx, int cy)
+    // --- Grass ---
+
+    [Fact]
+    public void GetBiomeForTile_WhenBiomeMapReturnsGrass_ReturnsGreenField()
     {
-        var biome = _sut.GetBiomeForChunk(new ChunkCoord(cx, cy));
-        Assert.Equal("green_field", biome.TagName);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Grass);
+        Assert.Equal("green_field", _sut.GetBiomeForTile(0, 0).TagName);
+    }
+
+    // --- DarkForest ---
+
+    [Fact]
+    public void GetBiomeForTile_WhenBiomeMapReturnsDarkForest_ReturnsDarkForestDefinition()
+    {
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.DarkForest);
+        Assert.Equal("dark_forest", _sut.GetBiomeForTile(100, 0).TagName);
     }
 
     [Fact]
-    public void GetBiomeForPosition_Converts_Position_To_ChunkCoord()
+    public void GetBiomeForTile_DarkForest_HasSpiderAndOrcMonsterTags()
     {
-        // Position (0,0) → chunk (0,0) → green_field
-        var biome = _sut.GetBiomeForPosition(new Position(0, 0));
-        Assert.Equal("green_field", biome.TagName);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.DarkForest);
+        var biome = _sut.GetBiomeForTile(100, 0);
+        Assert.Contains("spider", biome.MonsterTags);
+        Assert.Contains("orc",    biome.MonsterTags);
+    }
+
+    // --- Delegação ---
+
+    [Fact]
+    public void GetBiomeForChunk_DelegatesToBiomeMapOnce()
+    {
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Sand);
+        var biome = _sut.GetBiomeForChunk(new ChunkCoord(10, -15));
+        Assert.Equal("sand", biome.TagName);
+        _mockBiomeMap.Verify(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
-    public void GetBiomeForPosition_Large_Negative_Coords_Returns_Valid_Biome()
+    public void GetBiomeForPosition_DelegatesToBiomeMapOnce()
     {
-        // Should not throw even with large negative coords
-        var biome = _sut.GetBiomeForPosition(new Position(-500, -500));
-        Assert.NotNull(biome);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Snow);
+        var biome = _sut.GetBiomeForPosition(new Position(100, 200));
+        Assert.Equal("snow", biome.TagName);
+        _mockBiomeMap.Verify(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
-    public void Biome_Has_Non_Empty_MonsterTags()
+    public void GetBiomeForTile_CallsBiomeMapWithExactCoordinates()
     {
-        var biome = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
-        Assert.NotEmpty(biome.MonsterTags);
+        _mockBiomeMap.Setup(m => m.GetBiomeAt(42, -77)).Returns(Biome.Sand);
+        _sut.GetBiomeForTile(42, -77);
+        _mockBiomeMap.Verify(m => m.GetBiomeAt(42, -77), Times.Once);
     }
+
+    // --- Fallback ---
 
     [Fact]
-    public void GetBiomeForTile_Within_SafeRadius_Returns_GreenField()
+    public void GetBiomeForTile_WhenSandBiomeMissing_ReturnsDefault()
     {
-        // Tiles within 2*chunkSize (32) from origin are always green_field
-        var biome = _sut.GetBiomeForTile(10, 10);
-        Assert.Equal("green_field", biome.TagName);
-    }
+        // Build selector with repo that has no "sand" entry → falls back to default
+        var minimalJson = """
+            {
+              "biomes": [
+                {
+                  "id": 1, "tagName": "green_field", "name": "Green Field",
+                  "groundTilePrefix": "grass", "groundTileCount": 12,
+                  "semanticObjectMap": {}, "monsterTags": [], "isDefault": true
+                }
+              ]
+            }
+            """;
+        var mockBiomeMap = new Mock<IBiomeMap>();
+        mockBiomeMap.Setup(m => m.GetBiomeAt(It.IsAny<int>(), It.IsAny<int>())).Returns(Biome.Sand);
+        var repo   = new BiomeDefinitionRepository(minimalJson);
+        var config = Options.Create(new WorldConfig { Map = { ChunkSize = 16 } });
+        var sut    = new BiomeSelector(repo, mockBiomeMap.Object, config);
 
-    [Fact]
-    public void GetBiomeForTile_At_Origin_Returns_GreenField()
-    {
-        var biome = _sut.GetBiomeForTile(0, 0);
-        Assert.Equal("green_field", biome.TagName);
-    }
-
-    [Theory]
-    [InlineData(100, 0)]
-    [InlineData(200, 150)]
-    [InlineData(-100, -100)]
-    public void GetBiomeForTile_Far_From_Origin_Returns_Valid_Biome(int tx, int ty)
-    {
-        var biome = _sut.GetBiomeForTile(tx, ty);
-        Assert.NotNull(biome);
-        Assert.Contains(biome.TagName, new[] { "green_field", "dark_forest" });
-    }
-
-    [Fact]
-    public void GetBiomeForTile_Is_Deterministic()
-    {
-        var b1 = _sut.GetBiomeForTile(150, 200);
-        var b2 = _sut.GetBiomeForTile(150, 200);
-        Assert.Equal(b1.TagName, b2.TagName);
-    }
-
-    [Fact]
-    public void GetBiomeForTile_And_GetBiomeForChunk_Agree_On_Clear_Cases()
-    {
-        // Tile at (0,0) chunk center (tile 8,8) — safe radius, both green_field
-        var tile = _sut.GetBiomeForTile(8, 8);
-        var chunk = _sut.GetBiomeForChunk(new ChunkCoord(0, 0));
-        Assert.Equal(chunk.TagName, tile.TagName);
-    }
-
-    // Coordenadas espelhadas nos testes do frontend (biomeNoise.test.ts)
-    // Garante que grama renderizada (frontend) bate com bioma dos objetos (backend)
-    [Theory]
-    [InlineData(100, 100, "dark_forest")]
-    [InlineData(200, 50,  "green_field")]
-    [InlineData(300, 100, "dark_forest")]
-    [InlineData(-100, 100, "green_field")]
-    public void GetBiomeForTile_KnownCoordinates_ReturnExpectedBiome(int tx, int ty, string expectedTag)
-    {
-        var biome = _sut.GetBiomeForTile(tx, ty);
-        Assert.Equal(expectedTag, biome.TagName);
-    }
-
-    [Fact]
-    public void GetBiomeForTile_DarkForest_Exists_SystemIsNotAllGreenField()
-    {
-        var coords = new[] { (200, 50), (300, 100), (400, 150), (500, 200) };
-        var tags = coords.Select(c => _sut.GetBiomeForTile(c.Item1, c.Item2).TagName);
-        Assert.Contains("dark_forest", tags);
-    }
-
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(10, 10)]
-    [InlineData(30, 0)]
-    [InlineData(0, 30)]
-    [InlineData(-20, 15)]
-    public void GetBiomeForTile_InsideSafeRadius_AlwaysGreenField(int tx, int ty)
-    {
-        // Safe radius = 2 * chunkSize(16) = 32 tiles
-        var biome = _sut.GetBiomeForTile(tx, ty);
-        Assert.Equal("green_field", biome.TagName);
+        var biome = sut.GetBiomeForTile(0, 0);
+        Assert.Equal("green_field", biome.TagName); // fallback to default
     }
 }

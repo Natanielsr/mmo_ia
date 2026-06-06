@@ -4,10 +4,12 @@ namespace FractalRiver;
 
 public static class BiomeMap
 {
-    private const float Frequency     = 0.04f;
-    private const float NoiseStrength = 0.15f;
-    private const float SnowThreshold = 0.80f;
-    private const float SandThreshold = 0.80f;
+    private const float Frequency          = 0.04f;
+    private const float NoiseStrength      = 0.15f;
+    private const float SnowThreshold      = 0.80f;
+    private const float SandThreshold      = 0.80f;
+    private const float DarkForestThreshold = 0.65f;
+    private const float DarkForestNoiseStr  = 0.10f;
 
     public static Biome[,] Assign(int cols, int rows, int seed)
     {
@@ -19,11 +21,14 @@ public static class BiomeMap
         {
             float northness = 1.0f - (float)row / rows;
             float southness = (float)row / rows;
+            float eastness  = (float)col / cols;
             float noiseVal  = noise.Sample(col * Frequency, row * Frequency);
 
-            biomes[col, row] = northness + NoiseStrength * noiseVal >= SandThreshold ? Biome.Sand
-                             : southness + NoiseStrength * noiseVal >= SnowThreshold ? Biome.Snow
-                             : Biome.Grass;
+            biomes[col, row] =
+                northness + NoiseStrength    * noiseVal >= SandThreshold         ? Biome.Sand
+              : southness + NoiseStrength    * noiseVal >= SnowThreshold         ? Biome.Snow
+              : eastness  + DarkForestNoiseStr * noiseVal >= DarkForestThreshold ? Biome.DarkForest
+              : Biome.Grass;
         }
 
         return biomes;

@@ -8,6 +8,8 @@
     { "id": 6, "tagName": "snake",    "name": "Snake",    "hp": 40, "attack": 6,  "xp": 30  },
     { "id": 7, "tagName": "goblin",   "name": "Goblin",   "hp": 55, "attack": 9,  "xp": 50  },
     { "id": 8, "tagName": "skeleton",     "name": "Skeleton",     "hp": 75,  "attack": 12, "xp": 80  },
-    { "id": 9, "tagName": "orc-sorcerer", "name": "Orc Sorcerer", "hp": 100, "attack": 16, "xp": 130 }
+    { "id": 9,  "tagName": "orc-sorcerer", "name": "Orc Sorcerer", "hp": 100, "attack": 16, "xp": 130 },
+    { "id": 10, "tagName": "scorpion",     "name": "Scorpion",     "hp": 45,  "attack": 8,  "xp": 40  },
+    { "id": 11, "tagName": "bear",         "name": "Bear",         "hp": 120, "attack": 18, "xp": 150 }
   ]
 }

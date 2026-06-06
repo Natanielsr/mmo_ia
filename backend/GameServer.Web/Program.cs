@@ -75,6 +75,7 @@ builder.Services.AddSingleton<IBiomeDefinitionRepository>(_ =>
     var path = Path.Combine(builder.Environment.ContentRootPath, "Data", "biomes.json");
     return new BiomeDefinitionRepository(File.ReadAllText(path));
 });
+builder.Services.AddSingleton<IBiomeMap, WorldBiomeMapService>();
 builder.Services.AddSingleton<IBiomeSelector, BiomeSelector>();
 builder.Services.AddSingleton<IRankingRepository>(sp =>
 {

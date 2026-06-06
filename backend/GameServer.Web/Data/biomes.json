@@ -2,7 +2,7 @@
   "biomes": [
     {
       "id": 1,
-      "tagName": "green_field",
+      "tagName": "grass",
       "name": "Green Field",
       "groundTilePrefix": "grass",
       "groundTileCount": 12,
@@ -13,7 +13,7 @@
         "bush": "bush",
         "pillar": "pillar"
       },
-      "monsterTags": ["rat", "wolf", "bug", "snake"],
+      "monsterTags": ["rat", "bug"],
       "isDefault": true
     },
     {
@@ -30,6 +30,38 @@
         "pillar": "dark_pillar"
       },
       "monsterTags": ["spider", "orc", "goblin", "skeleton", "orc-sorcerer"],
+      "isDefault": false
+    },
+    {
+      "id": 3,
+      "tagName": "sand",
+      "name": "Desert",
+      "groundTilePrefix": "sand",
+      "groundTileCount": 12,
+      "semanticObjectMap": {
+        "default": "cactus",
+        "tree": "cactus",
+        "rock": "sand_rock",
+        "bush": "dry_bush",
+        "pillar": "pillar"
+      },
+      "monsterTags": ["scorpion", "snake"],
+      "isDefault": false
+    },
+    {
+      "id": 4,
+      "tagName": "snow",
+      "name": "Snowlands",
+      "groundTilePrefix": "snow",
+      "groundTileCount": 12,
+      "semanticObjectMap": {
+        "default": "pine_tree",
+        "tree": "pine_tree",
+        "rock": "snow_rock",
+        "bush": "snow_bush",
+        "pillar": "pillar"
+      },
+      "monsterTags": ["wolf", "bear"],
       "isDefault": false
     }
   ]
