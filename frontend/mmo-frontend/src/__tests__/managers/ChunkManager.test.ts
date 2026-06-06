@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 
 vi.mock('phaser', () => ({ default: { Scene: class {} } }));
 vi.mock('../../config/constants', () => ({ GRID_SIZE: 32 }));
@@ -34,7 +34,7 @@ function chunk(cx: number, cy: number): ChunkData {
 }
 
 describe('ChunkManager — solicitação de chunks faltantes', () => {
-    let onChunksNeeded: ReturnType<typeof vi.fn>;
+    let onChunksNeeded: Mock<(coords: { cx: number; cy: number }[]) => void>;
     let scene: ReturnType<typeof makeScene>;
     let manager: ChunkManager;
 
