@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace GameServer.Tests.Integration
 {
-    public class WorldGeneratorIntegrationTests
+    public class ChunkObjectGeneratorIntegrationTests
     {
         private readonly Mock<IStaticWorldManager> _mockStaticWorldManager = new();
         private readonly Mock<IIdGeneratorService> _mockIdGenerator = new();
@@ -24,7 +24,7 @@ namespace GameServer.Tests.Integration
         private readonly Mock<IFractalRiverWorldService> _mockFractalWorld = new();
         private readonly IOptions<WorldConfig> _config = Options.Create(new WorldConfig());
 
-        public WorldGeneratorIntegrationTests()
+        public ChunkObjectGeneratorIntegrationTests()
         {
             _mockIdGenerator.Setup(g => g.GenerateId()).Returns(1001);
 
@@ -52,9 +52,9 @@ namespace GameServer.Tests.Integration
         }
 
         [Fact]
-        public void WorldGenerator_ShouldRegisterItemInManagerAndNotifyEvents_WhenPotionSpawnRequested()
+        public void ChunkObjectGenerator_ShouldRegisterItemInManagerAndNotifyEvents_WhenPotionSpawnRequested()
         {
-            var generator = new WorldGenerator(
+            var generator = new ChunkObjectGenerator(
                 _mockStaticWorldManager.Object,
                 _mockIdGenerator.Object,
                 _mockItemManager.Object,
@@ -65,7 +65,7 @@ namespace GameServer.Tests.Integration
                 _mockBiomeSelector.Object,
                 _mockFractalWorld.Object);
 
-            var method = typeof(WorldGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var method = typeof(ChunkObjectGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             // SpawnObject(int x, int y, Random rng, string? forcedType, BiomeDefinition? biome)
             method!.Invoke(generator, new object?[] { 10, 10, new Random(), "item:potion", null });
@@ -75,7 +75,7 @@ namespace GameServer.Tests.Integration
         }
 
         [Fact]
-        public void WorldGenerator_SpawnObject_UsesBiomeSemanticMap_ForObjectCode()
+        public void ChunkObjectGenerator_SpawnObject_UsesBiomeSemanticMap_ForObjectCode()
         {
             var darkForestBiome = new BiomeDefinition
             {
@@ -90,7 +90,7 @@ namespace GameServer.Tests.Integration
                 .Setup(b => b.GetBiomeForChunk(It.IsAny<ChunkCoord>()))
                 .Returns(darkForestBiome);
 
-            var generator = new WorldGenerator(
+            var generator = new ChunkObjectGenerator(
                 _mockStaticWorldManager.Object,
                 _mockIdGenerator.Object,
                 _mockItemManager.Object,
@@ -101,7 +101,7 @@ namespace GameServer.Tests.Integration
                 _mockBiomeSelector.Object,
                 _mockFractalWorld.Object);
 
-            var method = typeof(WorldGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var method = typeof(ChunkObjectGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             method!.Invoke(generator, new object?[] { 5, 5, new Random(), "tree", darkForestBiome });
 

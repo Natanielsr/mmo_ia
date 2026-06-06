@@ -39,7 +39,7 @@ namespace GameServer.Tests.Helpers
         public Mock<IPlayerManager>          PlayerManager          { get; } = new();
         public Mock<IItemManager>            ItemManager            { get; } = new();
         public Mock<IIdGeneratorService>     IdGenerator            { get; } = new();
-        public Mock<IWorldGenerator>         WorldGenerator         { get; } = new();
+        public Mock<IChunkObjectGenerator>   WorldGenerator         { get; } = new();
         public Mock<IBiomeSelector>          BiomeSelector          { get; } = new();
         public Mock<IFractalRiverWorldService> FractalRiverWorld     { get; } = new();
         public Mock<ILootTableService>       LootTable              { get; } = new();

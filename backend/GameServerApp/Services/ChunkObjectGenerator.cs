@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 namespace GameServerApp.Services
 {
-    public class WorldGenerator : IWorldGenerator
+    public class ChunkObjectGenerator : IChunkObjectGenerator
     {
         private readonly IStaticWorldManager _staticWorldManager;
         private readonly IIdGeneratorService _idGeneratorService;
@@ -25,7 +25,7 @@ namespace GameServerApp.Services
         private readonly IFractalRiverWorldService _fractalWorld;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
-        public WorldGenerator(
+        public ChunkObjectGenerator(
             IStaticWorldManager staticWorldManager,
             IIdGeneratorService idGeneratorService,
             IItemManager itemManager,

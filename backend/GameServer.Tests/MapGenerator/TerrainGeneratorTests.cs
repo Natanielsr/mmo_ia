@@ -2,7 +2,7 @@ using Xunit;
 
 namespace FractalRiver.Tests;
 
-public class WorldGeneratorTests
+public class TerrainGeneratorTests
 {
     // ── Dimensões ─────────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ public class WorldGeneratorTests
     [InlineData(1,   1)]
     public void Generate_GridSize_IsColsPlusOneByRowsPlusOne(int cols, int rows)
     {
-        var (grid, _) = WorldGenerator.Generate(cols, rows, seed: 0, frequency: 0.05f);
+        var (grid, _) = TerrainGenerator.Generate(cols, rows, seed: 0, frequency: 0.05f);
 
         Assert.Equal(cols + 1, grid.GetLength(0));
         Assert.Equal(rows + 1, grid.GetLength(1));
@@ -23,8 +23,8 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_SameSeed_ProducesSameGrid()
     {
-        var (a, _) = WorldGenerator.Generate(50, 50, seed: 42, frequency: 0.05f);
-        var (b, _) = WorldGenerator.Generate(50, 50, seed: 42, frequency: 0.05f);
+        var (a, _) = TerrainGenerator.Generate(50, 50, seed: 42, frequency: 0.05f);
+        var (b, _) = TerrainGenerator.Generate(50, 50, seed: 42, frequency: 0.05f);
 
         for (int x = 0; x <= 50; x++)
         for (int y = 0; y <= 50; y++)
@@ -34,8 +34,8 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_DifferentSeeds_ProduceDifferentGrids()
     {
-        var (a, _) = WorldGenerator.Generate(50, 50, seed: 1, frequency: 0.05f);
-        var (b, _) = WorldGenerator.Generate(50, 50, seed: 2, frequency: 0.05f);
+        var (a, _) = TerrainGenerator.Generate(50, 50, seed: 1, frequency: 0.05f);
+        var (b, _) = TerrainGenerator.Generate(50, 50, seed: 2, frequency: 0.05f);
 
         int differences = 0;
         for (int x = 0; x <= 50; x++)
@@ -50,7 +50,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_DefaultThreshold_MostlyLand()
     {
-        var (grid, _) = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
+        var (grid, _) = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
         int total = 100 * 100;
         int land  = CountLand(grid, 99, 99);
         double ratio = (double)land / total;
@@ -61,7 +61,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_HasSomeWater()
     {
-        var (grid, _) = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
+        var (grid, _) = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
         int water = CountWater(grid, 99, 99);
 
         Assert.True(water > 0, "Deve existir ao menos uma célula de água.");
@@ -70,7 +70,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_HighThreshold_MoreWater()
     {
-        var (grid, _) = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: 0.9f);
+        var (grid, _) = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: 0.9f);
         int land = CountLand(grid, 99, 99);
 
         Assert.True(land < 100 * 100 / 2, "Threshold alto deve resultar em menos de 50% de terra.");
@@ -79,8 +79,8 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_LowThreshold_MoreLand()
     {
-        var (gridLow, _)  = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: -0.9f);
-        var (gridBase, _) = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: -0.5f);
+        var (gridLow, _)  = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: -0.9f);
+        var (gridBase, _) = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f, threshold: -0.5f);
 
         int landLow  = CountLand(gridLow,  99, 99);
         int landBase = CountLand(gridBase, 99, 99);
@@ -93,8 +93,8 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_DifferentFrequencies_ProduceDifferentPatterns()
     {
-        var (lowFreq, _)  = WorldGenerator.Generate(50, 50, seed: 42, frequency: 0.02f);
-        var (highFreq, _) = WorldGenerator.Generate(50, 50, seed: 42, frequency: 0.15f);
+        var (lowFreq, _)  = TerrainGenerator.Generate(50, 50, seed: 42, frequency: 0.02f);
+        var (highFreq, _) = TerrainGenerator.Generate(50, 50, seed: 42, frequency: 0.15f);
 
         int differences = 0;
         for (int x = 0; x <= 50; x++)
@@ -109,21 +109,21 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_MinimalGrid_DoesNotThrow()
     {
-        var ex = Record.Exception(() => WorldGenerator.Generate(1, 1, seed: 0, frequency: 0.05f));
+        var ex = Record.Exception(() => TerrainGenerator.Generate(1, 1, seed: 0, frequency: 0.05f));
         Assert.Null(ex);
     }
 
     [Fact]
     public void Generate_ZeroSeed_Works()
     {
-        var ex = Record.Exception(() => WorldGenerator.Generate(10, 10, seed: 0, frequency: 0.05f));
+        var ex = Record.Exception(() => TerrainGenerator.Generate(10, 10, seed: 0, frequency: 0.05f));
         Assert.Null(ex);
     }
 
     [Fact]
     public void Generate_NegativeSeed_Works()
     {
-        var ex = Record.Exception(() => WorldGenerator.Generate(10, 10, seed: -1, frequency: 0.05f));
+        var ex = Record.Exception(() => TerrainGenerator.Generate(10, 10, seed: -1, frequency: 0.05f));
         Assert.Null(ex);
     }
 
@@ -135,7 +135,7 @@ public class WorldGeneratorTests
     [InlineData(999, 0.08f)]
     public void Generate_AllLandConnected_NeverIsolatedIsland(int seed, float freq)
     {
-        var (grid, _) = WorldGenerator.Generate(99, 99, seed, freq);
+        var (grid, _) = TerrainGenerator.Generate(99, 99, seed, freq);
 
         Assert.Equal(1, CountLandComponents(grid));
     }
@@ -143,7 +143,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_HighFrequency_AllLandConnected()
     {
-        var (grid, _) = WorldGenerator.Generate(99, 99, seed: 7, frequency: 0.15f);
+        var (grid, _) = TerrainGenerator.Generate(99, 99, seed: 7, frequency: 0.15f);
 
         Assert.Equal(1, CountLandComponents(grid));
     }
@@ -151,7 +151,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_SmallGrid_AllLandConnected()
     {
-        var (grid, _) = WorldGenerator.Generate(10, 10, seed: 0, frequency: 0.05f);
+        var (grid, _) = TerrainGenerator.Generate(10, 10, seed: 0, frequency: 0.05f);
 
         Assert.Equal(1, CountLandComponents(grid));
     }
@@ -161,7 +161,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_PathIsSubsetOfLand()
     {
-        var (isLand, isPath) = WorldGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
+        var (isLand, isPath) = TerrainGenerator.Generate(99, 99, seed: 42, frequency: 0.05f);
 
         for (int x = 0; x <= 99; x++)
         for (int y = 0; y <= 99; y++)
@@ -174,7 +174,7 @@ public class WorldGeneratorTests
     public void Generate_SingleLandmass_ProducesNoPaths()
     {
         // threshold muito baixo → tudo terra → 1 componente → EnsureConnected não desenha pontes
-        var (_, isPath) = WorldGenerator.Generate(30, 30, seed: 42, frequency: 0.05f, threshold: -0.99f);
+        var (_, isPath) = TerrainGenerator.Generate(30, 30, seed: 42, frequency: 0.05f, threshold: -0.99f);
 
         for (int x = 0; x <= 30; x++)
         for (int y = 0; y <= 30; y++)
@@ -188,7 +188,7 @@ public class WorldGeneratorTests
     [InlineData(123, 0.13f)]
     public void Generate_Archipelago_HasPaths(int seed, float freq)
     {
-        var (_, isPath) = WorldGenerator.Generate(99, 99, seed, freq);
+        var (_, isPath) = TerrainGenerator.Generate(99, 99, seed, freq);
 
         int pathCells = CountPathCells(isPath);
         Assert.True(pathCells > 0,
@@ -204,7 +204,7 @@ public class WorldGeneratorTests
     [InlineData(42,  0.08f)]
     public void Generate_PathCells_FormSingleConnectedComponent(int seed, float freq)
     {
-        var (_, isPath) = WorldGenerator.Generate(99, 99, seed, freq);
+        var (_, isPath) = TerrainGenerator.Generate(99, 99, seed, freq);
 
         int components = CountPathComponents(isPath);
         Assert.True(components <= 1,
@@ -215,7 +215,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_Archipelago_PathsAreConnected()
     {
-        var (_, isPath) = WorldGenerator.Generate(99, 99, seed: 7, frequency: 0.15f);
+        var (_, isPath) = TerrainGenerator.Generate(99, 99, seed: 7, frequency: 0.15f);
 
         Assert.Equal(1, CountPathComponents(isPath));
     }
@@ -224,7 +224,7 @@ public class WorldGeneratorTests
     [Fact]
     public void Generate_LargeArchipelago_PathsAreConnected()
     {
-        var (_, isPath) = WorldGenerator.Generate(149, 149, seed: 999999, frequency: 0.12f);
+        var (_, isPath) = TerrainGenerator.Generate(149, 149, seed: 999999, frequency: 0.12f);
 
         int components = CountPathComponents(isPath);
         Assert.True(components <= 1,

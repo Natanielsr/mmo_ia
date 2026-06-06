@@ -12,7 +12,7 @@ namespace GameServerApp.Processors
     public class ChunkProcessor : IChunkProcessor
     {
         private readonly IStaticWorldManager _staticWorldManager;
-        private readonly IWorldGenerator _worldGenerator;
+        private readonly IChunkObjectGenerator _worldGenerator;
         private readonly IItemManager _itemManager;
         private readonly IWorldEvents _worldEvents;
         private readonly IFractalRiverWorldService _fractalWorld;
@@ -20,7 +20,7 @@ namespace GameServerApp.Processors
 
         public ChunkProcessor(
             IStaticWorldManager staticWorldManager,
-            IWorldGenerator worldGenerator,
+            IChunkObjectGenerator worldGenerator,
             IItemManager itemManager,
             IWorldEvents worldEvents,
             IFractalRiverWorldService fractalWorld,

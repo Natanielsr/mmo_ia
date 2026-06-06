@@ -2,7 +2,7 @@ using FractalRiver.Generation;
 
 namespace FractalRiver;
 
-public static class WorldGenerator
+public static class TerrainGenerator
 {
     /// <summary>
     /// Gera grades de terreno de tamanho (cols+1) × (rows+1) usando Perlin noise 2D.

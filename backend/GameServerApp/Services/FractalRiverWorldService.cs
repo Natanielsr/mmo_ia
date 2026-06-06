@@ -49,7 +49,7 @@ public class FractalRiverWorldService : IFractalRiverWorldService
     public FractalRiverWorldService(IOptions<WorldConfig> config)
     {
         var map = config.Value.Map;
-        WorldData = FractalRiver.WorldGenerator.GenerateWorld(map.Width, map.Height, map.GeneratorSeed, map.GeneratorFrequency);
+        WorldData = FractalRiver.TerrainGenerator.GenerateWorld(map.Width, map.Height, map.GeneratorSeed, map.GeneratorFrequency);
     }
 
     public int? GetTileType(int worldX, int worldY)

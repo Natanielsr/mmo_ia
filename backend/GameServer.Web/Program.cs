@@ -51,7 +51,7 @@ builder.Services.AddSingleton<ICombatService, CombatService>();
 builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>();
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
-builder.Services.AddSingleton<IWorldGenerator, WorldGenerator>();
+builder.Services.AddSingleton<IChunkObjectGenerator, ChunkObjectGenerator>();
 builder.Services.AddSingleton<IFractalRiverWorldService, FractalRiverWorldService>();
 builder.Services.AddSingleton<IItemFactory, ItemFactory>();
 builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
