@@ -10,6 +10,8 @@ public interface IFractalRiverWorldService
 
     bool IsWaterTile(int worldX, int worldY);
 
+    bool IsPathTile(int worldX, int worldY);
+
     /// <summary>Matriz completa do mundo (tiles + biomas) para enviar ao frontend.</summary>
     WorldMapData GetWorldMap();
 

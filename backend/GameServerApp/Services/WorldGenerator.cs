@@ -22,6 +22,7 @@ namespace GameServerApp.Services
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IItemFactory _itemFactory;
         private readonly IBiomeSelector _biomeSelector;
+        private readonly IFractalRiverWorldService _fractalWorld;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public WorldGenerator(
@@ -32,7 +33,8 @@ namespace GameServerApp.Services
             IOptions<WorldConfig> config,
             IItemDefinitionRepository itemRepo,
             IItemFactory itemFactory,
-            IBiomeSelector biomeSelector)
+            IBiomeSelector biomeSelector,
+            IFractalRiverWorldService fractalWorld)
         {
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;
@@ -42,6 +44,7 @@ namespace GameServerApp.Services
             _itemRepo = itemRepo;
             _itemFactory = itemFactory;
             _biomeSelector = biomeSelector;
+            _fractalWorld = fractalWorld;
 
             // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
             _formations = new List<(IWorldFormation, double)>
@@ -97,6 +100,8 @@ namespace GameServerApp.Services
             var pos = new Position(x, y);
 
             if (_staticWorldManager.IsBlocked(pos)) return;
+            if (_fractalWorld.IsWaterTile(x, y)) return;
+            if (_fractalWorld.IsPathTile(x, y)) return;
 
             // Items passam direto sem mapeamento de bioma
             if (forcedType != null && forcedType.StartsWith("item:"))

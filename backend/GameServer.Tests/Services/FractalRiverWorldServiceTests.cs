@@ -101,4 +101,56 @@ public class FractalRiverWorldServiceTests
             foreach (var t in row)
                 Assert.Equal(0, t);
     }
+
+    [Theory]
+    [InlineData(TileType.PathFull)]
+    [InlineData(TileType.PathTerrainEdgeN)]
+    [InlineData(TileType.PathTerrainEdgeS)]
+    [InlineData(TileType.PathTerrainEdgeE)]
+    [InlineData(TileType.PathTerrainEdgeW)]
+    [InlineData(TileType.PathTerrainCornerNW)]
+    [InlineData(TileType.PathTerrainCornerNE)]
+    [InlineData(TileType.PathTerrainCornerSW)]
+    [InlineData(TileType.PathTerrainCornerSE)]
+    [InlineData(TileType.PathTerrainCrossNWtoSE)]
+    [InlineData(TileType.PathTerrainCrossNEtoSW)]
+    [InlineData(TileType.TerrainPathCornerNW)]
+    [InlineData(TileType.TerrainPathCornerNE)]
+    [InlineData(TileType.TerrainPathCornerSW)]
+    [InlineData(TileType.TerrainPathCornerSE)]
+    public void IsPathTile_ReturnsTrueForAllPathVariants(TileType tileType)
+    {
+        var service = CreateService();
+        var data = service.WorldData;
+
+        // Injeta o tile diretamente na matriz para testar
+        data.Tiles[0, 0] = tileType;
+
+        Assert.True(service.IsPathTile(0, 0));
+    }
+
+    [Theory]
+    [InlineData(TileType.TerrainFull)]
+    [InlineData(TileType.WaterFull)]
+    [InlineData(TileType.WaterTerrainEdgeN)]
+    public void IsPathTile_ReturnsFalseForNonPathTiles(TileType tileType)
+    {
+        var service = CreateService();
+        var data = service.WorldData;
+
+        data.Tiles[0, 0] = tileType;
+
+        Assert.False(service.IsPathTile(0, 0));
+    }
+
+    [Fact]
+    public void IsPathTile_OutOfBounds_ReturnsFalse()
+    {
+        var service = CreateService(width: 16, height: 16);
+
+        Assert.False(service.IsPathTile(-1, 0));
+        Assert.False(service.IsPathTile(0, -1));
+        Assert.False(service.IsPathTile(100, 0));
+        Assert.False(service.IsPathTile(0, 100));
+    }
 }

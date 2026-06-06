@@ -21,6 +21,7 @@ namespace GameServer.Tests.Integration
         private readonly Mock<IItemDefinitionRepository> _mockItemRepo = new();
         private readonly Mock<IItemFactory> _mockItemFactory = new();
         private readonly Mock<IBiomeSelector> _mockBiomeSelector = new();
+        private readonly Mock<IFractalRiverWorldService> _mockFractalWorld = new();
         private readonly IOptions<WorldConfig> _config = Options.Create(new WorldConfig());
 
         public WorldGeneratorIntegrationTests()
@@ -61,7 +62,8 @@ namespace GameServer.Tests.Integration
                 _config,
                 _mockItemRepo.Object,
                 _mockItemFactory.Object,
-                _mockBiomeSelector.Object);
+                _mockBiomeSelector.Object,
+                _mockFractalWorld.Object);
 
             var method = typeof(WorldGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
@@ -96,7 +98,8 @@ namespace GameServer.Tests.Integration
                 _config,
                 _mockItemRepo.Object,
                 _mockItemFactory.Object,
-                _mockBiomeSelector.Object);
+                _mockBiomeSelector.Object,
+                _mockFractalWorld.Object);
 
             var method = typeof(WorldGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 

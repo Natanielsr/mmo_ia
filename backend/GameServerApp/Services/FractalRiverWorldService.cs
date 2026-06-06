@@ -8,6 +8,25 @@ namespace GameServerApp.Services;
 
 public class FractalRiverWorldService : IFractalRiverWorldService
 {
+    private static readonly HashSet<TileType> PathTiles = new()
+    {
+        TileType.PathFull,
+        TileType.TerrainPathCornerNW,
+        TileType.TerrainPathCornerNE,
+        TileType.TerrainPathCornerSW,
+        TileType.TerrainPathCornerSE,
+        TileType.PathTerrainEdgeN,
+        TileType.PathTerrainEdgeS,
+        TileType.PathTerrainEdgeE,
+        TileType.PathTerrainEdgeW,
+        TileType.PathTerrainCornerNW,
+        TileType.PathTerrainCornerNE,
+        TileType.PathTerrainCornerSW,
+        TileType.PathTerrainCornerSE,
+        TileType.PathTerrainCrossNWtoSE,
+        TileType.PathTerrainCrossNEtoSW,
+    };
+
     private static readonly HashSet<TileType> WaterTiles = new()
     {
         TileType.WaterFull,
@@ -45,6 +64,13 @@ public class FractalRiverWorldService : IFractalRiverWorldService
         if (worldX < 0 || worldX >= WorldData.Cols || worldY < 0 || worldY >= WorldData.Rows)
             return false;
         return WaterTiles.Contains(WorldData.Tiles[worldX, worldY]);
+    }
+
+    public bool IsPathTile(int worldX, int worldY)
+    {
+        if (worldX < 0 || worldX >= WorldData.Cols || worldY < 0 || worldY >= WorldData.Rows)
+            return false;
+        return PathTiles.Contains(WorldData.Tiles[worldX, worldY]);
     }
 
     public WorldMapData GetWorldMap() => new()
