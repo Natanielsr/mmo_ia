@@ -10,9 +10,12 @@ export class ChunkManager {
     private visitedChunks: Set<string> = new Set();
     private chunkSize: number = 16;
     private allObjects: Map<string, MapObjectData[]> = new Map();
+    private pendingRequests: Set<string> = new Set();
+    private onChunksNeeded: (coords: { cx: number; cy: number }[]) => void;
 
-    constructor(scene: Phaser.Scene) {
+    constructor(scene: Phaser.Scene, onChunksNeeded: (coords: { cx: number; cy: number }[]) => void) {
         this.scene = scene;
+        this.onChunksNeeded = onChunksNeeded;
     }
 
     public getVisitedChunks() { return this.visitedChunks; }
@@ -21,6 +24,7 @@ export class ChunkManager {
 
     public handleChunkLoaded(data: ChunkData) {
         const chunkKey = `${data.cx},${data.cy}`;
+        this.pendingRequests.delete(chunkKey);
         this.visitedChunks.add(chunkKey);
         this.allObjects.set(chunkKey, data.objects);
 
@@ -128,6 +132,21 @@ export class ChunkManager {
                 this.visitedChunks.delete(allKeys[i]);
             }
         }
+
+        // Detecta chunks visíveis faltantes e solicita ao servidor
+        const missing: { cx: number; cy: number }[] = [];
+        for (let dx = -loadRadius; dx <= loadRadius; dx++) {
+            for (let dy = -loadRadius; dy <= loadRadius; dy++) {
+                const cx = pcx + dx;
+                const cy = pcy + dy;
+                const key = `${cx},${cy}`;
+                if (!this.loadedChunks.has(key) && !this.pendingRequests.has(key)) {
+                    missing.push({ cx, cy });
+                    this.pendingRequests.add(key);
+                }
+            }
+        }
+        if (missing.length > 0) this.onChunksNeeded(missing);
     }
 
     public clear() {
@@ -136,5 +155,6 @@ export class ChunkManager {
             chunk.rt?.destroy();
         });
         this.loadedChunks.clear();
+        this.pendingRequests.clear();
     }
 }

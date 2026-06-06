@@ -2,6 +2,7 @@ using GameServerApp.Contracts.Managers;
 using GameServerApp.Contracts.Processors;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
 
 namespace GameServerApp.Managers
 {
@@ -80,6 +81,9 @@ namespace GameServerApp.Managers
 
         public void ProcessChunkLoading(IPlayer player, string connectionId)
             => _chunkProcessor.ProcessChunkLoading(player, connectionId);
+
+        public void ProcessChunkRequest(IPlayer player, string connectionId, IEnumerable<ChunkCoordDto> coords)
+            => _chunkProcessor.ProcessChunkRequest(player, connectionId, coords);
 
         public void ProcessUseItem(IPlayer player, string itemId)
             => _itemProcessor.ProcessUseItem(player, itemId);

@@ -54,47 +54,63 @@ namespace GameServerApp.Processors
                     if (player.SentChunks.Contains(coord))
                         continue;
 
-                    if (!_staticWorldManager.IsChunkLoaded(coord))
-                        _worldGenerator.GenerateChunk(coord);
-
-                    var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
-                    var chunkItems   = _itemManager.GetItemsInChunk(coord);
-                    var (tiles, biomes) = _fractalWorld.GetChunkTiles(coord.CX, coord.CY, _config.Map.ChunkSize);
-
-                    var chunkData = new ChunkData
-                    {
-                        Cx = coord.CX,
-                        Cy = coord.CY,
-                        Tiles = tiles,
-                        Biomes = biomes,
-                        Objects = chunkObjects.Select(obj => new MapObjectData
-                        {
-                            Id         = obj.Id,
-                            Name       = obj.Name,
-                            ObjectCode = obj.ObjectCode,
-                            Position   = obj.Position,
-                            Type       = obj.Type,
-                            IsPassable = obj.IsPassable
-                        }).ToList(),
-                        Items = chunkItems.Select(item => new ItemData
-                        {
-                            Id          = item.Id,
-                            Name        = item.Name,
-                            Description = item.Description,
-                            Value       = item.Value,
-                            TagName     = item.TagName,
-                            Position    = item.Position,
-                            Type        = item.Type,
-                            AttackBonus  = (item as GameServerApp.World.Weapon)?.AttackBonus,
-                            DefenseBonus = (item as GameServerApp.Contracts.World.IDefensiveItem)?.DefenseBonus,
-                            Quantity    = item.Quantity,
-                        }).ToList()
-                    };
-
-                    _worldEvents.OnChunkLoaded(connectionId, chunkData);
+                    _worldEvents.OnChunkLoaded(connectionId, BuildChunkData(coord));
                     player.SentChunks.Add(coord);
                 }
             }
+        }
+
+        public void ProcessChunkRequest(IPlayer player, string connectionId, IEnumerable<ChunkCoordDto> coords)
+        {
+            foreach (var dto in coords)
+            {
+                var coord = new ChunkCoord(dto.Cx, dto.Cy);
+
+                if (!IsChunkInsideMap(coord))
+                    continue;
+
+                _worldEvents.OnChunkLoaded(connectionId, BuildChunkData(coord));
+            }
+        }
+
+        private ChunkData BuildChunkData(ChunkCoord coord)
+        {
+            if (!_staticWorldManager.IsChunkLoaded(coord))
+                _worldGenerator.GenerateChunk(coord);
+
+            var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
+            var chunkItems   = _itemManager.GetItemsInChunk(coord);
+            var (tiles, biomes) = _fractalWorld.GetChunkTiles(coord.CX, coord.CY, _config.Map.ChunkSize);
+
+            return new ChunkData
+            {
+                Cx = coord.CX,
+                Cy = coord.CY,
+                Tiles = tiles,
+                Biomes = biomes,
+                Objects = chunkObjects.Select(obj => new MapObjectData
+                {
+                    Id         = obj.Id,
+                    Name       = obj.Name,
+                    ObjectCode = obj.ObjectCode,
+                    Position   = obj.Position,
+                    Type       = obj.Type,
+                    IsPassable = obj.IsPassable
+                }).ToList(),
+                Items = chunkItems.Select(item => new ItemData
+                {
+                    Id          = item.Id,
+                    Name        = item.Name,
+                    Description = item.Description,
+                    Value       = item.Value,
+                    TagName     = item.TagName,
+                    Position    = item.Position,
+                    Type        = item.Type,
+                    AttackBonus  = (item as GameServerApp.World.Weapon)?.AttackBonus,
+                    DefenseBonus = (item as GameServerApp.Contracts.World.IDefensiveItem)?.DefenseBonus,
+                    Quantity    = item.Quantity,
+                }).ToList()
+            };
         }
 
         /// <summary>True se o chunk sobrepõe os limites do mapa [0,Width) × [0,Height).</summary>

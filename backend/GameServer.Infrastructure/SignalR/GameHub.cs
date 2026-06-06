@@ -225,6 +225,13 @@ namespace GameServer.Infrastructure.SignalR
                 _worldProcessor.ProcessMoveItemInInventory(player, itemId, toIndex);
         }
 
+        public void RequestChunks(List<ChunkCoordDto> coords)
+        {
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player != null)
+                _worldProcessor.ProcessChunkRequest(player, Context.ConnectionId, coords);
+        }
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             if (_playerManager.RemovePlayer(Context.ConnectionId, out var player) && player != null)

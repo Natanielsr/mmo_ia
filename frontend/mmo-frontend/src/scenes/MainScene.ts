@@ -64,7 +64,9 @@ export class MainScene extends Phaser.Scene {
         this.playerManager   = new PlayerManager(this);
         this.monsterManager  = new MonsterManager(this);
         this.itemManager     = new ItemManager(this);
-        this.chunkManager    = new ChunkManager(this);
+        this.chunkManager    = new ChunkManager(this, (coords) => {
+            this.signalRService?.invoke('RequestChunks', coords);
+        });
         this.inventoryManager = new InventoryManager();
         this.equipmentManager = new EquipmentManager();
         this.combatSystem    = new CombatSystem(this, this.playerManager, this.monsterManager);
