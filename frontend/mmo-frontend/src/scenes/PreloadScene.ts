@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { WEAPON_OVERLAY_REGISTRY, getAllBodyConfigs } from '../config/overlays';
 import { ITEM_ICON_REGISTRY } from '../config/itemIconRegistry';
 import { MONSTER_SPRITE_REGISTRY } from '../config/monsterSpriteRegistry';
+import { BIOME_OBJECT_SPRITE_REGISTRY } from '../config/biomeObjectSpriteRegistry';
 import { getAllTerrainAssetEntries } from '../config/terrainAssetMap';
 
 export class PreloadScene extends Phaser.Scene {
@@ -68,10 +69,7 @@ export class PreloadScene extends Phaser.Scene {
             this.load.image(key, path);
         }
 
-        this.load.image('tree', 'assets/tree.png');
-        this.load.image('rock', 'assets/rock.png');
-        this.load.image('bush', 'assets/bush.png');
-        this.load.image('pillar', 'assets/pillar.png');
+        
         for (const [tagName, path] of Object.entries(ITEM_ICON_REGISTRY)) {
             this.load.image(tagName, path.replace(/^\//, ''));
         }
@@ -80,15 +78,9 @@ export class PreloadScene extends Phaser.Scene {
             this.load.image(`grass${i}`, `assets/grass${i}.png`);
         }
 
-        // Dark Forest biome tiles
-        for (let i = 1; i <= 12; i++) {
-            this.load.image(`dark_grass${i}`, `assets/dark_forest/dark_grass${i}.png`);
+        for (const [code, cfg] of Object.entries(BIOME_OBJECT_SPRITE_REGISTRY)) {
+            this.load.image(code, cfg.asset);
         }
-        // Dark Forest biome objects
-        this.load.image('dark_tree',   'assets/dark_forest/dark_tree.png');
-        this.load.image('dark_rock',   'assets/dark_forest/dark_rock.png');
-        this.load.image('dark_bush',   'assets/dark_forest/dark_bush.png');
-        this.load.image('dark_pillar', 'assets/dark_forest/dark_pillar.png');
 
         // Terrain transition tiles (grass, sand, paths, water edges)
         for (const entry of getAllTerrainAssetEntries()) {

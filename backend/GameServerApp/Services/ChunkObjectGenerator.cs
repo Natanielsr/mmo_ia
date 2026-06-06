@@ -119,14 +119,13 @@ namespace GameServerApp.Services
 
             if (_staticWorldManager.GetObjectAt(pos) != null) return;
 
-            // Escolhe tipo semântico (null = aleatório dos defaults)
-            string[] semanticDefaults = { "tree", "rock", "bush", "pillar" };
-            string semanticType = forcedType ?? semanticDefaults[rng.Next(semanticDefaults.Length)];
-
-            // Resolve objectCode via mapa semântico do bioma
-            string code = biome != null && biome.SemanticObjectMap.TryGetValue(semanticType, out var mapped)
-                ? mapped
-                : semanticType;
+            string code;
+            if (forcedType != null)
+                code = forcedType;
+            else if (biome?.Objects is { Count: > 0 } objs)
+                code = objs[rng.Next(objs.Count)];
+            else
+                code = new[] { "tree", "rock", "bush", "pillar" }[rng.Next(4)];
 
             string name = char.ToUpper(code[0]) + code.Substring(1);
 

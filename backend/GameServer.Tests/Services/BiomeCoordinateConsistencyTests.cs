@@ -36,10 +36,10 @@ public class BiomeCoordinateConsistencyTests
     private static readonly string BiomesJson = """
         {
           "biomes": [
-            { "id": 1, "tagName": "grass",       "name": "Green Field", "groundTilePrefix": "grass",      "groundTileCount": 1, "semanticObjectMap": {}, "monsterTags": [], "isDefault": true  },
-            { "id": 2, "tagName": "dark_forest",  "name": "Dark Forest", "groundTilePrefix": "dark_grass", "groundTileCount": 1, "semanticObjectMap": {}, "monsterTags": [], "isDefault": false },
-            { "id": 3, "tagName": "sand",         "name": "Desert",      "groundTilePrefix": "sand",       "groundTileCount": 1, "semanticObjectMap": {}, "monsterTags": [], "isDefault": false },
-            { "id": 4, "tagName": "snow",         "name": "Snowlands",   "groundTilePrefix": "snow",       "groundTileCount": 1, "semanticObjectMap": {}, "monsterTags": [], "isDefault": false }
+            { "id": 1, "tagName": "grass",       "name": "Green Field", "groundTilePrefix": "grass",      "groundTileCount": 1, "objects": [],"monsterTags": [], "isDefault": true  },
+            { "id": 2, "tagName": "dark_forest",  "name": "Dark Forest", "groundTilePrefix": "dark_grass", "groundTileCount": 1, "objects": [],"monsterTags": [], "isDefault": false },
+            { "id": 3, "tagName": "sand",         "name": "Desert",      "groundTilePrefix": "sand",       "groundTileCount": 1, "objects": [],"monsterTags": [], "isDefault": false },
+            { "id": 4, "tagName": "snow",         "name": "Snowlands",   "groundTilePrefix": "snow",       "groundTileCount": 1, "objects": [],"monsterTags": [], "isDefault": false }
           ]
         }
         """;

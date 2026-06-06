@@ -14,11 +14,7 @@ public class BiomeDefinitionRepositoryTests
               "name": "Green Field",
               "groundTilePrefix": "grass",
               "groundTileCount": 12,
-              "semanticObjectMap": {
-                "default": "tree",
-                "tree": "tree",
-                "rock": "rock"
-              },
+              "objects": ["tree", "rock"],
               "monsterTags": ["rat", "wolf"],
               "isDefault": true
             },
@@ -28,11 +24,7 @@ public class BiomeDefinitionRepositoryTests
               "name": "Dark Forest",
               "groundTilePrefix": "darkgrass",
               "groundTileCount": 12,
-              "semanticObjectMap": {
-                "default": "dark_tree",
-                "tree": "dark_tree",
-                "rock": "dark_rock"
-              },
+              "objects": ["dark_tree", "dark_rock"],
               "monsterTags": ["spider", "orc"],
               "isDefault": false
             }
@@ -93,13 +85,12 @@ public class BiomeDefinitionRepositoryTests
     }
 
     [Fact]
-    public void SemanticObjectMap_Contains_Expected_Mappings()
+    public void Objects_Contains_Expected_Items()
     {
         var darkForest = _sut.GetByTagName("dark_forest")!;
 
-        Assert.Equal("dark_tree", darkForest.SemanticObjectMap["tree"]);
-        Assert.Equal("dark_rock", darkForest.SemanticObjectMap["rock"]);
-        Assert.Equal("dark_tree", darkForest.SemanticObjectMap["default"]);
+        Assert.Contains("dark_tree", darkForest.Objects);
+        Assert.Contains("dark_rock", darkForest.Objects);
     }
 
     [Fact]

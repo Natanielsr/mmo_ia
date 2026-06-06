@@ -45,7 +45,7 @@ namespace GameServer.Tests.Integration
                 {
                     Id = 1, TagName = "green_field", Name = "Green Field",
                     GroundTilePrefix = "grass", GroundTileCount = 12,
-                    SemanticObjectMap = new() { ["default"] = "tree", ["tree"] = "tree" },
+                    Objects = ["tree", "rock", "bush"],
                     MonsterTags = new() { "rat" },
                     IsDefault = true
                 });
@@ -75,13 +75,13 @@ namespace GameServer.Tests.Integration
         }
 
         [Fact]
-        public void ChunkObjectGenerator_SpawnObject_UsesBiomeSemanticMap_ForObjectCode()
+        public void ChunkObjectGenerator_SpawnObject_UsesForcedType_Directly()
         {
             var darkForestBiome = new BiomeDefinition
             {
                 Id = 2, TagName = "dark_forest", Name = "Dark Forest",
                 GroundTilePrefix = "darkgrass", GroundTileCount = 12,
-                SemanticObjectMap = new() { ["default"] = "dark_tree", ["tree"] = "dark_tree", ["rock"] = "dark_rock" },
+                Objects = ["dark_tree", "dark_rock"],
                 MonsterTags = new() { "spider" },
                 IsDefault = false
             };
@@ -103,7 +103,7 @@ namespace GameServer.Tests.Integration
 
             var method = typeof(ChunkObjectGenerator).GetMethod("SpawnObject", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-            method!.Invoke(generator, new object?[] { 5, 5, new Random(), "tree", darkForestBiome });
+            method!.Invoke(generator, new object?[] { 5, 5, new Random(), "dark_tree", darkForestBiome });
 
             _mockStaticWorldManager.Verify(
                 m => m.AddStaticObject(It.Is<IStaticWorldObject>(o => o.ObjectCode == "dark_tree")),

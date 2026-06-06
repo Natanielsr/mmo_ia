@@ -122,7 +122,7 @@ namespace GameServer.Tests.Helpers
             {
                 Id = 1, TagName = "green_field", Name = "Green Field",
                 GroundTilePrefix = "grass", GroundTileCount = 12,
-                SemanticObjectMap = new() { ["default"] = "tree" },
+                Objects = ["tree"],
                 MonsterTags = new() { "rat", "wolf", "orc", "spider" },
                 IsDefault = true
             };

@@ -8,4 +8,6 @@ export const MONSTER_SPRITE_REGISTRY: Record<string, string> = {
   'goblin':   'assets/goblin.png',
   'skeleton':     'assets/skeleton.png',
   'orc-sorcerer': 'assets/orc_sorcerer.png',
+  'scorpion':   'assets/scorpion.png',
+  'bear' :     'assets/bear.png',
 }

@@ -9,7 +9,7 @@ public class BiomeDefinition
     public required string Name { get; init; }
     public required string GroundTilePrefix { get; init; }
     public required int GroundTileCount { get; init; }
-    public required Dictionary<string, string> SemanticObjectMap { get; init; }
+    public required List<string> Objects { get; init; }
     public required List<string> MonsterTags { get; init; }
     public bool IsDefault { get; init; }
 }

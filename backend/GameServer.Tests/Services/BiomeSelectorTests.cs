@@ -21,25 +21,25 @@ public class BiomeSelectorTests
                 {
                   "id": 1, "tagName": "green_field", "name": "Green Field",
                   "groundTilePrefix": "grass", "groundTileCount": 12,
-                  "semanticObjectMap": { "default": "tree" },
+                  "objects": ["tree"],
                   "monsterTags": ["rat", "wolf"], "isDefault": true
                 },
                 {
                   "id": 2, "tagName": "dark_forest", "name": "Dark Forest",
                   "groundTilePrefix": "darkgrass", "groundTileCount": 12,
-                  "semanticObjectMap": { "default": "dark_tree" },
+                  "objects": ["dark_tree"],
                   "monsterTags": ["spider", "orc"], "isDefault": false
                 },
                 {
                   "id": 3, "tagName": "sand", "name": "Desert",
                   "groundTilePrefix": "sand", "groundTileCount": 12,
-                  "semanticObjectMap": { "default": "cactus" },
+                  "objects": ["cactus"],
                   "monsterTags": ["scorpion", "snake"], "isDefault": false
                 },
                 {
                   "id": 4, "tagName": "snow", "name": "Snowlands",
                   "groundTilePrefix": "snow", "groundTileCount": 12,
-                  "semanticObjectMap": { "default": "pine_tree" },
+                  "objects": ["pine_tree"],
                   "monsterTags": ["wolf", "bear"], "isDefault": false
                 }
               ]
@@ -154,7 +154,7 @@ public class BiomeSelectorTests
                 {
                   "id": 1, "tagName": "green_field", "name": "Green Field",
                   "groundTilePrefix": "grass", "groundTileCount": 12,
-                  "semanticObjectMap": {}, "monsterTags": [], "isDefault": true
+                  "objects": [], "monsterTags": [], "isDefault": true
                 }
               ]
             }

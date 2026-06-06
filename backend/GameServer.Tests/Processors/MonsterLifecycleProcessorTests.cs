@@ -24,7 +24,7 @@ public class MonsterLifecycleProcessorTests
     {
         Id = 1, TagName = "green_field", Name = "Green Field",
         GroundTilePrefix = "grass", GroundTileCount = 12,
-        SemanticObjectMap = [],
+        Objects = [],
         MonsterTags = ["rat", "wolf"],
         IsDefault = true
     };
@@ -33,7 +33,7 @@ public class MonsterLifecycleProcessorTests
     {
         Id = 2, TagName = "dark_forest", Name = "Dark Forest",
         GroundTilePrefix = "dark_grass", GroundTileCount = 12,
-        SemanticObjectMap = [],
+        Objects = [],
         MonsterTags = ["spider", "orc"]
     };
 
