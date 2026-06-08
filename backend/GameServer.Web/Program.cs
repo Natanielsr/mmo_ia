@@ -53,6 +53,7 @@ builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>()
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 builder.Services.AddSingleton<IChunkObjectGenerator, ChunkObjectGenerator>();
 builder.Services.AddSingleton<IFractalRiverWorldService, FractalRiverWorldService>();
+builder.Services.AddSingleton<IPlayerSpawnService, PlayerSpawnService>();
 builder.Services.AddSingleton<IItemFactory, ItemFactory>();
 builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
 {
