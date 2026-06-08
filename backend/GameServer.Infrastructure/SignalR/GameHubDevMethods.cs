@@ -70,6 +70,15 @@ namespace GameServer.Infrastructure.SignalR
             player.SetGodMode(enabled);
         }
 
+        public void DevNoClip(bool enabled)
+        {
+            if (!IsDev) return;
+            var player = _playerManager.GetPlayerByConnectionId(Context.ConnectionId);
+            if (player == null) return;
+
+            player.SetNoClip(enabled);
+        }
+
         public void DevFullHeal()
         {
             if (!IsDev) return;

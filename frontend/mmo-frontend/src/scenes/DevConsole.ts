@@ -90,6 +90,12 @@ export class DevConsole {
             } else if (cmd === '/mortal') {
                 await this.signalRService.invoke('DevGodMode', false);
                 this.log('✓ God mode DESATIVADO');
+            } else if (cmd === '/noclip') {
+                await this.signalRService.invoke('DevNoClip', true);
+                this.log('✓ NoClip ATIVADO — atravessa paredes');
+            } else if (cmd === '/clip') {
+                await this.signalRService.invoke('DevNoClip', false);
+                this.log('✓ NoClip DESATIVADO — colisão normal');
             } else if (cmd === '/heal') {
                 await this.signalRService.invoke('DevFullHeal');
                 this.log('✓ HP total restaurado');
@@ -125,6 +131,8 @@ export class DevConsole {
             '/speed <n>        → Define velocidade (1.0–10.0, padrão 2.0)',
             '/god              → Ativa modo deus (invencível)',
             '/mortal           → Desativa modo deus',
+            '/noclip           → Ativa atravessar paredes',
+            '/clip             → Desativa atravessar paredes',
             '/heal             → Restaura HP total',
             '/kill             → Mata monstros próximos (raio 5)',
             '/allitems         → Spawna um de cada item no inventário',

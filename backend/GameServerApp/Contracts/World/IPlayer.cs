@@ -27,6 +27,7 @@ namespace GameServerApp.Contracts.World
         DateTime LastAttackTime { get; }
         PlayerState State { get; }
         bool IsGodMode { get; }
+        bool IsNoClip { get; }
         HashSet<ChunkCoord> SentChunks { get; }
 
         void Move(Position newPosition);
@@ -43,6 +44,7 @@ namespace GameServerApp.Contracts.World
         void ApplyEquipmentBonuses(int attackBonus, int defenseBonus);
         void SetSpeed(double speed);
         void SetGodMode(bool enabled);
+        void SetNoClip(bool enabled);
         void SetLevel(int targetLevel);
     }
 }

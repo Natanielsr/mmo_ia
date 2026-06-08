@@ -43,7 +43,7 @@ namespace GameServerApp.Processors
 
             var targetPos = _movementService.Move(player.Position, direction);
 
-            if (_collisionManager.IsPositionBlocked(targetPos))
+            if (!player.IsNoClip && _collisionManager.IsPositionBlocked(targetPos))
                 return false;
 
             var oldPos = player.Position;

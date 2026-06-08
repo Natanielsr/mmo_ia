@@ -32,6 +32,7 @@ namespace GameServerApp.World
         public PlayerState State { get; private set; }
         public bool IsDead => State == PlayerState.Dead;
         public bool IsGodMode { get; private set; }
+        public bool IsNoClip { get; private set; }
         public HashSet<ChunkCoord> SentChunks { get; } = [];
 
         private int _equipmentAttackBonus = 0;
@@ -184,6 +185,11 @@ namespace GameServerApp.World
         public void SetGodMode(bool enabled)
         {
             IsGodMode = enabled;
+        }
+
+        public void SetNoClip(bool enabled)
+        {
+            IsNoClip = enabled;
         }
 
         public void SetLevel(int targetLevel)
