@@ -34,6 +34,9 @@ export function getTerrainAssetEntry(tileType: number, biome: BiomeIndex): Asset
     case 2: // Snow
       basePath = 'assets/terrain/snow_biome';
       break;
+    case 3: // DarkForest
+      basePath = 'assets/terrain/dark_forest';
+      break;
   }
 
   const fileName = getTileFileName(tileType, biome);
@@ -47,7 +50,7 @@ export function getTerrainAssetEntry(tileType: number, biome: BiomeIndex): Asset
 
 // Map tile type to filename based on biome
 function getTileFileName(tileType: number, biome: BiomeIndex): string | null {
-  const biomePrefix = biome === 0 ? 'grass' : biome === 1 ? 'sand' : 'snow';
+  const biomePrefix = biome === 1 ? 'sand' : biome === 2 ? 'snow' : 'grass';
 
   switch (tileType) {
     // Terrain full tiles
@@ -137,7 +140,7 @@ function getTileFileName(tileType: number, biome: BiomeIndex): string | null {
 // Get all terrain assets for preloading
 export function getAllTerrainAssetEntries(): AssetEntry[] {
   const entries: AssetEntry[] = [];
-  const biomes: BiomeIndex[] = [0, 1, 2];
+  const biomes: BiomeIndex[] = [0, 1, 2, 3];
 
   for (const tileType of Object.values(TileType).filter((v) => typeof v === 'number')) {
     for (const biome of biomes) {

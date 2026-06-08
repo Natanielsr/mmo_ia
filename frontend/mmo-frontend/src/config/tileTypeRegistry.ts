@@ -31,6 +31,6 @@ export const TileType = {
   PathTerrainCrossNEtoSW: 28,
 } as const;
 
-export type BiomeIndex = 0 | 1 | 2; // 0=Grass, 1=Sand, 2=Snow
+export type BiomeIndex = 0 | 1 | 2 | 3; // 0=Grass, 1=Sand, 2=Snow, 3=DarkForest
 
 export const getTerrainTextureKey = (t: number, b: BiomeIndex) => `terrain_${b}_${t}`;
