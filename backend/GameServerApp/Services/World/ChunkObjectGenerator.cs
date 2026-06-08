@@ -1,0 +1,149 @@
+using GameServerApp.Contracts.Config;
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Services.Combat;
+using GameServerApp.Contracts.Services.Items;
+using GameServerApp.Contracts.Services.Movement;
+using GameServerApp.Contracts.Services.Ranking;
+using GameServerApp.Contracts.Services.Repositories;
+using GameServerApp.Contracts.Services.World;
+using GameServerApp.Contracts.Types;
+using GameServerApp.Dtos;
+using GameServerApp.Services.World.WorldFormations;
+using GameServerApp.World;
+using GameServerApp.Contracts.World;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+
+namespace GameServerApp.Services.World
+{
+    public class ChunkObjectGenerator : IChunkObjectGenerator
+    {
+        private readonly IStaticWorldManager _staticWorldManager;
+        private readonly IIdGeneratorService _idGeneratorService;
+        private readonly IItemManager _itemManager;
+        private readonly IWorldEvents _worldEvents;
+        private readonly WorldConfig _config;
+        private readonly IItemDefinitionRepository _itemRepo;
+        private readonly IItemFactory _itemFactory;
+        private readonly IBiomeSelector _biomeSelector;
+        private readonly IWorldTerrainService _fractalWorld;
+        private readonly List<(IWorldFormation Formation, double Weight)> _formations;
+
+        public ChunkObjectGenerator(
+            IStaticWorldManager staticWorldManager,
+            IIdGeneratorService idGeneratorService,
+            IItemManager itemManager,
+            IWorldEvents worldEvents,
+            IOptions<WorldConfig> config,
+            IItemDefinitionRepository itemRepo,
+            IItemFactory itemFactory,
+            IBiomeSelector biomeSelector,
+            IWorldTerrainService fractalWorld)
+        {
+            _staticWorldManager = staticWorldManager;
+            _idGeneratorService = idGeneratorService;
+            _itemManager = itemManager;
+            _worldEvents = worldEvents;
+            _config = config.Value;
+            _itemRepo = itemRepo;
+            _itemFactory = itemFactory;
+            _biomeSelector = biomeSelector;
+            _fractalWorld = fractalWorld;
+
+            // Inicializa as formações disponíveis com seus respectivos pesos/probabilidades
+            _formations = new List<(IWorldFormation, double)>
+            {
+                (new OrganicNoiseFormation(), 0.85), // 85% clareiras/florestas
+                (new StoneCircleFormation(), 0.04),  // 4% Stonehenge
+                (new RowFormation(), 0.04),         // 4% Pomares/Grades
+                (new ClusterFormation(), 0.04),     // 4% Aglomerados densos
+                (new MazeFormation(), 0.03)          // 3% Labirintos
+            };
+        }
+
+        public void GenerateChunk(ChunkCoord coord)
+        {
+            // Seed determinística para o chunk
+            int chunkSeed = HashCode.Combine(coord.CX, coord.CY);
+            var rng = new Random(chunkSeed);
+
+            // Coordenadas mundo do início do chunk
+            int startX = coord.CX * _config.Map.ChunkSize;
+            int startY = coord.CY * _config.Map.ChunkSize;
+
+            // Escolhe uma formação baseada nos pesos
+            IWorldFormation selectedFormation = PickFormation(rng);
+
+            selectedFormation.Generate(
+                startX,
+                startY,
+                _config.Map.ChunkSize,
+                rng,
+                (x, y, type) => SpawnObject(x, y, rng, type, _biomeSelector.GetBiomeForTile(x, y)));
+        }
+
+        private IWorldFormation PickFormation(Random rng)
+        {
+            double roll = rng.NextDouble();
+            double cumulative = 0;
+
+            foreach (var item in _formations)
+            {
+                cumulative += item.Weight;
+                if (roll < cumulative)
+                {
+                    return item.Formation;
+                }
+            }
+
+            return _formations[0].Formation; // Default
+        }
+
+        private void SpawnObject(int x, int y, Random rng, string? forcedType = null, BiomeDefinition? biome = null)
+        {
+            var pos = new Position(x, y);
+
+            if (_staticWorldManager.IsBlocked(pos)) return;
+            if (_fractalWorld.IsWaterTile(x, y)) return;
+            if (_fractalWorld.IsPathTile(x, y)) return;
+
+            // Items passam direto sem mapeamento de bioma
+            if (forcedType != null && forcedType.StartsWith("item:"))
+            {
+                string tagName = forcedType.Substring(5);
+                var def = _itemRepo.GetByTagName(tagName);
+                if (def != null)
+                {
+                    var item = _itemFactory.Create(def, _idGeneratorService.GenerateId().ToString(), pos);
+                    _itemManager.DropItem(item);
+                    _worldEvents.OnItemDropped(item);
+                }
+                return;
+            }
+
+            if (_staticWorldManager.GetObjectAt(pos) != null) return;
+
+            string code;
+            if (forcedType != null)
+                code = forcedType;
+            else if (biome?.Objects is { Count: > 0 } objs)
+                code = objs[rng.Next(objs.Count)];
+            else
+                code = new[] { "tree", "rock", "bush", "pillar" }[rng.Next(4)];
+
+            string name = char.ToUpper(code[0]) + code.Substring(1);
+
+            var obj = new StaticObject(
+                id: _idGeneratorService.GenerateId(),
+                position: pos,
+                name: name,
+                objectCode: code,
+                isPassable: false
+            );
+
+            _staticWorldManager.AddStaticObject(obj);
+        }
+    }
+}

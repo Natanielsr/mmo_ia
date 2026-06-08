@@ -1,5 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Services.Combat;
+using GameServerApp.Contracts.Services.Items;
+using GameServerApp.Contracts.Services.Movement;
+using GameServerApp.Contracts.Services.Ranking;
+using GameServerApp.Contracts.Services.Repositories;
+using GameServerApp.Contracts.Services.World;
 using GameServerApp.Dtos;
 
 namespace GameServer.Web.Controllers;

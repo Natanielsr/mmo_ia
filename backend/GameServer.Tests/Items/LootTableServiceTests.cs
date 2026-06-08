@@ -1,7 +1,19 @@
 using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Services.Combat;
+using GameServerApp.Contracts.Services.Items;
+using GameServerApp.Contracts.Services.Movement;
+using GameServerApp.Contracts.Services.Ranking;
+using GameServerApp.Contracts.Services.Repositories;
+using GameServerApp.Contracts.Services.World;
 using GameServerApp.Contracts.Types;
 using GameServerApp.Contracts.World;
-using GameServerApp.Services;
+using GameServerApp.Services.Combat;
+using GameServerApp.Services.Items;
+using GameServerApp.Services.Movement;
+using GameServerApp.Services.Ranking;
+using GameServerApp.Services.Repositories;
+using GameServerApp.Services.World;
+using GameServerApp.Services.World.WorldFormations;
 using GameServerApp.World;
 using Moq;
 

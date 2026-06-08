@@ -1,0 +1,64 @@
+using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Services.Combat;
+using GameServerApp.Contracts.Services.Items;
+using GameServerApp.Contracts.Services.Movement;
+using GameServerApp.Contracts.Services.Ranking;
+using GameServerApp.Contracts.Services.Repositories;
+using GameServerApp.Contracts.Services.World;
+using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
+using GameServerApp.World;
+
+namespace GameServerApp.Services.Items;
+
+public class ItemFactory : IItemFactory
+{
+    public IItem Create(ItemDefinition def, string instanceId, Position position)
+    {
+        return def.Type switch
+        {
+            "Potion" => new HealingItem(
+                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Potion,
+                healAmount: def.HealAmount ?? 20,
+                description: def.Description, value: def.Value),
+
+            "Healing" => new HealingItem(
+                instanceId, def.Name, def.Weight, def.TagName, position, ItemType.Healing,
+                healAmount: def.HealAmount ?? 10,
+                description: def.Description, value: def.Value),
+
+            "Weapon" => new Weapon(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                attackBonus: def.AttackBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            "Armor" => new Armor(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                defenseBonus: def.DefenseBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            "Helmet" => new Helmet(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                defenseBonus: def.DefenseBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            "Shield" => new Shield(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                defenseBonus: def.DefenseBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            "Legs" => new Legs(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                defenseBonus: def.DefenseBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            "Boots" => new Boots(
+                instanceId, def.Name, def.Weight, def.TagName, position,
+                defenseBonus: def.DefenseBonus ?? 0,
+                description: def.Description, value: def.Value),
+
+            _ => throw new InvalidOperationException($"Unknown item type: {def.Type}")
+        };
+    }
+}

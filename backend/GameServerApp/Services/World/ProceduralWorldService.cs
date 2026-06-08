@@ -1,0 +1,111 @@
+using GameServerApp.Contracts.Managers;
+using GameServerApp.Contracts.Services;
+using GameServerApp.Contracts.Services.Combat;
+using GameServerApp.Contracts.Services.Items;
+using GameServerApp.Contracts.Services.Movement;
+using GameServerApp.Contracts.Services.Ranking;
+using GameServerApp.Contracts.Services.Repositories;
+using GameServerApp.Contracts.Services.World;
+using GameServerApp.Contracts.Types;
+using GameServerApp.Contracts.World;
+using GameServerApp.Dtos;
+using GameServerApp.World;
+
+namespace GameServerApp.Services.World;
+
+public class ProceduralWorldService : IProceduralWorldService
+{
+    private static readonly string[] ObstacleNames = ["tree", "rock", "bush", "pillar"];
+    private readonly IIdGeneratorService _idGeneratorService;
+    private readonly IStaticWorldManager _staticWorldManager;
+
+    private static readonly Position PlayserSpawnPosition = new Position(0, 0);
+
+    public ProceduralWorldService(
+        IIdGeneratorService idGeneratorService,
+        IStaticWorldManager staticWorldManager
+        )
+    {
+        _idGeneratorService = idGeneratorService;
+        _staticWorldManager = staticWorldManager;
+    }
+
+    public IReadOnlyCollection<IStaticWorldObject> GenerateRandomObstacles(
+        int width,
+        int height,
+        double fillPercentage,
+        int safeSpawnRadius,
+        int? seed = null)
+    {
+        if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+        if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
+        if (fillPercentage <= 0 || fillPercentage >= 1) throw new ArgumentOutOfRangeException(nameof(fillPercentage));
+        if (safeSpawnRadius < 0) throw new ArgumentOutOfRangeException(nameof(safeSpawnRadius));
+
+        var rng = seed.HasValue ? new Random(seed.Value) : new Random();
+
+        var minX = -(width / 2);
+        var maxX = minX + width - 1;
+        var minY = -(height / 2);
+        var maxY = minY + height - 1;
+
+        var targetCount = (int)Math.Floor(width * height * fillPercentage);
+        var generated = new List<IStaticWorldObject>(targetCount);
+        var occupiedPositions = new HashSet<Position>();
+
+        var maxAttempts = targetCount * 20;
+        var attempts = 0;
+
+        while (generated.Count < targetCount && attempts < maxAttempts)
+        {
+            attempts++;
+
+            var x = rng.Next(minX, maxX + 1);
+            var y = rng.Next(minY, maxY + 1);
+            var pos = new Position(x, y);
+
+            if (pos == PlayserSpawnPosition) //player spawn position
+                continue;
+
+            var insideSpawnSafeArea = Math.Abs(x) <= safeSpawnRadius && Math.Abs(y) <= safeSpawnRadius;
+            if (insideSpawnSafeArea || !occupiedPositions.Add(pos))
+            {
+                continue;
+            }
+
+            var obstacleName = ObstacleNames[rng.Next(ObstacleNames.Length)];
+            generated.Add(new StaticObject(
+                id: _idGeneratorService.GenerateId(),
+                position: pos,
+                name: obstacleName,
+                objectCode: obstacleName,
+                isPassable: false));
+        }
+
+        return generated;
+    }
+
+    public IReadOnlyCollection<MapObjectData> GetAllMapObjects()
+    {
+        var allObjects = new List<MapObjectData>();
+
+        // O método internal GetAllObjects() está no StaticWorldManager
+        // Mas estamos acessando ele pelo acesso ao dicionário direto para simplificar
+
+        foreach (var kvp in _staticWorldManager.GetAllObjects().Where(x => x.Value != null))
+        {
+            var obj = kvp.Value;
+            allObjects.Add(new MapObjectData
+            {
+                Id = obj.Id,
+                Name = obj.Name,
+                ObjectCode = obj.ObjectCode,
+                Position = obj.Position,
+                Type = obj.Type,
+                IsPassable = obj.IsPassable
+            });
+        }
+
+        return allObjects;
+    }
+}

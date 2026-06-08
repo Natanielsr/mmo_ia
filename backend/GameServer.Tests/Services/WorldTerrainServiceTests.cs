@@ -1,6 +1,12 @@
-using FractalRiver;
+using GameServerApp.Services.World.MapGenerator;
 using GameServerApp.Contracts.Config;
-using GameServerApp.Services;
+using GameServerApp.Services.Combat;
+using GameServerApp.Services.Items;
+using GameServerApp.Services.Movement;
+using GameServerApp.Services.Ranking;
+using GameServerApp.Services.Repositories;
+using GameServerApp.Services.World;
+using GameServerApp.Services.World.WorldFormations;
 using Microsoft.Extensions.Options;
 using Xunit;
 

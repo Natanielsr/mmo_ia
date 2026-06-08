@@ -1,4 +1,10 @@
-using GameServerApp.Services;
+using GameServerApp.Services.Combat;
+using GameServerApp.Services.Items;
+using GameServerApp.Services.Movement;
+using GameServerApp.Services.Ranking;
+using GameServerApp.Services.Repositories;
+using GameServerApp.Services.World;
+using GameServerApp.Services.World.WorldFormations;
 
 namespace GameServer.Tests.Combat;
 

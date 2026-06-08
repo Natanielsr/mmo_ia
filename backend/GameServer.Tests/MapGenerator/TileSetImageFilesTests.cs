@@ -1,3 +1,4 @@
+using GameServerApp.Services.World.MapGenerator;
 using System.Reflection;
 using Xunit;
 

@@ -1,5 +1,5 @@
 using GameServerApp.Contracts;
-using GameServerApp.Services.WorldFormations;
+using GameServerApp.Services.World.WorldFormations;
 using Xunit;
 using System;
 using System.Collections.Generic;

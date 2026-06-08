@@ -1,4 +1,5 @@
-using FractalRiver.Generation;
+using GameServerApp.Services.World.MapGenerator;
+using GameServerApp.Services.World.MapGenerator.Generation;
 using Xunit;
 
 namespace FractalRiver.Tests;
