@@ -21,6 +21,20 @@ public static class TerrainGenerator
         return (grid, paths);
     }
 
+    private static void ForceBorderTiles(TileType[,] tiles, int cols, int rows)
+    {
+        for (int x = 0; x < cols; x++)
+        {
+            tiles[x, 0]        = TileType.WaterFull;
+            tiles[x, rows - 1] = TileType.WaterFull;
+        }
+        for (int y = 0; y < rows; y++)
+        {
+            tiles[0, y]        = TileType.WaterFull;
+            tiles[cols - 1, y] = TileType.WaterFull;
+        }
+    }
+
     /// <summary>
     /// Gera um mundo completo com tiles e biomas, pronto para renderizar ou serializar.
     /// </summary>
@@ -28,6 +42,7 @@ public static class TerrainGenerator
     {
         var (isLand, isPath) = Generate(cols, rows, seed, frequency, threshold);
         var tiles  = DualGrid.Compute(isLand, isPath);
+        ForceBorderTiles(tiles, cols, rows);
         var biomes = BiomeMap.Assign(cols, rows, seed);
         return new WorldData(cols, rows, tiles, biomes);
     }

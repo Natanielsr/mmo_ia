@@ -22,6 +22,7 @@ namespace GameServerApp.Processors
         private readonly IMonsterMovementService _monsterMovementService;
         private readonly IWorldEvents _worldEvents;
         private readonly IBiomeSelector _biomeSelector;
+        private readonly IWorldTerrainService _terrainService;
         private readonly WorldConfig _config;
         private readonly List<DateTime> _pendingRespawns = new();
 
@@ -31,6 +32,7 @@ namespace GameServerApp.Processors
             IMonsterMovementService monsterMovementService,
             IWorldEvents worldEvents,
             IBiomeSelector biomeSelector,
+            IWorldTerrainService terrainService,
             IOptions<WorldConfig> config)
         {
             _monsterManager = monsterManager;
@@ -38,6 +40,7 @@ namespace GameServerApp.Processors
             _monsterMovementService = monsterMovementService;
             _worldEvents = worldEvents;
             _biomeSelector = biomeSelector;
+            _terrainService = terrainService;
             _config = config.Value;
         }
 
@@ -101,7 +104,8 @@ namespace GameServerApp.Processors
                         minRadius,
                         _config.Monsters.SpawnRadius,
                         monsterTagsFilter: biome.MonsterTags,
-                        positionValidator: pos => _biomeSelector.GetBiomeForTile(pos.X, pos.Y).TagName == biome.TagName);
+                        positionValidator: pos => !_terrainService.IsWaterTile(pos.X, pos.Y)
+                                               && _biomeSelector.GetBiomeForTile(pos.X, pos.Y).TagName == biome.TagName);
 
                     if (spawned != null && spawned.Any())
                     {

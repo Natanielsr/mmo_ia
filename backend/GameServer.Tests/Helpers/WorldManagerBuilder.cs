@@ -163,12 +163,15 @@ namespace GameServer.Tests.Helpers
                 IdGenerator.Object,
                 opts);
 
+            FractalRiverWorld.Setup(t => t.IsWaterTile(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
+
             var monsterLifecycleProcessor = new MonsterLifecycleProcessor(
                 monsterMgr,
                 PlayerManager.Object,
                 MonsterMovementService.Object,
                 Events.Object,
                 BiomeSelector.Object,
+                FractalRiverWorld.Object,
                 opts);
 
             var itemProcessor = new ItemProcessor(

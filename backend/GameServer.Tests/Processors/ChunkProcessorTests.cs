@@ -71,18 +71,29 @@ namespace GameServer.Tests.Processors
         }
 
         [Fact]
-        public void ProcessChunkRequest_Should_Skip_OutOfBounds_Coords()
+        public void ProcessChunkRequest_Should_Skip_FarOutOfRange_Coords()
         {
             var player = MakePlayer();
             var coords = new List<ChunkCoordDto>
             {
-                new(5, 5),  // 5 * 16 = 80 >= 32 → fora do mapa
-                new(-1, 0), // negativo → fora do mapa
+                new(5, 5),   // 5 * 16 = 80 >> mapa+borda → ignorado
+                new(-2, 0),  // 2 chunks fora da borda → ignorado
             };
 
             _sut.ProcessChunkRequest(player, "conn-1", coords);
 
             _worldEvents.Verify(e => e.OnChunkLoaded(It.IsAny<string>(), It.IsAny<ChunkData>()), Times.Never);
+        }
+
+        [Fact]
+        public void ProcessChunkRequest_Should_Send_BorderChunk_AsWater()
+        {
+            var player = MakePlayer();
+            var coords = new List<ChunkCoordDto> { new(-1, 0) }; // 1 chunk fora → retorna água
+
+            _sut.ProcessChunkRequest(player, "conn-1", coords);
+
+            _worldEvents.Verify(e => e.OnChunkLoaded("conn-1", It.Is<ChunkData>(c => c.Cx == -1 && c.Cy == 0)), Times.Once);
         }
 
         [Fact]

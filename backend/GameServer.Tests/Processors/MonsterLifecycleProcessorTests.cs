@@ -24,6 +24,7 @@ public class MonsterLifecycleProcessorTests
     private readonly Mock<IMonsterMovementService> _movementServiceMock = new();
     private readonly Mock<IWorldEvents> _worldEventsMock = new();
     private readonly Mock<IBiomeSelector> _biomeSelectorMock = new();
+    private readonly Mock<IWorldTerrainService> _terrainServiceMock = new();
     private readonly MonsterLifecycleProcessor _sut;
 
     private static readonly BiomeDefinition GreenField = new()
@@ -58,12 +59,15 @@ public class MonsterLifecycleProcessorTests
             }
         });
 
+        _terrainServiceMock.Setup(t => t.IsWaterTile(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
+
         _sut = new MonsterLifecycleProcessor(
             _monsterManagerMock.Object,
             _playerManagerMock.Object,
             _movementServiceMock.Object,
             _worldEventsMock.Object,
             _biomeSelectorMock.Object,
+            _terrainServiceMock.Object,
             config);
     }
 

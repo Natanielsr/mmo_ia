@@ -68,7 +68,7 @@ public class WorldTerrainService : IWorldTerrainService
     public bool IsWaterTile(int worldX, int worldY)
     {
         if (worldX < 0 || worldX >= WorldData.Cols || worldY < 0 || worldY >= WorldData.Rows)
-            return false;
+            return true;
         return WaterTiles.Contains(WorldData.Tiles[worldX, worldY]);
     }
 
@@ -102,8 +102,9 @@ public class WorldTerrainService : IWorldTerrainService
             {
                 int wx = startX + col;
                 int wy = startY + row;
-                tiles[row][col]  = (wx < WorldData.Cols && wy < WorldData.Rows) ? (int)WorldData.Tiles[wx, wy]  : 0;
-                biomes[row][col] = (wx < WorldData.Cols && wy < WorldData.Rows) ? (int)WorldData.Biomes[wx, wy] : 0;
+                bool inBounds    = wx >= 0 && wy >= 0 && wx < WorldData.Cols && wy < WorldData.Rows;
+                tiles[row][col]  = inBounds ? (int)WorldData.Tiles[wx, wy]  : 0;
+                biomes[row][col] = inBounds ? (int)WorldData.Biomes[wx, wy] : 0;
             }
         }
 

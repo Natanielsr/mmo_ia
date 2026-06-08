@@ -81,12 +81,16 @@ namespace GameServerApp.Processors
 
         private ChunkData BuildChunkData(ChunkCoord coord)
         {
+            var (tiles, biomes) = _fractalWorld.GetChunkTiles(coord.CX, coord.CY, _config.Map.ChunkSize);
+
+            if (!IsChunkInMapBounds(coord))
+                return new ChunkData { Cx = coord.CX, Cy = coord.CY, Tiles = tiles, Biomes = biomes, Objects = [], Items = [] };
+
             if (!_staticWorldManager.IsChunkLoaded(coord))
                 _worldGenerator.GenerateChunk(coord);
 
             var chunkObjects = _staticWorldManager.GetChunkObjects(coord);
             var chunkItems   = _itemManager.GetItemsInChunk(coord);
-            var (tiles, biomes) = _fractalWorld.GetChunkTiles(coord.CX, coord.CY, _config.Map.ChunkSize);
 
             return new ChunkData
             {
@@ -119,8 +123,15 @@ namespace GameServerApp.Processors
             };
         }
 
-        /// <summary>True se o chunk sobrepõe os limites do mapa [0,Width) × [0,Height).</summary>
         private bool IsChunkInsideMap(ChunkCoord coord)
+        {
+            int size = _config.Map.ChunkSize;
+            return coord.CX >= -1 && coord.CY >= -1
+                && coord.CX * size < _config.Map.Width  + size
+                && coord.CY * size < _config.Map.Height + size;
+        }
+
+        private bool IsChunkInMapBounds(ChunkCoord coord)
         {
             int size = _config.Map.ChunkSize;
             return coord.CX >= 0 && coord.CY >= 0
