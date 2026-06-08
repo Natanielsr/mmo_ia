@@ -26,12 +26,12 @@ public class PlayerSpawnServiceTests
         new(Cols, Rows, new TileType[Cols, Rows], new Biome[Cols, Rows]);
 
     private static (PlayerSpawnService Svc,
-                    Mock<IFractalRiverWorldService> Fractal,
+                    Mock<IWorldTerrainService> Fractal,
                     Mock<IStaticWorldManager> World,
                     Mock<IChunkObjectGenerator> Gen)
         BuildSut()
     {
-        var fractal = new Mock<IFractalRiverWorldService>();
+        var fractal = new Mock<IWorldTerrainService>();
         fractal.Setup(f => f.WorldData).Returns(MakeWorldData());
         fractal.Setup(f => f.IsWaterTile(It.IsAny<int>(), It.IsAny<int>())).Returns(false);
 

@@ -21,7 +21,7 @@ namespace GameServer.Tests.Integration
         private readonly Mock<IItemDefinitionRepository> _mockItemRepo = new();
         private readonly Mock<IItemFactory> _mockItemFactory = new();
         private readonly Mock<IBiomeSelector> _mockBiomeSelector = new();
-        private readonly Mock<IFractalRiverWorldService> _mockFractalWorld = new();
+        private readonly Mock<IWorldTerrainService> _mockFractalWorld = new();
         private readonly IOptions<WorldConfig> _config = Options.Create(new WorldConfig());
 
         public ChunkObjectGeneratorIntegrationTests()

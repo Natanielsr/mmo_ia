@@ -2,7 +2,7 @@ using GameServerApp.Dtos;
 
 namespace GameServerApp.Contracts.Services;
 
-public interface IFractalRiverWorldService
+public interface IWorldTerrainService
 {
     FractalRiver.WorldData WorldData { get; }
 

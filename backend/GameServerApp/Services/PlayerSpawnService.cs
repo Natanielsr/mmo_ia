@@ -8,13 +8,13 @@ namespace GameServerApp.Services;
 
 public class PlayerSpawnService : IPlayerSpawnService
 {
-    private readonly IFractalRiverWorldService _fractalWorld;
+    private readonly IWorldTerrainService _fractalWorld;
     private readonly IStaticWorldManager _staticWorldManager;
     private readonly IChunkObjectGenerator _chunkGenerator;
     private readonly MapConfig _map;
 
     public PlayerSpawnService(
-        IFractalRiverWorldService fractalWorld,
+        IWorldTerrainService fractalWorld,
         IStaticWorldManager staticWorldManager,
         IChunkObjectGenerator chunkGenerator,
         IOptions<WorldConfig> config)

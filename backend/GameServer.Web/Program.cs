@@ -52,7 +52,7 @@ builder.Services.AddSingleton<IProceduralWorldService, ProceduralWorldService>()
 builder.Services.AddSingleton<IMonsterMovementService, MonsterMovementService>();
 builder.Services.AddSingleton<IPathfindingService, AStarPathfindingService>();
 builder.Services.AddSingleton<IChunkObjectGenerator, ChunkObjectGenerator>();
-builder.Services.AddSingleton<IFractalRiverWorldService, FractalRiverWorldService>();
+builder.Services.AddSingleton<IWorldTerrainService, WorldTerrainService>();
 builder.Services.AddSingleton<IPlayerSpawnService, PlayerSpawnService>();
 builder.Services.AddSingleton<IItemFactory, ItemFactory>();
 builder.Services.AddSingleton<IItemDefinitionRepository>(_ =>
@@ -136,7 +136,7 @@ app.Run();
 
 static void InitializeWaterBlocks(IServiceProvider services)
 {
-    var fractal = services.GetRequiredService<IFractalRiverWorldService>();
+    var fractal = services.GetRequiredService<IWorldTerrainService>();
     var staticWorld = services.GetRequiredService<IStaticWorldManager>();
     var config = services.GetRequiredService<IOptions<WorldConfig>>().Value;
 

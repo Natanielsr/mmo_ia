@@ -27,7 +27,7 @@ namespace GameServer.Infrastructure.SignalR
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IRankingService _rankingService;
         private readonly ILootTableService _lootTableService;
-        private readonly IFractalRiverWorldService _fractalWorld;
+        private readonly IWorldTerrainService _fractalWorld;
         private readonly IPlayerSpawnService _spawnService;
 
         public GameHub(
@@ -45,7 +45,7 @@ namespace GameServer.Infrastructure.SignalR
             IItemDefinitionRepository itemRepo,
             IRankingService rankingService,
             ILootTableService lootTableService,
-            IFractalRiverWorldService fractalWorld,
+            IWorldTerrainService fractalWorld,
             IPlayerSpawnService spawnService)
         {
             _worldProcessor = worldProcessor;

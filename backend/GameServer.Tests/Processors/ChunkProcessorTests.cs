@@ -17,7 +17,7 @@ namespace GameServer.Tests.Processors
         private readonly Mock<IChunkObjectGenerator> _worldGenerator = new();
         private readonly Mock<IItemManager> _itemManager = new();
         private readonly Mock<IWorldEvents> _worldEvents = new();
-        private readonly Mock<IFractalRiverWorldService> _fractalWorld = new();
+        private readonly Mock<IWorldTerrainService> _fractalWorld = new();
         private readonly IOptions<WorldConfig> _config;
         private readonly ChunkProcessor _sut;
 

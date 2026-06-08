@@ -50,7 +50,7 @@ public class BiomeCoordinateConsistencyTests
     public void GetBiomeAt_MatchesRawBiomeArray_ForAllTiles()
     {
         // WorldData.Biomes[x, y] é a fonte de verdade; GetBiomeAt deve retornar o mesmo valor.
-        var worldSvc = new FractalRiverWorldService(Config());
+        var worldSvc = new WorldTerrainService(Config());
         var biomeSvc = new WorldBiomeMapService(Config());
 
         for (int x = 0; x < Width; x++)
@@ -87,7 +87,7 @@ public class BiomeCoordinateConsistencyTests
     {
         // O que o cliente recebe via GetChunkTiles deve ser idêntico ao que o servidor
         // usa para lógica de spawn via GetBiomeAt — ambos em coordenadas top-left.
-        var worldSvc = new FractalRiverWorldService(Config());
+        var worldSvc = new WorldTerrainService(Config());
         var biomeSvc = new WorldBiomeMapService(Config());
 
         var (_, biomeRows) = worldSvc.GetChunkTiles(cx, cy, ChunkSize);
@@ -114,7 +114,7 @@ public class BiomeCoordinateConsistencyTests
     [InlineData(31, 31)]
     public void GetBiomeForPosition_TagName_MatchesRawBiomeAtTileXY(int x, int y)
     {
-        var worldSvc   = new FractalRiverWorldService(Config());
+        var worldSvc   = new WorldTerrainService(Config());
         var biomeSvc   = new WorldBiomeMapService(Config());
         var repo       = new BiomeDefinitionRepository(BiomesJson);
         var selector   = new BiomeSelector(repo, biomeSvc, Config());
@@ -133,7 +133,7 @@ public class BiomeCoordinateConsistencyTests
     [InlineData(1, 1)]
     public void GetBiomeForChunk_TagName_MatchesRawBiomeAtChunkCenterTile(int cx, int cy)
     {
-        var worldSvc = new FractalRiverWorldService(Config());
+        var worldSvc = new WorldTerrainService(Config());
         var biomeSvc = new WorldBiomeMapService(Config());
         var repo     = new BiomeDefinitionRepository(BiomesJson);
         var selector = new BiomeSelector(repo, biomeSvc, Config());

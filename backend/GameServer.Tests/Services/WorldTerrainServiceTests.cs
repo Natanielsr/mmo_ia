@@ -6,15 +6,15 @@ using Xunit;
 
 namespace GameServer.Tests.Services;
 
-public class FractalRiverWorldServiceTests
+public class WorldTerrainServiceTests
 {
-    private static FractalRiverWorldService CreateService(int width = 32, int height = 24)
+    private static WorldTerrainService CreateService(int width = 32, int height = 24)
     {
         var config = Options.Create(new WorldConfig
         {
             Map = new MapConfig { Width = width, Height = height, GeneratorSeed = 42, GeneratorFrequency = 0.05f }
         });
-        return new FractalRiverWorldService(config);
+        return new WorldTerrainService(config);
     }
 
     [Fact]

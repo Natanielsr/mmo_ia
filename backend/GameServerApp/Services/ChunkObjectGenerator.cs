@@ -22,7 +22,7 @@ namespace GameServerApp.Services
         private readonly IItemDefinitionRepository _itemRepo;
         private readonly IItemFactory _itemFactory;
         private readonly IBiomeSelector _biomeSelector;
-        private readonly IFractalRiverWorldService _fractalWorld;
+        private readonly IWorldTerrainService _fractalWorld;
         private readonly List<(IWorldFormation Formation, double Weight)> _formations;
 
         public ChunkObjectGenerator(
@@ -34,7 +34,7 @@ namespace GameServerApp.Services
             IItemDefinitionRepository itemRepo,
             IItemFactory itemFactory,
             IBiomeSelector biomeSelector,
-            IFractalRiverWorldService fractalWorld)
+            IWorldTerrainService fractalWorld)
         {
             _staticWorldManager = staticWorldManager;
             _idGeneratorService = idGeneratorService;

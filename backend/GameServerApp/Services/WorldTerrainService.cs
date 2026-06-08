@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace GameServerApp.Services;
 
-public class FractalRiverWorldService : IFractalRiverWorldService
+public class WorldTerrainService : IWorldTerrainService
 {
     private static readonly HashSet<TileType> PathTiles = new()
     {
@@ -46,7 +46,7 @@ public class FractalRiverWorldService : IFractalRiverWorldService
 
     public WorldData WorldData { get; }
 
-    public FractalRiverWorldService(IOptions<WorldConfig> config)
+    public WorldTerrainService(IOptions<WorldConfig> config)
     {
         var map = config.Value.Map;
         WorldData = FractalRiver.TerrainGenerator.GenerateWorld(map.Width, map.Height, map.GeneratorSeed, map.GeneratorFrequency);
